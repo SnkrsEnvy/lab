@@ -1,0 +1,323 @@
+{
+  "project": "Grand Core \u2014 Unreal Master v1",
+  "engine": "Unreal Engine 5.8",
+  "room": {
+    "length_ft": 80,
+    "width_ft": 40,
+    "height_ft": 20,
+    "area_sqft": 3200
+  },
+  "status": "Generated and structurally validated; Unreal compile/render pending on Windows UE installation.",
+  "files": [
+    {
+      "path": "Config/ConsoleVariables.ini",
+      "bytes": 1032,
+      "sha256": "b8f6d16f2ec7426e8cc5d63cd118f50233310978ff63bb9cfd96cf9eb63ceb88"
+    },
+    {
+      "path": "Config/DefaultEngine.ini",
+      "bytes": 2522,
+      "sha256": "315ba0c7e302f5d7f8442e5113610e8d30adaa5fd1e15509df965b7d77b7b306"
+    },
+    {
+      "path": "Config/DefaultGame.ini",
+      "bytes": 426,
+      "sha256": "7b776bf71e161feb8ada55f275e24079bf33f8a53ae2b65b7d7aa198e4302859"
+    },
+    {
+      "path": "Config/DefaultInput.ini",
+      "bytes": 1509,
+      "sha256": "b8faa52fcfdeb264292323f45a263146a130b509d6b7490d294ca20fec3e614a"
+    },
+    {
+      "path": "ContentSource/Geometry/GrandCore_MasterShell.glb",
+      "bytes": 49584,
+      "sha256": "5d1045aced92187ccbe381534462b904f07c332fb1908025b590cee90e15eeef"
+    },
+    {
+      "path": "ContentSource/References/MASTER_VISUAL_BENCHMARK.png",
+      "bytes": 2039977,
+      "sha256": "f54eaef5ff069806ce6bb03a072052ad5dd1fb62b2e16bd268a259f2835bca2a"
+    },
+    {
+      "path": "ContentSource/References/ROOM_DIMENSION_SKETCH.jpeg",
+      "bytes": 518871,
+      "sha256": "f04a98e9cc84c41ff8465ca9cfb997f1833f0263321e64e433e6c339e9ebb74c"
+    },
+    {
+      "path": "ContentSource/Textures/T_Bronze_Dark_Albedo_2K.jpg",
+      "bytes": 135745,
+      "sha256": "0dc7fae863d2d16f6f5adf733e535da5608232d0ea46ace461bf2b36156840ec"
+    },
+    {
+      "path": "ContentSource/Textures/T_Bronze_Dark_Metallic_2K.png",
+      "bytes": 3157,
+      "sha256": "c5a4f22e838c0ba63bff72f54d939612a3b83cbcbc324d089cb212d2c84966ec"
+    },
+    {
+      "path": "ContentSource/Textures/T_Bronze_Dark_Normal_2K.png",
+      "bytes": 210603,
+      "sha256": "ce7202157542dde81533a3684c80f3c65b9c5f24739da9a5cd8d833f95ba1b1e"
+    },
+    {
+      "path": "ContentSource/Textures/T_Bronze_Dark_Roughness_2K.png",
+      "bytes": 214117,
+      "sha256": "dfed9680035b8ef997035682cbe7a276ce43907617474380efa0e9c372bab351"
+    },
+    {
+      "path": "ContentSource/Textures/T_Marble_Calacatta_AO_4K.png",
+      "bytes": 253858,
+      "sha256": "4bd19ea510732f6d73df0f59f3f745e57d4fd66f7d3d6bac7e95b4846252e14d"
+    },
+    {
+      "path": "ContentSource/Textures/T_Marble_Calacatta_Albedo_8K.jpg",
+      "bytes": 2654204,
+      "sha256": "2a245bef624ce99213ca6dd3e548342837d8abf3b9914b1d33aabdb00635b523"
+    },
+    {
+      "path": "ContentSource/Textures/T_Marble_Calacatta_Height_4K.png",
+      "bytes": 424337,
+      "sha256": "1b82f550fb2ae3528a680497991fdfe667a279c71a5dca6aa7357e00a32c49d1"
+    },
+    {
+      "path": "ContentSource/Textures/T_Marble_Calacatta_Normal_4K.png",
+      "bytes": 1199949,
+      "sha256": "ea965deb7ef3905d05869ef5c3f40c07ace9d6cdae6bc57e2183d672a6e3be66"
+    },
+    {
+      "path": "ContentSource/Textures/T_Marble_Calacatta_Roughness_4K.png",
+      "bytes": 508331,
+      "sha256": "c4429a76faa087dc724bea3533532eec64b68e574778376676391e56afc8a1df"
+    },
+    {
+      "path": "ContentSource/Textures/T_Plaster_Ivory_Albedo_4K.jpg",
+      "bytes": 1762994,
+      "sha256": "0fe60bbc6d02d5ad3d9e1a972fa1143c151a8a73907c8f22966d52c9e55c952c"
+    },
+    {
+      "path": "ContentSource/Textures/T_Plaster_Ivory_Normal_4K.png",
+      "bytes": 2716891,
+      "sha256": "6c92556b90c058a1b6179004961271b79973110ce24adc075d7e19eb3f5db97e"
+    },
+    {
+      "path": "ContentSource/Textures/T_Plaster_Ivory_Roughness_4K.png",
+      "bytes": 105615,
+      "sha256": "fc8e684ad1e6f660b1db6010fa04595513b88d2030c4eb48ffa9c5219e5eb28e"
+    },
+    {
+      "path": "ContentSource/Textures/T_Velvet_Camel_AO_4K.png",
+      "bytes": 2620201,
+      "sha256": "52c437ace82eb8a32972dc7abd25640747cb89dae4b7bee6dd90e87f981c51e4"
+    },
+    {
+      "path": "ContentSource/Textures/T_Velvet_Camel_Albedo_8K.jpg",
+      "bytes": 9812141,
+      "sha256": "f4980a59f0c2caba99385d2fb1a0329979270222842593361764a3bfbd1d172c"
+    },
+    {
+      "path": "ContentSource/Textures/T_Velvet_Camel_Fuzz_4K.png",
+      "bytes": 3056811,
+      "sha256": "3190ce1d7671e5066e31894d80b5699358428d371548cc795781ca307ec9ba53"
+    },
+    {
+      "path": "ContentSource/Textures/T_Velvet_Camel_Normal_4K.png",
+      "bytes": 12747989,
+      "sha256": "7c81e3c019fc243d22865dc8a9258f04a9700e1642377ba90333c5ca1378c79e"
+    },
+    {
+      "path": "ContentSource/Textures/T_Velvet_Camel_Roughness_4K.png",
+      "bytes": 1710999,
+      "sha256": "1c3631a6cbb307d7dd3b601e400900a11db0a81e0eca0ac1e0d8f4320812d35f"
+    },
+    {
+      "path": "Docs/BUILD-STATUS.md",
+      "bytes": 1162,
+      "sha256": "71dfbff5f625a2ef9b87c69a66b6b19f8c21959f6ece81e58206ec62386da6a0"
+    },
+    {
+      "path": "Docs/HARDWARE-PROFILE.md",
+      "bytes": 839,
+      "sha256": "e5854cdc22cb4dc1cc21ec6d92021bfa97c4ac96eaffc7b9388a1a29163191cf"
+    },
+    {
+      "path": "Docs/MASTER-ARCHITECTURE.md",
+      "bytes": 1442,
+      "sha256": "ad7b810ed7f1da02c70e9f268589469906aff511a49f5f5fa5fdb30bf270f89c"
+    },
+    {
+      "path": "Docs/MATERIAL-SPEC.md",
+      "bytes": 1200,
+      "sha256": "bd6becc604182eb46fba6987057df4c75026f760d171b53a6fd02c514891438f"
+    },
+    {
+      "path": "Docs/PIXEL-STREAMING.md",
+      "bytes": 1183,
+      "sha256": "608de4d5d71cb69b9d5d3511e5f945e9a6fd647e3e153dfe9128e1e7260feb19"
+    },
+    {
+      "path": "Docs/ROOM-MATH.md",
+      "bytes": 975,
+      "sha256": "5c377e7a86eb57cce42464abeb653718bea61ac83a7ef79b39166f5f5fada976"
+    },
+    {
+      "path": "GRAND_CORE_LOCKED_SPEC.png",
+      "bytes": 2243269,
+      "sha256": "117af7c6ec7f269732ba58eb9ce885517069d5d21d26dded3ddb64da03190d0f"
+    },
+    {
+      "path": "GrandCore.uproject",
+      "bytes": 663,
+      "sha256": "c7ee1c3dad9c58cf336d81ef66bd6f0cdd7e60fd0eccdeb488475c0ac0c6b953"
+    },
+    {
+      "path": "OPEN-GRAND-CORE.cmd",
+      "bytes": 111,
+      "sha256": "1d0540d5befd0bdbac424169e3c1f351fe4458225874d8b62b56fb6fd8df3ed4"
+    },
+    {
+      "path": "PACKAGE-MASTER-WALK.cmd",
+      "bytes": 137,
+      "sha256": "44bd4f8ead67c1f6f0fdb495e2a1f5a48f0c91485d45711784a1e12c9621d45c"
+    },
+    {
+      "path": "PixelStreaming/WebFrontend/README.md",
+      "bytes": 388,
+      "sha256": "46813a673e321b8b73fce87204663a15ef40712728ab8e862894996f820a981f"
+    },
+    {
+      "path": "PixelStreaming/WebFrontend/grandcore-theme.css",
+      "bytes": 837,
+      "sha256": "30690bbe7f89785029d1dcf397ba19edaacf519d061b21572b0a730300ef7efa"
+    },
+    {
+      "path": "README-FIRST.md",
+      "bytes": 2722,
+      "sha256": "c7c2230136cfc55a3a21c23a825286ed5cea107760f6226d7ee54ccc5e695d72"
+    },
+    {
+      "path": "SETUP-GRAND-CORE.cmd",
+      "bytes": 212,
+      "sha256": "803553374e013b6a0a63d0fcda122b4fd149aaefd468be93291168e1f763ffd3"
+    },
+    {
+      "path": "Scripts/Cinematic-Limit-CVars.txt",
+      "bytes": 914,
+      "sha256": "29ec2774932ab1532e533bd95a14a980648b652fa4e793b4f2574284fb2d53b9"
+    },
+    {
+      "path": "Scripts/MASTER-WALK-CVars.txt",
+      "bytes": 612,
+      "sha256": "4d54dc11ccbed7f6433da7e9982e73fe37090a072dbe6e7edc412f2aae78d9ef"
+    },
+    {
+      "path": "Scripts/OPEN-GRAND-CORE.ps1",
+      "bytes": 667,
+      "sha256": "5dca9f615f2a9f91639a80c5d4b1a3bf3b7c902c51f7853836ca5aabd47e826f"
+    },
+    {
+      "path": "Scripts/PACKAGE-MASTER-WALK.ps1",
+      "bytes": 742,
+      "sha256": "d1a9dec34000f62f15a802d51ee135025879d100dd61af2edb3f0926dd79327a"
+    },
+    {
+      "path": "Scripts/RUN-PIXEL-STREAMING-TEMPLATE.cmd",
+      "bytes": 645,
+      "sha256": "7ab0d6c9a6db92f2b7e23a645ecd346d7b6878fe4204d2632c6615a98b81b07e"
+    },
+    {
+      "path": "Scripts/SETUP-GRAND-CORE.ps1",
+      "bytes": 2511,
+      "sha256": "bd9b6f085f07a192e4f9ade751c1a5cab5e8c6bef317698d2ba8b3183cbf6601"
+    },
+    {
+      "path": "Scripts/build_master_shell.py",
+      "bytes": 22656,
+      "sha256": "a8f9966c26774ea05d60f4c357fa6731e868867e563a5270b64593d8be0c8f1a"
+    },
+    {
+      "path": "Scripts/generate_master_textures.py",
+      "bytes": 8883,
+      "sha256": "de174bc9872345df3a101ed336cb7edb40f8e5cf78b3671ce62ea99afe1315db"
+    },
+    {
+      "path": "Scripts/generate_shell_glb.py",
+      "bytes": 4951,
+      "sha256": "fb20f6b4d429e03b4ab48e05667695f4bd45684a85743abb53faa212a2d4a8da"
+    },
+    {
+      "path": "Scripts/regenerate_marble.py",
+      "bytes": 5096,
+      "sha256": "b5bbaeae8cc413e7ed1626a474a9c6ad2fb4000e805ce0d5f81206dae848a44b"
+    },
+    {
+      "path": "Source/GrandCore/GrandCore.Build.cs",
+      "bytes": 433,
+      "sha256": "3d48abd8eeaf1f45ccb3a6323bceb4cd1934143da1b22423289c48e7100d2bd0"
+    },
+    {
+      "path": "Source/GrandCore/GrandCore.cpp",
+      "bytes": 115,
+      "sha256": "433d05aa3b5f523c717ce298d3f021f6814da9e3441526d75a460cb3da7eeb23"
+    },
+    {
+      "path": "Source/GrandCore/GrandCoreCharacter.cpp",
+      "bytes": 5403,
+      "sha256": "5abbf98614f9ba478712572f8a3de82bf407f76e39ac3d34782a58597fb6faaf"
+    },
+    {
+      "path": "Source/GrandCore/GrandCoreCharacter.h",
+      "bytes": 1112,
+      "sha256": "a616f3ed1bb444b479f2af2189838b83beceb074ac2f336a73bd74ab52343290"
+    },
+    {
+      "path": "Source/GrandCore/GrandCoreGameMode.cpp",
+      "bytes": 349,
+      "sha256": "d74450bef1b251481a3a6c868462c12bb9109f49d45d7c684e76d762cd40693f"
+    },
+    {
+      "path": "Source/GrandCore/GrandCoreGameMode.h",
+      "bytes": 253,
+      "sha256": "839f6dce27fa767d79489a74f59a5bd0da854411c66fe74f85d775e8d1d618ba"
+    },
+    {
+      "path": "Source/GrandCore/GrandCoreHUD.cpp",
+      "bytes": 1795,
+      "sha256": "dfc413afd8913545b203c3fb5b53bebc63b2cb2043d010d855e47f7ba8162f08"
+    },
+    {
+      "path": "Source/GrandCore/GrandCoreHUD.h",
+      "bytes": 310,
+      "sha256": "306224d2daba3ea07355eaea0a9e69cc9eff7337eea88027d0f8e6bc7a645779"
+    },
+    {
+      "path": "Source/GrandCore/GrandCorePlayerController.cpp",
+      "bytes": 2295,
+      "sha256": "ecbae38fbe55c0527ad77a1e8e61dae317d93aaf95d93236347ba50c1c992a56"
+    },
+    {
+      "path": "Source/GrandCore/GrandCorePlayerController.h",
+      "bytes": 696,
+      "sha256": "a52650dcce8e6843f877d1eb3f1cae2015bb35659f190519c08091ffb2f7d9cd"
+    },
+    {
+      "path": "Source/GrandCore/GrandStation.cpp",
+      "bytes": 871,
+      "sha256": "56aff0f11be70570d32f0968242e7754b4320a00084f157664ef6de8eb96cf4e"
+    },
+    {
+      "path": "Source/GrandCore/GrandStation.h",
+      "bytes": 1127,
+      "sha256": "85d0d0650f94e60cc4b5bdc0347a1c1a1fb068c380944e708d6b59886eb9a5ec"
+    },
+    {
+      "path": "Source/GrandCore.Target.cs",
+      "bytes": 373,
+      "sha256": "363be7cd73bebe7251af09fea2f96c1356cb6680e513d7341b950a6f38f6c26a"
+    },
+    {
+      "path": "Source/GrandCoreEditor.Target.cs",
+      "bytes": 387,
+      "sha256": "c9419000e0fc649a5d9ee31b9bd8a437626afd9c3c628c2e08947c036ba80300"
+    }
+  ]
+}

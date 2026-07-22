@@ -1,0 +1,25 @@
+; GRAND CORE — CINEMATIC LIMIT
+; Apply through the in-editor console or a cinematic launch profile.
+r.ScreenPercentage 150
+r.TSR.History.ScreenPercentage 200
+r.Tonemapper.Sharpen 0.8
+r.Lumen.HardwareRayTracing 1
+r.Lumen.Reflections.HardwareRayTracing 1
+r.Lumen.Reflections.HardwareRayTracing.LightingMode 2
+r.Lumen.Reflections.MaxRoughnessToTrace 1
+r.Lumen.ScreenProbeGather.RadianceCache.ProbeResolution 64
+r.Lumen.ScreenProbeGather.DownsampleFactor 4
+r.Lumen.ScreenProbeGather.Temporal.MaxFramesAccumulated 64
+r.LumenScene.Radiosity.Temporal.MaxFramesAccumulated 64
+r.Shadow.Virtual.ResolutionLodBiasLocal -2
+r.Shadow.Virtual.ResolutionLodBiasDirectional -2
+r.Nanite.MaxPixelsPerEdge 0.35
+r.ViewDistanceScale 4
+r.Streaming.PoolSize 3600
+r.MaxAnisotropy 16
+r.BloomQuality 5
+r.AmbientOcclusionLevels 3
+r.DepthOfFieldQuality 4
+r.RayTracing.Culling 0
+r.PathTracing.SamplesPerPixel 4096
+r.PathTracing.MaxBounces 12

@@ -1,1 +1,19 @@
 Huckleberry
+
+# GRAND CORE UNREAL RULES
+unreal/Binaries/
+unreal/DerivedDataCache/
+unreal/Intermediate/
+unreal/Saved/
+unreal/.vs/
+unreal/*.sln
+unreal/*.VC.db
+unreal/*.VC.opendb
+unreal/*.opensdf
+unreal/*.sdf
+unreal/*.suo
+unreal/Plugins/**/Binaries/
+unreal/Plugins/**/Intermediate/
+Thumbs.db
+Desktop.ini
+.DS_Store
