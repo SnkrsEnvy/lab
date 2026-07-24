@@ -54,12 +54,12 @@ bool AGrandCorePlayerController::InputTouch(
         if (TouchId == MoveTouchId)
         {
             const FVector2D Delta = (TouchLocation - MoveTouchOrigin) / 110.0f;
-            GrandCoreCharacter->SetTouchMove(FVector2D(Delta.X, -Delta.Y));
+            GrandCoreGrandCoreGrandCoreCharacter->SetTouchMove(FVector2D(Delta.X, -Delta.Y));
         }
         else if (TouchId == LookTouchId)
         {
             const FVector2D Delta = TouchLocation - LookTouchPrevious;
-            GrandCoreCharacter->SetTouchLook(Delta / 18.0f);
+            GrandCoreGrandCoreGrandCoreCharacter->SetTouchLook(Delta / 18.0f);
             LookTouchPrevious = TouchLocation;
         }
     }
@@ -68,12 +68,12 @@ bool AGrandCorePlayerController::InputTouch(
         if (TouchId == MoveTouchId)
         {
             MoveTouchId = FTouchId();
-            GrandCoreCharacter->ClearTouchMove();
+            GrandCoreGrandCoreGrandCoreCharacter->ClearTouchMove();
         }
         if (TouchId == LookTouchId)
         {
             LookTouchId = FTouchId();
-            GrandCoreCharacter->ClearTouchLook();
+            GrandCoreGrandCoreGrandCoreCharacter->ClearTouchLook();
         }
     }
 

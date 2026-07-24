@@ -24,8 +24,8 @@ bool AGrandCorePlayerController::InputTouch(
     const float Force,
     const uint64 Timestamp)
 {
-    AGrandCoreCharacter* GrandCoreCharacter = Cast<AGrandCoreCharacter>(GetPawn());
-    if (!GrandCoreCharacter)
+    AGrandCoreCharacter* Character = Cast<AGrandCoreCharacter>(GetPawn());
+    if (!Character)
     {
         return Super::InputTouch(TouchId, Type, TouchLocation, Force, Timestamp);
     }
@@ -54,12 +54,12 @@ bool AGrandCorePlayerController::InputTouch(
         if (TouchId == MoveTouchId)
         {
             const FVector2D Delta = (TouchLocation - MoveTouchOrigin) / 110.0f;
-            GrandCoreCharacter->SetTouchMove(FVector2D(Delta.X, -Delta.Y));
+            Character->SetTouchMove(FVector2D(Delta.X, -Delta.Y));
         }
         else if (TouchId == LookTouchId)
         {
             const FVector2D Delta = TouchLocation - LookTouchPrevious;
-            GrandCoreCharacter->SetTouchLook(Delta / 18.0f);
+            Character->SetTouchLook(Delta / 18.0f);
             LookTouchPrevious = TouchLocation;
         }
     }
@@ -68,12 +68,12 @@ bool AGrandCorePlayerController::InputTouch(
         if (TouchId == MoveTouchId)
         {
             MoveTouchId = FTouchId();
-            GrandCoreCharacter->ClearTouchMove();
+            Character->ClearTouchMove();
         }
         if (TouchId == LookTouchId)
         {
             LookTouchId = FTouchId();
-            GrandCoreCharacter->ClearTouchLook();
+            Character->ClearTouchLook();
         }
     }
 

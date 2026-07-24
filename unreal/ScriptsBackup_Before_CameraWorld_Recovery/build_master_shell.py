@@ -431,24 +431,20 @@ def build_shell(materials):
         ("Hero_Reverse", (L / 2 - 260, W / 2 - 170, 180), (-L / 2 + 280, -120, 220)),
     ]
     for label, loc, target in cameras:
-        camera = actor_subsystem.spawn_actor_from_class(
-            unreal.CineCameraActor,
-            unreal.Vector(*loc),
-            look_at_rotation(loc, target),
-        )
+        camera = actor_subsystem.spawn_actor_from_class(unreal.CineCameraActor, unreal.Vector(*loc), look_at_rotation(loc, target))
         camera.set_actor_label(f"GC_{label}")
         camera_component = camera.get_cine_camera_component()
         if camera_component:
-            safe_set(camera_component, "current_focal_length", 22.0)
-            safe_set(camera_component, "current_aperture", 5.6)
-
-    # World settings.
+            safe_set(camera_component, "current_focal_length, 22.0)
+ safe_set(camera_component, current_aperture, 5.6)
+# World settings.
     world = unreal.EditorLevelLibrary.get_editor_world()
     world_settings = world.get_world_settings()
     safe_set(world_settings, "force_no_precomputed_lighting", True)
     game_mode = unreal.load_class(None, "/Script/GrandCore.GrandCoreGameMode")
     if game_mode:
         safe_set(world_settings, "default_game_mode", game_mode)
+
 
 def main():
     log("Starting master-shell build")

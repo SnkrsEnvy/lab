@@ -74,7 +74,7 @@ def import_texture(filename: str, asset_name: str, normal=False, linear=False):
         safe_set(texture, "srgb", False)
     elif linear:
         safe_set(texture, "srgb", False)
-    safe_set(texture, "filter", unreal.TextureFilter.TF_DEFAULT)
+    safe_set(texture, "filter", unreal.TextureFilter.TF_ANISOTROPIC)
     safe_set(texture, "max_texture_size", 8192)
     editor_assets.save_loaded_asset(texture)
     return texture
@@ -431,16 +431,11 @@ def build_shell(materials):
         ("Hero_Reverse", (L / 2 - 260, W / 2 - 170, 180), (-L / 2 + 280, -120, 220)),
     ]
     for label, loc, target in cameras:
-        camera = actor_subsystem.spawn_actor_from_class(
-            unreal.CineCameraActor,
-            unreal.Vector(*loc),
-            look_at_rotation(loc, target),
-        )
+        camera = actor_subsystem.spawn_actor_from_class(unreal.CineCameraActor, unreal.Vector(*loc), look_at_rotation(loc, target))
         camera.set_actor_label(f"GC_{label}")
-        camera_component = camera.get_cine_camera_component()
-        if camera_component:
-            safe_set(camera_component, "current_focal_length", 22.0)
-            safe_set(camera_component, "current_aperture", 5.6)
+        safe_set(camera.cine_camera_component, "current_focal_length", 22.0)
+        safe_set(camera.cine_camera_component, "current_aperture", 5.6)
+        safe_set(camera.cine_camera_component, "focus_settings", camera.cine_camera_component.focus_settings)
 
     # World settings.
     world = unreal.EditorLevelLibrary.get_editor_world()
@@ -449,6 +444,7 @@ def build_shell(materials):
     game_mode = unreal.load_class(None, "/Script/GrandCore.GrandCoreGameMode")
     if game_mode:
         safe_set(world_settings, "default_game_mode", game_mode)
+
 
 def main():
     log("Starting master-shell build")

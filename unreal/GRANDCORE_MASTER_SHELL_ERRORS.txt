@@ -1,0 +1,661 @@
+GRAND CORE MASTER SHELL ERROR REPORT
+Source log: C:\Users\silve\OneDrive\Desktop\Goose1\GrandCoreRepo\lab\unreal\Saved\Logs\GrandCore.log
+
+==============================================================================
+MATCH NEAR LOG LINE 32
+    24: LogCsvProfiler: Display: Metadata set : os="Windows 11 (24H2) [10.0.26100.8655] "
+    25: LogCsvProfiler: Display: Metadata set : cpu="GenuineIntel|11th Gen Intel(R) Core(TM) i7-11370H @ 3.30GHz"
+    26: LogCsvProfiler: Display: Metadata set : pgoenabled="0"
+    27: LogCsvProfiler: Display: Metadata set : pgoprofilingenabled="0"
+    28: LogCsvProfiler: Display: Metadata set : ltoenabled="0"
+    29: LogCsvProfiler: Display: Metadata set : asan="0"
+    30: LogCsvProfiler: Display: Metadata set : mergedmodules="0"
+    31: LogCsvProfiler: Display: Metadata set : compacttset="0"
+    32: LogCsvProfiler: Display: Metadata set : commandline="" C:\Users\silve\OneDrive\Desktop\Goose1\GrandCoreRepo\lab\unreal\GrandCore.uproject -run=pythonscript -script=C:\Users\silve\OneDrive\Desktop\Goose1\GrandCoreRepo\lab\unreal\Scripts\build_master_shell.py -unattended -nop4 -nosplash -NoSound -stdout -FullStdOutLogOutput""
+    33: LogCsvProfiler: Display: Metadata set : loginid="6c3b1d8654484b4094a8a441c3856c0e"
+    34: LogCsvProfiler: Display: Metadata set : llm="0"
+    35: LogModuleManager: InternalLoadLibrary: 'StorageServerClient' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-StorageServerClient.dll')
+    36: LogModuleManager: InternalLoadLibrary: 'CookOnTheFly' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-CookOnTheFly.dll')
+    37: LogModuleManager: InternalLoadLibrary: 'StreamingFile' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-StreamingFile.dll')
+    38: LogModuleManager: InternalLoadLibrary: 'NetworkFile' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-NetworkFile.dll')
+    39: LogModuleManager: InternalLoadLibrary: 'PakFile' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-PakFile.dll')
+    40: LogModuleManager: InternalLoadLibrary: 'RSA' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-RSA.dll')
+    41: LogModuleManager: InternalLoadLibrary: 'SandboxFile' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-SandboxFile.dll')
+    42: LogCsvProfiler: Display: Metadata set : zenstreaming="0"
+    43: LogInit: Running DelayedAutoRegister Phase FileSystemReady
+    44: LogInit: Running DelayedAutoRegister Phase TaskGraphSystemReady
+    45: LogStats: Stats thread started at 0.333482
+    46: LogInit: Running DelayedAutoRegister Phase StatSystemReady
+    47: LogModuleManager: InternalLoadLibrary: 'CoreUObject' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-CoreUObject.dll')
+    48: LogCsvProfiler: Display: Metadata set : systemresolution.resx="1280"
+
+==============================================================================
+MATCH NEAR LOG LINE 312
+   304: LogPluginManager: Mounting Engine plugin LevelSequenceNavigatorBridge
+   305: LogPluginManager: Mounting Engine plugin LocalizableMessage
+   306: LogPluginManager: Mounting Engine plugin LowLevelNetTrace
+   307: LogPluginManager: Mounting Engine plugin MeshModelingToolsetExp
+   308: LogPluginManager: Mounting Engine plugin MutableAssetUserData
+   309: LogPluginManager: Mounting Engine plugin NFORDenoise
+   310: LogPluginManager: Mounting Engine plugin PlanarCut
+   311: LogPluginManager: Mounting Engine plugin PlatformCrypto
+   312: LogPluginManager: Mounting Engine plugin PythonScriptPlugin
+   313: LogPluginManager: Mounting Engine plugin SequenceNavigator
+   314: LogPluginManager: Mounting Engine plugin RuntimeTelemetry
+   315: LogPluginManager: Mounting Engine plugin SkeletalReduction
+   316: LogPluginManager: Mounting Engine plugin ToolPresets
+   317: LogPluginManager: Mounting Engine plugin ToolsetRegistry
+   318: LogPluginManager: Mounting Engine plugin Water
+   319: LogPluginManager: Mounting Engine plugin WebSocketNetworking
+   320: LogPluginManager: Mounting Engine plugin TcpMessaging
+   321: LogPluginManager: Mounting Engine plugin UdpMessaging
+   322: LogPluginManager: Mounting Engine plugin MetaHumanSDK
+   323: LogPluginManager: Mounting Engine plugin NNEDenoiser
+   324: LogPluginManager: Mounting Engine plugin NNERuntimeORT
+   325: LogPluginManager: Mounting Engine plugin LauncherChunkInstaller
+   326: LogPluginManager: Mounting Engine plugin Takes
+   327: LogPluginManager: Mounting Engine plugin PortableObjectFileDataSource
+   328: LogPluginManager: Mounting Engine plugin AMFCodecs
+
+==============================================================================
+MATCH NEAR LOG LINE 362
+   354: LogModuleManager: InternalLoadLibrary: 'SourceControl' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-SourceControl.dll')
+   355: SourceControl: Revision control is disabled
+   356: SourceControl: Revision control is disabled
+   357: LogModuleManager: InternalLoadLibrary: 'PlasticSourceControl' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Developer/PlasticSourceControl/Binaries/Win64/UnrealEditor-PlasticSourceControl.dll')
+   358: SourceControl: Revision control is disabled
+   359: LogModuleManager: InternalLoadLibrary: 'PlatformCrypto' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/PlatformCrypto/Binaries/Win64/UnrealEditor-PlatformCrypto.dll')
+   360: LogModuleManager: InternalLoadLibrary: 'PlatformCryptoTypes' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/PlatformCrypto/Binaries/Win64/UnrealEditor-PlatformCryptoTypes.dll')
+   361: LogModuleManager: InternalLoadLibrary: 'PlatformCryptoContext' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/PlatformCrypto/Binaries/Win64/UnrealEditor-PlatformCryptoContext.dll')
+   362: LogModuleManager: InternalLoadLibrary: 'PythonScriptPluginPreload' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/PythonScriptPlugin/Binaries/Win64/UnrealEditor-PythonScriptPluginPreload.dll')
+   363: LogInit: Running DelayedAutoRegister Phase EarliestPossiblePluginsLoaded
+   364: LogModuleManager: InternalLoadLibrary: 'ChaosCloth' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/ChaosCloth/Binaries/Win64/UnrealEditor-ChaosCloth.dll')
+   365: LogModuleManager: InternalLoadLibrary: 'PCGCompute' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/PCG/Binaries/Win64/UnrealEditor-PCGCompute.dll')
+   366: LogModuleManager: InternalLoadLibrary: 'DatasmithContent' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Enterprise/DatasmithContent/Binaries/Win64/UnrealEditor-DatasmithContent.dll')
+   367: LogModuleManager: InternalLoadLibrary: 'GLTFExporter' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Enterprise/GLTFExporter/Binaries/Win64/UnrealEditor-GLTFExporter.dll')
+   368: LogModuleManager: InternalLoadLibrary: 'VariantManagerContent' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Enterprise/VariantManagerContent/Binaries/Win64/UnrealEditor-VariantManagerContent.dll')
+   369: LogModuleManager: InternalLoadLibrary: 'NiagaraShader' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/FX/Niagara/Binaries/Win64/UnrealEditor-NiagaraShader.dll')
+   370: LogModuleManager: InternalLoadLibrary: 'NiagaraVertexFactories' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/FX/Niagara/Binaries/Win64/UnrealEditor-NiagaraVertexFactories.dll')
+   371: LogModuleManager: InternalLoadLibrary: 'EOSShared' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Online/EOSShared/Binaries/Win64/UnrealEditor-EOSShared.dll')
+   372: LogEOSShared: Loaded "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/EOSSDK-Win64-Shipping.dll"
+   373: LogEOSShared: FEOSSDKManager::Initialize Initializing EOSSDK Version:1.19.1.2-53289219
+   374: LogModuleManager: InternalLoadLibrary: 'OnlineServicesInterface' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Online/OnlineServices/Binaries/Win64/UnrealEditor-OnlineServicesInterface.dll')
+   375: LogModuleManager: InternalLoadLibrary: 'OnlineServicesCommon' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Online/OnlineServices/Binaries/Win64/UnrealEditor-OnlineServicesCommon.dll')
+   376: LogModuleManager: InternalLoadLibrary: 'OnlineServicesCommonEngineUtils' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Online/OnlineServices/Binaries/Win64/UnrealEditor-OnlineServicesCommonEngineUtils.dll')
+   377: LogModuleManager: InternalLoadLibrary: 'OnlineSubsystem' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Online/OnlineSubsystem/Binaries/Win64/UnrealEditor-OnlineSubsystem.dll')
+   378: LogModuleManager: InternalLoadLibrary: 'HTTP' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-HTTP.dll')
+
+==============================================================================
+MATCH NEAR LOG LINE 481
+   473: LogInit: Net CL: 55116800
+   474: LogInit: OS: Windows 11 (24H2) [10.0.26100.8655] (), CPU: 11th Gen Intel(R) Core(TM) i7-11370H @ 3.30GHz, GPU: Intel(R) Iris(R) Xe Graphics
+   475: LogInit: CPU Model ID: 68c1, microcode revision: be
+   476: LogInit: Compiled (64-bit): Jun 13 2026 03:21:59
+   477: LogInit: Architecture: x64
+   478: LogInit: Compiled with Visual C++: 19.44.35228.00
+   479: LogInit: Build Configuration: Development
+   480: LogInit: Branch Name: ++UE5+Release-5.8
+   481: LogInit: Command Line:  C:\Users\silve\OneDrive\Desktop\Goose1\GrandCoreRepo\lab\unreal\GrandCore.uproject -run=pythonscript -script=C:\Users\silve\OneDrive\Desktop\Goose1\GrandCoreRepo\lab\unreal\Scripts\build_master_shell.py -unattended -nop4 -nosplash -NoSound -stdout -FullStdOutLogOutput
+   482: LogInit: Base Directory: C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/
+   483: LogInit: Allocator: Mimalloc
+   484: LogInit: Installed Engine Build: 1
+   485: LogInit: This binary is optimized with LTO: no, PGO: no, instrumented for PGO data collection: no
+   486: LogDevObjectVersion: Number of dev versions registered: 36
+   487: LogDevObjectVersion:   Dev-Blueprints (B0D832E4-1F89-4F0D-ACCF-7EB736FD4AA2): 10
+   488: LogDevObjectVersion:   Dev-Build (E1C64328-A22C-4D53-A36C-8E866417BD8C): 0
+   489: LogDevObjectVersion:   Dev-Core (375EC13C-06E4-48FB-B500-84F0262A717E): 4
+   490: LogDevObjectVersion:   Dev-Editor (E4B068ED-F494-42E9-A231-DA0B2E46BB41): 40
+   491: LogDevObjectVersion:   Dev-Framework (CFFC743F-43B0-4480-9391-14DF171D2073): 37
+   492: LogDevObjectVersion:   Dev-Mobile (B02B49B5-BB20-44E9-A304-32B752E40360): 3
+   493: LogDevObjectVersion:   Dev-Networking (A4E4105C-59A1-49B5-A7C5-40C4547EDFEE): 0
+   494: LogDevObjectVersion:   Dev-Online (39C831C9-5AE6-47DC-9A44-9C173E1C8E7C): 0
+   495: LogDevObjectVersion:   Dev-Physics (78F01B33-EBEA-4F98-B9B4-84EACCB95AA2): 20
+   496: LogDevObjectVersion:   Dev-Platform (6631380F-2D4D-43E0-8009-CF276956A95A): 0
+   497: LogDevObjectVersion:   Dev-Rendering (12F88B9F-8875-4AFC-A67C-D90C383ABD29): 49
+
+==============================================================================
+MATCH NEAR LOG LINE 1296
+  1288: [2026.07.24-11.11.34:318][  0]LogModuleManager: InternalLoadLibrary: 'AnimationSharing' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Developer/AnimationSharing/Binaries/Win64/UnrealEditor-AnimationSharing.dll')
+  1289: [2026.07.24-11.11.34:320][  0]LogModuleManager: InternalLoadLibrary: 'PropertyAccessNode' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Developer/PropertyAccessNode/Binaries/Win64/UnrealEditor-PropertyAccessNode.dll')
+  1290: [2026.07.24-11.11.34:321][  0]LogModuleManager: InternalLoadLibrary: 'ChaosCaching' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/ChaosCaching/Binaries/Win64/UnrealEditor-ChaosCaching.dll')
+  1291: [2026.07.24-11.11.34:321][  0]LogModuleManager: InternalLoadLibrary: 'ChaosCachingEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/ChaosCaching/Binaries/Win64/UnrealEditor-ChaosCachingEditor.dll')
+  1292: [2026.07.24-11.11.34:322][  0]LogModuleManager: InternalLoadLibrary: 'TakeRecorder' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/VirtualProduction/Takes/Binaries/Win64/UnrealEditor-TakeRecorder.dll')
+  1293: [2026.07.24-11.11.34:323][  0]LogModuleManager: InternalLoadLibrary: 'EditorTRSGizmoTests' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/EditorTRSGizmo/Binaries/Win64/UnrealEditor-EditorTRSGizmoTests.dll')
+  1294: [2026.07.24-11.11.34:324][  0]LogModuleManager: InternalLoadLibrary: 'FullBodyIK' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/FullBodyIK/Binaries/Win64/UnrealEditor-FullBodyIK.dll')
+  1295: [2026.07.24-11.11.34:326][  0]LogModuleManager: InternalLoadLibrary: 'PBIK' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/FullBodyIK/Binaries/Win64/UnrealEditor-PBIK.dll')
+  1296: [2026.07.24-11.11.34:327][  0]LogModuleManager: InternalLoadLibrary: 'PythonScriptPlugin' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/PythonScriptPlugin/Binaries/Win64/UnrealEditor-PythonScriptPlugin.dll')
+  1297: [2026.07.24-11.11.34:332][  0]LogModuleManager: InternalLoadLibrary: 'SequenceNavigator' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/SequenceNavigator/Binaries/Win64/UnrealEditor-SequenceNavigator.dll')
+  1298: [2026.07.24-11.11.34:335][  0]LogModuleManager: InternalLoadLibrary: 'TcpMessaging' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Messaging/TcpMessaging/Binaries/Win64/UnrealEditor-TcpMessaging.dll')
+  1299: [2026.07.24-11.11.34:336][  0]LogModuleManager: InternalLoadLibrary: 'UdpMessaging' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Messaging/UdpMessaging/Binaries/Win64/UnrealEditor-UdpMessaging.dll')
+  1300: [2026.07.24-11.11.34:337][  0]LogModuleManager: InternalLoadLibrary: 'NNERuntimeORT' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/NNE/NNERuntimeORT/Binaries/Win64/UnrealEditor-NNERuntimeORT.dll')
+  1301: [2026.07.24-11.11.34:351][  0]LogNNERuntimeORT: MakeRuntimeORTDml:
+  1302: [2026.07.24-11.11.34:352][  0]LogNNERuntimeORT:   DirectML:  yes
+  1303: [2026.07.24-11.11.34:352][  0]LogNNERuntimeORT:   RHI D3D12: no
+  1304: [2026.07.24-11.11.34:352][  0]LogNNERuntimeORT:   D3D12:     n/a (checked in CanCreateModelGPU)
+  1305: [2026.07.24-11.11.34:352][  0]LogNNERuntimeORT: Interface availability:
+  1306: [2026.07.24-11.11.34:352][  0]LogNNERuntimeORT:   GPU: n/a (checked in CanCreateModelGPU)
+  1307: [2026.07.24-11.11.34:352][  0]LogNNERuntimeORT:   RDG: no
+  1308: [2026.07.24-11.11.34:352][  0]LogModuleManager: InternalLoadLibrary: 'NNEEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-NNEEditor.dll')
+  1309: [2026.07.24-11.11.34:354][  0]LogModuleManager: InternalLoadLibrary: 'SQLiteCore' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Runtime/Database/SQLiteCore/Binaries/Win64/UnrealEditor-SQLiteCore.dll')
+  1310: [2026.07.24-11.11.34:355][  0]LogModuleManager: InternalLoadLibrary: 'Concert' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Developer/Concert/ConcertMain/Binaries/Win64/UnrealEditor-Concert.dll')
+  1311: [2026.07.24-11.11.34:359][  0]LogModuleManager: InternalLoadLibrary: 'ConcertClient' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Developer/Concert/ConcertMain/Binaries/Win64/UnrealEditor-ConcertClient.dll')
+  1312: [2026.07.24-11.11.34:360][  0]LogModuleManager: InternalLoadLibrary: 'ConcertTransport' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Developer/Concert/ConcertMain/Binaries/Win64/UnrealEditor-ConcertTransport.dll')
+
+==============================================================================
+MATCH NEAR LOG LINE 1611
+  1603: [2026.07.24-11.11.34:881][  0]LogModuleManager: InternalLoadLibrary: 'TakesCore' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/VirtualProduction/Takes/Binaries/Win64/UnrealEditor-TakesCore.dll')
+  1604: [2026.07.24-11.11.34:882][  0]LogModuleManager: InternalLoadLibrary: 'TakeTrackRecorders' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/VirtualProduction/Takes/Binaries/Win64/UnrealEditor-TakeTrackRecorders.dll')
+  1605: [2026.07.24-11.11.34:882][  0]LogModuleManager: InternalLoadLibrary: 'TakeRecorderSources' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/VirtualProduction/Takes/Binaries/Win64/UnrealEditor-TakeRecorderSources.dll')
+  1606: [2026.07.24-11.11.34:884][  0]LogModuleManager: InternalLoadLibrary: 'TakeRecorderEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/VirtualProduction/Takes/Binaries/Win64/UnrealEditor-TakeRecorderEditor.dll')
+  1607: [2026.07.24-11.11.34:887][  0]LogModuleManager: InternalLoadLibrary: 'CacheTrackRecorder' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/VirtualProduction/Takes/Binaries/Win64/UnrealEditor-CacheTrackRecorder.dll')
+  1608: [2026.07.24-11.11.34:887][  0]LogModuleManager: InternalLoadLibrary: 'TakeRecorderNamingTokens' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/VirtualProduction/Takes/Binaries/Win64/UnrealEditor-TakeRecorderNamingTokens.dll')
+  1609: [2026.07.24-11.11.34:907][  0]LogUObjectArray: 52862 objects as part of root set at end of initial load.
+  1610: [2026.07.24-11.11.34:907][  0]LogUObjectArray: CloseDisregardForGC: 0/0 objects in disregard for GC pool
+  1611: [2026.07.24-11.11.34:925][  0]LogInit: Executing Class /Script/PythonScriptPlugin.PythonScriptCommandlet
+  1612: [2026.07.24-11.11.34:925][  0]LogInit: Initializing Editor Engine...
+  1613: [2026.07.24-11.11.34:926][  0]LogEngine: Initializing Engine...
+  1614: [2026.07.24-11.11.34:926][  0]LogModuleManager: InternalLoadLibrary: 'TypedElementRuntime' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-TypedElementRuntime.dll')
+  1615: [2026.07.24-11.11.34:946][  0]LogMovieScene: USequencerBakeSubsystem subsystem initialized.
+  1616: [2026.07.24-11.11.34:947][  0]LogModuleManager: InternalLoadLibrary: 'JsonUtilitiesEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-JsonUtilitiesEditor.dll')
+  1617: [2026.07.24-11.11.34:948][  0]LogModuleManager: InternalLoadLibrary: 'JsonUtilities' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-JsonUtilities.dll')
+  1618: [2026.07.24-11.11.34:949][  0]LogToolsetRegistry: Display: Registering Toolset ToolsetRegistry.AgentSkillToolset
+  1619: [2026.07.24-11.11.34:949][  0]LogTedsSettings: UTedsSettingsEditorSubsystem::Initialize
+  1620: [2026.07.24-11.11.34:968][  0]LogAssetRegistry: Display: No AssetDiscovery cache present at ../../../../../../Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Intermediate/CachedAssetRegistryDiscovery.bin. AssetRegistry discovery of files will be uncached.
+  1621: [2026.07.24-11.11.34:970][  0]LogAssetRegistry: Display: CleanupOrphanedCacheFiles (PreLoad): 0 .ref files found, 0 referenced binaries
+  1622: [2026.07.24-11.11.34:971][  0]LogAssetRegistry: Display: CleanupOrphanedCacheFiles: 0 total binaries, 0 referenced (kept), 0 old-style pre-migration (kept), 0 orphans deleted, 0 orphans locked (kept)
+  1623: [2026.07.24-11.11.34:971][  0]LogAssetRegistry: Display: FindShardedCacheFiles: 0 via .ref, 0 via migration fallback, 0 total
+  1624: [2026.07.24-11.11.34:971][  0]LogAssetRegistry: Display: AssetDataGatherer spent 0.000s loading caches from ../../../../../../Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Intermediate/CachedAssetRegistry.
+  1625: [2026.07.24-11.11.34:986][  0]LogModuleManager: InternalLoadLibrary: 'LevelInstanceEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-LevelInstanceEditor.dll')
+  1626: [2026.07.24-11.11.34:991][  0]LogNiagara: UAV Float16 is not supported, compressed GPU emitters will be disabled.
+  1627: [2026.07.24-11.11.34:991][  0]LogModuleManager: InternalLoadLibrary: 'AIModule' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-AIModule.dll')
+
+==============================================================================
+MATCH NEAR LOG LINE 1745
+  1737: [2026.07.24-11.11.35:671][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/ToolsetRegistry/Content/Python/init_unreal.py... started...
+  1738: [2026.07.24-11.11.35:742][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/ToolsetRegistry/Content/Python/init_unreal.py... took 71.637 ms
+  1739: [2026.07.24-11.11.35:743][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/IKRig/Content/Python/init_unreal.py... started...
+  1740: [2026.07.24-11.11.35:745][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/IKRig/Content/Python/init_unreal.py... took 2.839 ms (total: 74.476 ms)
+  1741: [2026.07.24-11.11.35:745][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/ControlRig/Content/Python/init_unreal.py... started...
+  1742: [2026.07.24-11.11.35:757][  0]LogPython: registering <class 'ControlRigWorkflows.workflow_deformation_rig_preset.provider'>
+  1743: 
+  1744: [2026.07.24-11.11.35:768][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/ControlRig/Content/Python/init_unreal.py... took 21.435 ms (total: 95.912 ms)
+  1745: [2026.07.24-11.11.35:768][  0]LogPython: Python enabled via IPythonScriptPlugin::ForceEnablePythonAtRuntime: D:\build\++UE5\Sync\Engine\Plugins\Experimental\PythonScriptPlugin\Source\PythonScriptPlugin\Private\PythonScriptCommandlet.cpp(43:30) int __cdecl UPythonScriptCommandlet::Main(const class FString &)
+  1746: [2026.07.24-11.11.35:768][  0]SourceControl: Revision control is disabled
+  1747: [2026.07.24-11.11.35:768][  0]LogPythonScriptCommandlet: Display: Running Python script: C:\Users\silve\OneDrive\Desktop\Goose1\GrandCoreRepo\lab\unreal\Scripts\build_master_shell.py
+  1748: [2026.07.24-11.11.35:771][  0]LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1749: [2026.07.24-11.11.35:771][  0]LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1750: [2026.07.24-11.11.35:771][  0]LogPython: Error:                                          ^
+  1751: [2026.07.24-11.11.35:771][  0]LogPythonScriptCommandlet: Error: Python script executed with errors
+  1752: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: Commandlet PythonScriptCommandlet_0 finished execution (result -1))
+  1753: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1754: [2026.07.24-11.11.35:771][  0]LogInit: Display: Warning/Error Summary (Unique only)
+  1755: [2026.07.24-11.11.35:771][  0]LogInit: Display: -----------------------------------
+  1756: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1757: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1758: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:                                          ^
+  1759: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPythonScriptCommandlet: Error: Python script executed with errors
+  1760: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1761: [2026.07.24-11.11.35:771][  0]LogInit: Display: Commandlet->Main return this error code: -1
+
+==============================================================================
+MATCH NEAR LOG LINE 1747
+  1739: [2026.07.24-11.11.35:743][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/IKRig/Content/Python/init_unreal.py... started...
+  1740: [2026.07.24-11.11.35:745][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/IKRig/Content/Python/init_unreal.py... took 2.839 ms (total: 74.476 ms)
+  1741: [2026.07.24-11.11.35:745][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/ControlRig/Content/Python/init_unreal.py... started...
+  1742: [2026.07.24-11.11.35:757][  0]LogPython: registering <class 'ControlRigWorkflows.workflow_deformation_rig_preset.provider'>
+  1743: 
+  1744: [2026.07.24-11.11.35:768][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/ControlRig/Content/Python/init_unreal.py... took 21.435 ms (total: 95.912 ms)
+  1745: [2026.07.24-11.11.35:768][  0]LogPython: Python enabled via IPythonScriptPlugin::ForceEnablePythonAtRuntime: D:\build\++UE5\Sync\Engine\Plugins\Experimental\PythonScriptPlugin\Source\PythonScriptPlugin\Private\PythonScriptCommandlet.cpp(43:30) int __cdecl UPythonScriptCommandlet::Main(const class FString &)
+  1746: [2026.07.24-11.11.35:768][  0]SourceControl: Revision control is disabled
+  1747: [2026.07.24-11.11.35:768][  0]LogPythonScriptCommandlet: Display: Running Python script: C:\Users\silve\OneDrive\Desktop\Goose1\GrandCoreRepo\lab\unreal\Scripts\build_master_shell.py
+  1748: [2026.07.24-11.11.35:771][  0]LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1749: [2026.07.24-11.11.35:771][  0]LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1750: [2026.07.24-11.11.35:771][  0]LogPython: Error:                                          ^
+  1751: [2026.07.24-11.11.35:771][  0]LogPythonScriptCommandlet: Error: Python script executed with errors
+  1752: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: Commandlet PythonScriptCommandlet_0 finished execution (result -1))
+  1753: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1754: [2026.07.24-11.11.35:771][  0]LogInit: Display: Warning/Error Summary (Unique only)
+  1755: [2026.07.24-11.11.35:771][  0]LogInit: Display: -----------------------------------
+  1756: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1757: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1758: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:                                          ^
+  1759: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPythonScriptCommandlet: Error: Python script executed with errors
+  1760: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1761: [2026.07.24-11.11.35:771][  0]LogInit: Display: Commandlet->Main return this error code: -1
+  1762: [2026.07.24-11.11.35:771][  0]LogInit: Display: With 4 error(s), 0 warning(s)
+  1763: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+
+==============================================================================
+MATCH NEAR LOG LINE 1748
+  1740: [2026.07.24-11.11.35:745][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/IKRig/Content/Python/init_unreal.py... took 2.839 ms (total: 74.476 ms)
+  1741: [2026.07.24-11.11.35:745][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/ControlRig/Content/Python/init_unreal.py... started...
+  1742: [2026.07.24-11.11.35:757][  0]LogPython: registering <class 'ControlRigWorkflows.workflow_deformation_rig_preset.provider'>
+  1743: 
+  1744: [2026.07.24-11.11.35:768][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/ControlRig/Content/Python/init_unreal.py... took 21.435 ms (total: 95.912 ms)
+  1745: [2026.07.24-11.11.35:768][  0]LogPython: Python enabled via IPythonScriptPlugin::ForceEnablePythonAtRuntime: D:\build\++UE5\Sync\Engine\Plugins\Experimental\PythonScriptPlugin\Source\PythonScriptPlugin\Private\PythonScriptCommandlet.cpp(43:30) int __cdecl UPythonScriptCommandlet::Main(const class FString &)
+  1746: [2026.07.24-11.11.35:768][  0]SourceControl: Revision control is disabled
+  1747: [2026.07.24-11.11.35:768][  0]LogPythonScriptCommandlet: Display: Running Python script: C:\Users\silve\OneDrive\Desktop\Goose1\GrandCoreRepo\lab\unreal\Scripts\build_master_shell.py
+  1748: [2026.07.24-11.11.35:771][  0]LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1749: [2026.07.24-11.11.35:771][  0]LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1750: [2026.07.24-11.11.35:771][  0]LogPython: Error:                                          ^
+  1751: [2026.07.24-11.11.35:771][  0]LogPythonScriptCommandlet: Error: Python script executed with errors
+  1752: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: Commandlet PythonScriptCommandlet_0 finished execution (result -1))
+  1753: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1754: [2026.07.24-11.11.35:771][  0]LogInit: Display: Warning/Error Summary (Unique only)
+  1755: [2026.07.24-11.11.35:771][  0]LogInit: Display: -----------------------------------
+  1756: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1757: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1758: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:                                          ^
+  1759: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPythonScriptCommandlet: Error: Python script executed with errors
+  1760: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1761: [2026.07.24-11.11.35:771][  0]LogInit: Display: Commandlet->Main return this error code: -1
+  1762: [2026.07.24-11.11.35:771][  0]LogInit: Display: With 4 error(s), 0 warning(s)
+  1763: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1764: Execution of commandlet took:  0.10 seconds, PeakPhysMemoryMB=1597 MB, PeakVirtMemoryMB=1384 MB
+
+==============================================================================
+MATCH NEAR LOG LINE 1749
+  1741: [2026.07.24-11.11.35:745][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/ControlRig/Content/Python/init_unreal.py... started...
+  1742: [2026.07.24-11.11.35:757][  0]LogPython: registering <class 'ControlRigWorkflows.workflow_deformation_rig_preset.provider'>
+  1743: 
+  1744: [2026.07.24-11.11.35:768][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/ControlRig/Content/Python/init_unreal.py... took 21.435 ms (total: 95.912 ms)
+  1745: [2026.07.24-11.11.35:768][  0]LogPython: Python enabled via IPythonScriptPlugin::ForceEnablePythonAtRuntime: D:\build\++UE5\Sync\Engine\Plugins\Experimental\PythonScriptPlugin\Source\PythonScriptPlugin\Private\PythonScriptCommandlet.cpp(43:30) int __cdecl UPythonScriptCommandlet::Main(const class FString &)
+  1746: [2026.07.24-11.11.35:768][  0]SourceControl: Revision control is disabled
+  1747: [2026.07.24-11.11.35:768][  0]LogPythonScriptCommandlet: Display: Running Python script: C:\Users\silve\OneDrive\Desktop\Goose1\GrandCoreRepo\lab\unreal\Scripts\build_master_shell.py
+  1748: [2026.07.24-11.11.35:771][  0]LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1749: [2026.07.24-11.11.35:771][  0]LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1750: [2026.07.24-11.11.35:771][  0]LogPython: Error:                                          ^
+  1751: [2026.07.24-11.11.35:771][  0]LogPythonScriptCommandlet: Error: Python script executed with errors
+  1752: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: Commandlet PythonScriptCommandlet_0 finished execution (result -1))
+  1753: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1754: [2026.07.24-11.11.35:771][  0]LogInit: Display: Warning/Error Summary (Unique only)
+  1755: [2026.07.24-11.11.35:771][  0]LogInit: Display: -----------------------------------
+  1756: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1757: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1758: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:                                          ^
+  1759: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPythonScriptCommandlet: Error: Python script executed with errors
+  1760: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1761: [2026.07.24-11.11.35:771][  0]LogInit: Display: Commandlet->Main return this error code: -1
+  1762: [2026.07.24-11.11.35:771][  0]LogInit: Display: With 4 error(s), 0 warning(s)
+  1763: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1764: Execution of commandlet took:  0.10 seconds, PeakPhysMemoryMB=1597 MB, PeakVirtMemoryMB=1384 MB
+  1765: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: EngineExit() was called; note: exit was already requested)
+
+==============================================================================
+MATCH NEAR LOG LINE 1750
+  1742: [2026.07.24-11.11.35:757][  0]LogPython: registering <class 'ControlRigWorkflows.workflow_deformation_rig_preset.provider'>
+  1743: 
+  1744: [2026.07.24-11.11.35:768][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/ControlRig/Content/Python/init_unreal.py... took 21.435 ms (total: 95.912 ms)
+  1745: [2026.07.24-11.11.35:768][  0]LogPython: Python enabled via IPythonScriptPlugin::ForceEnablePythonAtRuntime: D:\build\++UE5\Sync\Engine\Plugins\Experimental\PythonScriptPlugin\Source\PythonScriptPlugin\Private\PythonScriptCommandlet.cpp(43:30) int __cdecl UPythonScriptCommandlet::Main(const class FString &)
+  1746: [2026.07.24-11.11.35:768][  0]SourceControl: Revision control is disabled
+  1747: [2026.07.24-11.11.35:768][  0]LogPythonScriptCommandlet: Display: Running Python script: C:\Users\silve\OneDrive\Desktop\Goose1\GrandCoreRepo\lab\unreal\Scripts\build_master_shell.py
+  1748: [2026.07.24-11.11.35:771][  0]LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1749: [2026.07.24-11.11.35:771][  0]LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1750: [2026.07.24-11.11.35:771][  0]LogPython: Error:                                          ^
+  1751: [2026.07.24-11.11.35:771][  0]LogPythonScriptCommandlet: Error: Python script executed with errors
+  1752: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: Commandlet PythonScriptCommandlet_0 finished execution (result -1))
+  1753: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1754: [2026.07.24-11.11.35:771][  0]LogInit: Display: Warning/Error Summary (Unique only)
+  1755: [2026.07.24-11.11.35:771][  0]LogInit: Display: -----------------------------------
+  1756: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1757: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1758: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:                                          ^
+  1759: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPythonScriptCommandlet: Error: Python script executed with errors
+  1760: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1761: [2026.07.24-11.11.35:771][  0]LogInit: Display: Commandlet->Main return this error code: -1
+  1762: [2026.07.24-11.11.35:771][  0]LogInit: Display: With 4 error(s), 0 warning(s)
+  1763: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1764: Execution of commandlet took:  0.10 seconds, PeakPhysMemoryMB=1597 MB, PeakVirtMemoryMB=1384 MB
+  1765: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: EngineExit() was called; note: exit was already requested)
+  1766: [2026.07.24-11.11.35:772][  0]LogStaticMesh: Abandoning remaining async distance field tasks for shutdown
+
+==============================================================================
+MATCH NEAR LOG LINE 1751
+  1743: 
+  1744: [2026.07.24-11.11.35:768][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/ControlRig/Content/Python/init_unreal.py... took 21.435 ms (total: 95.912 ms)
+  1745: [2026.07.24-11.11.35:768][  0]LogPython: Python enabled via IPythonScriptPlugin::ForceEnablePythonAtRuntime: D:\build\++UE5\Sync\Engine\Plugins\Experimental\PythonScriptPlugin\Source\PythonScriptPlugin\Private\PythonScriptCommandlet.cpp(43:30) int __cdecl UPythonScriptCommandlet::Main(const class FString &)
+  1746: [2026.07.24-11.11.35:768][  0]SourceControl: Revision control is disabled
+  1747: [2026.07.24-11.11.35:768][  0]LogPythonScriptCommandlet: Display: Running Python script: C:\Users\silve\OneDrive\Desktop\Goose1\GrandCoreRepo\lab\unreal\Scripts\build_master_shell.py
+  1748: [2026.07.24-11.11.35:771][  0]LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1749: [2026.07.24-11.11.35:771][  0]LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1750: [2026.07.24-11.11.35:771][  0]LogPython: Error:                                          ^
+  1751: [2026.07.24-11.11.35:771][  0]LogPythonScriptCommandlet: Error: Python script executed with errors
+  1752: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: Commandlet PythonScriptCommandlet_0 finished execution (result -1))
+  1753: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1754: [2026.07.24-11.11.35:771][  0]LogInit: Display: Warning/Error Summary (Unique only)
+  1755: [2026.07.24-11.11.35:771][  0]LogInit: Display: -----------------------------------
+  1756: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1757: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1758: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:                                          ^
+  1759: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPythonScriptCommandlet: Error: Python script executed with errors
+  1760: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1761: [2026.07.24-11.11.35:771][  0]LogInit: Display: Commandlet->Main return this error code: -1
+  1762: [2026.07.24-11.11.35:771][  0]LogInit: Display: With 4 error(s), 0 warning(s)
+  1763: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1764: Execution of commandlet took:  0.10 seconds, PeakPhysMemoryMB=1597 MB, PeakVirtMemoryMB=1384 MB
+  1765: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: EngineExit() was called; note: exit was already requested)
+  1766: [2026.07.24-11.11.35:772][  0]LogStaticMesh: Abandoning remaining async distance field tasks for shutdown
+  1767: [2026.07.24-11.11.35:772][  0]LogStaticMesh: Abandoning remaining async card representation tasks for shutdown
+
+==============================================================================
+MATCH NEAR LOG LINE 1752
+  1744: [2026.07.24-11.11.35:768][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/ControlRig/Content/Python/init_unreal.py... took 21.435 ms (total: 95.912 ms)
+  1745: [2026.07.24-11.11.35:768][  0]LogPython: Python enabled via IPythonScriptPlugin::ForceEnablePythonAtRuntime: D:\build\++UE5\Sync\Engine\Plugins\Experimental\PythonScriptPlugin\Source\PythonScriptPlugin\Private\PythonScriptCommandlet.cpp(43:30) int __cdecl UPythonScriptCommandlet::Main(const class FString &)
+  1746: [2026.07.24-11.11.35:768][  0]SourceControl: Revision control is disabled
+  1747: [2026.07.24-11.11.35:768][  0]LogPythonScriptCommandlet: Display: Running Python script: C:\Users\silve\OneDrive\Desktop\Goose1\GrandCoreRepo\lab\unreal\Scripts\build_master_shell.py
+  1748: [2026.07.24-11.11.35:771][  0]LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1749: [2026.07.24-11.11.35:771][  0]LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1750: [2026.07.24-11.11.35:771][  0]LogPython: Error:                                          ^
+  1751: [2026.07.24-11.11.35:771][  0]LogPythonScriptCommandlet: Error: Python script executed with errors
+  1752: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: Commandlet PythonScriptCommandlet_0 finished execution (result -1))
+  1753: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1754: [2026.07.24-11.11.35:771][  0]LogInit: Display: Warning/Error Summary (Unique only)
+  1755: [2026.07.24-11.11.35:771][  0]LogInit: Display: -----------------------------------
+  1756: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1757: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1758: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:                                          ^
+  1759: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPythonScriptCommandlet: Error: Python script executed with errors
+  1760: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1761: [2026.07.24-11.11.35:771][  0]LogInit: Display: Commandlet->Main return this error code: -1
+  1762: [2026.07.24-11.11.35:771][  0]LogInit: Display: With 4 error(s), 0 warning(s)
+  1763: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1764: Execution of commandlet took:  0.10 seconds, PeakPhysMemoryMB=1597 MB, PeakVirtMemoryMB=1384 MB
+  1765: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: EngineExit() was called; note: exit was already requested)
+  1766: [2026.07.24-11.11.35:772][  0]LogStaticMesh: Abandoning remaining async distance field tasks for shutdown
+  1767: [2026.07.24-11.11.35:772][  0]LogStaticMesh: Abandoning remaining async card representation tasks for shutdown
+  1768: [2026.07.24-11.11.35:772][  0]MassEntity: New Page: MassEntity
+
+==============================================================================
+MATCH NEAR LOG LINE 1756
+  1748: [2026.07.24-11.11.35:771][  0]LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1749: [2026.07.24-11.11.35:771][  0]LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1750: [2026.07.24-11.11.35:771][  0]LogPython: Error:                                          ^
+  1751: [2026.07.24-11.11.35:771][  0]LogPythonScriptCommandlet: Error: Python script executed with errors
+  1752: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: Commandlet PythonScriptCommandlet_0 finished execution (result -1))
+  1753: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1754: [2026.07.24-11.11.35:771][  0]LogInit: Display: Warning/Error Summary (Unique only)
+  1755: [2026.07.24-11.11.35:771][  0]LogInit: Display: -----------------------------------
+  1756: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1757: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1758: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:                                          ^
+  1759: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPythonScriptCommandlet: Error: Python script executed with errors
+  1760: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1761: [2026.07.24-11.11.35:771][  0]LogInit: Display: Commandlet->Main return this error code: -1
+  1762: [2026.07.24-11.11.35:771][  0]LogInit: Display: With 4 error(s), 0 warning(s)
+  1763: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1764: Execution of commandlet took:  0.10 seconds, PeakPhysMemoryMB=1597 MB, PeakVirtMemoryMB=1384 MB
+  1765: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: EngineExit() was called; note: exit was already requested)
+  1766: [2026.07.24-11.11.35:772][  0]LogStaticMesh: Abandoning remaining async distance field tasks for shutdown
+  1767: [2026.07.24-11.11.35:772][  0]LogStaticMesh: Abandoning remaining async card representation tasks for shutdown
+  1768: [2026.07.24-11.11.35:772][  0]MassEntity: New Page: MassEntity
+  1769: [2026.07.24-11.11.35:772][  0]LogMovieScene: USequencerBakeSubsystem subsystem deinitialized.
+  1770: [2026.07.24-11.11.35:773][  0]LogToolsetRegistry: Display: Unregistering Toolset ToolsetRegistry.AgentSkillToolset
+  1771: [2026.07.24-11.11.35:773][  0]LogTedsSettings: UTedsSettingsEditorSubsystem::Deinitialize
+  1772: [2026.07.24-11.11.35:773][  0]LogLevelSequenceEditor: LevelSequenceEditor subsystem deinitialized.
+
+==============================================================================
+MATCH NEAR LOG LINE 1757
+  1749: [2026.07.24-11.11.35:771][  0]LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1750: [2026.07.24-11.11.35:771][  0]LogPython: Error:                                          ^
+  1751: [2026.07.24-11.11.35:771][  0]LogPythonScriptCommandlet: Error: Python script executed with errors
+  1752: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: Commandlet PythonScriptCommandlet_0 finished execution (result -1))
+  1753: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1754: [2026.07.24-11.11.35:771][  0]LogInit: Display: Warning/Error Summary (Unique only)
+  1755: [2026.07.24-11.11.35:771][  0]LogInit: Display: -----------------------------------
+  1756: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1757: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1758: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:                                          ^
+  1759: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPythonScriptCommandlet: Error: Python script executed with errors
+  1760: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1761: [2026.07.24-11.11.35:771][  0]LogInit: Display: Commandlet->Main return this error code: -1
+  1762: [2026.07.24-11.11.35:771][  0]LogInit: Display: With 4 error(s), 0 warning(s)
+  1763: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1764: Execution of commandlet took:  0.10 seconds, PeakPhysMemoryMB=1597 MB, PeakVirtMemoryMB=1384 MB
+  1765: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: EngineExit() was called; note: exit was already requested)
+  1766: [2026.07.24-11.11.35:772][  0]LogStaticMesh: Abandoning remaining async distance field tasks for shutdown
+  1767: [2026.07.24-11.11.35:772][  0]LogStaticMesh: Abandoning remaining async card representation tasks for shutdown
+  1768: [2026.07.24-11.11.35:772][  0]MassEntity: New Page: MassEntity
+  1769: [2026.07.24-11.11.35:772][  0]LogMovieScene: USequencerBakeSubsystem subsystem deinitialized.
+  1770: [2026.07.24-11.11.35:773][  0]LogToolsetRegistry: Display: Unregistering Toolset ToolsetRegistry.AgentSkillToolset
+  1771: [2026.07.24-11.11.35:773][  0]LogTedsSettings: UTedsSettingsEditorSubsystem::Deinitialize
+  1772: [2026.07.24-11.11.35:773][  0]LogLevelSequenceEditor: LevelSequenceEditor subsystem deinitialized.
+  1773: [2026.07.24-11.11.35:775][  0]LogRuntimeTelemetry: Recording EnginePreExit events
+
+==============================================================================
+MATCH NEAR LOG LINE 1758
+  1750: [2026.07.24-11.11.35:771][  0]LogPython: Error:                                          ^
+  1751: [2026.07.24-11.11.35:771][  0]LogPythonScriptCommandlet: Error: Python script executed with errors
+  1752: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: Commandlet PythonScriptCommandlet_0 finished execution (result -1))
+  1753: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1754: [2026.07.24-11.11.35:771][  0]LogInit: Display: Warning/Error Summary (Unique only)
+  1755: [2026.07.24-11.11.35:771][  0]LogInit: Display: -----------------------------------
+  1756: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1757: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1758: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:                                          ^
+  1759: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPythonScriptCommandlet: Error: Python script executed with errors
+  1760: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1761: [2026.07.24-11.11.35:771][  0]LogInit: Display: Commandlet->Main return this error code: -1
+  1762: [2026.07.24-11.11.35:771][  0]LogInit: Display: With 4 error(s), 0 warning(s)
+  1763: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1764: Execution of commandlet took:  0.10 seconds, PeakPhysMemoryMB=1597 MB, PeakVirtMemoryMB=1384 MB
+  1765: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: EngineExit() was called; note: exit was already requested)
+  1766: [2026.07.24-11.11.35:772][  0]LogStaticMesh: Abandoning remaining async distance field tasks for shutdown
+  1767: [2026.07.24-11.11.35:772][  0]LogStaticMesh: Abandoning remaining async card representation tasks for shutdown
+  1768: [2026.07.24-11.11.35:772][  0]MassEntity: New Page: MassEntity
+  1769: [2026.07.24-11.11.35:772][  0]LogMovieScene: USequencerBakeSubsystem subsystem deinitialized.
+  1770: [2026.07.24-11.11.35:773][  0]LogToolsetRegistry: Display: Unregistering Toolset ToolsetRegistry.AgentSkillToolset
+  1771: [2026.07.24-11.11.35:773][  0]LogTedsSettings: UTedsSettingsEditorSubsystem::Deinitialize
+  1772: [2026.07.24-11.11.35:773][  0]LogLevelSequenceEditor: LevelSequenceEditor subsystem deinitialized.
+  1773: [2026.07.24-11.11.35:775][  0]LogRuntimeTelemetry: Recording EnginePreExit events
+  1774: [2026.07.24-11.11.35:777][  0]LogExit: Preparing to exit.
+
+==============================================================================
+MATCH NEAR LOG LINE 1759
+  1751: [2026.07.24-11.11.35:771][  0]LogPythonScriptCommandlet: Error: Python script executed with errors
+  1752: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: Commandlet PythonScriptCommandlet_0 finished execution (result -1))
+  1753: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1754: [2026.07.24-11.11.35:771][  0]LogInit: Display: Warning/Error Summary (Unique only)
+  1755: [2026.07.24-11.11.35:771][  0]LogInit: Display: -----------------------------------
+  1756: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1757: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1758: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:                                          ^
+  1759: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPythonScriptCommandlet: Error: Python script executed with errors
+  1760: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1761: [2026.07.24-11.11.35:771][  0]LogInit: Display: Commandlet->Main return this error code: -1
+  1762: [2026.07.24-11.11.35:771][  0]LogInit: Display: With 4 error(s), 0 warning(s)
+  1763: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1764: Execution of commandlet took:  0.10 seconds, PeakPhysMemoryMB=1597 MB, PeakVirtMemoryMB=1384 MB
+  1765: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: EngineExit() was called; note: exit was already requested)
+  1766: [2026.07.24-11.11.35:772][  0]LogStaticMesh: Abandoning remaining async distance field tasks for shutdown
+  1767: [2026.07.24-11.11.35:772][  0]LogStaticMesh: Abandoning remaining async card representation tasks for shutdown
+  1768: [2026.07.24-11.11.35:772][  0]MassEntity: New Page: MassEntity
+  1769: [2026.07.24-11.11.35:772][  0]LogMovieScene: USequencerBakeSubsystem subsystem deinitialized.
+  1770: [2026.07.24-11.11.35:773][  0]LogToolsetRegistry: Display: Unregistering Toolset ToolsetRegistry.AgentSkillToolset
+  1771: [2026.07.24-11.11.35:773][  0]LogTedsSettings: UTedsSettingsEditorSubsystem::Deinitialize
+  1772: [2026.07.24-11.11.35:773][  0]LogLevelSequenceEditor: LevelSequenceEditor subsystem deinitialized.
+  1773: [2026.07.24-11.11.35:775][  0]LogRuntimeTelemetry: Recording EnginePreExit events
+  1774: [2026.07.24-11.11.35:777][  0]LogExit: Preparing to exit.
+  1775: [2026.07.24-11.11.35:871][  0]LogUObjectHash: Compacting FUObjectHashTables data took   0.92ms
+
+==============================================================================
+FINAL 180 LOG LINES
+  1621: [2026.07.24-11.11.34:970][  0]LogAssetRegistry: Display: CleanupOrphanedCacheFiles (PreLoad): 0 .ref files found, 0 referenced binaries
+  1622: [2026.07.24-11.11.34:971][  0]LogAssetRegistry: Display: CleanupOrphanedCacheFiles: 0 total binaries, 0 referenced (kept), 0 old-style pre-migration (kept), 0 orphans deleted, 0 orphans locked (kept)
+  1623: [2026.07.24-11.11.34:971][  0]LogAssetRegistry: Display: FindShardedCacheFiles: 0 via .ref, 0 via migration fallback, 0 total
+  1624: [2026.07.24-11.11.34:971][  0]LogAssetRegistry: Display: AssetDataGatherer spent 0.000s loading caches from ../../../../../../Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Intermediate/CachedAssetRegistry.
+  1625: [2026.07.24-11.11.34:986][  0]LogModuleManager: InternalLoadLibrary: 'LevelInstanceEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-LevelInstanceEditor.dll')
+  1626: [2026.07.24-11.11.34:991][  0]LogNiagara: UAV Float16 is not supported, compressed GPU emitters will be disabled.
+  1627: [2026.07.24-11.11.34:991][  0]LogModuleManager: InternalLoadLibrary: 'AIModule' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-AIModule.dll')
+  1628: [2026.07.24-11.11.34:992][  0]LogModuleManager: InternalLoadLibrary: 'NavigationSystem' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-NavigationSystem.dll')
+  1629: [2026.07.24-11.11.34:992][  0]LogModuleManager: InternalLoadLibrary: 'AITestSuite' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-AITestSuite.dll')
+  1630: [2026.07.24-11.11.34:993][  0]LogModuleManager: InternalLoadLibrary: 'GameplayDebugger' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-GameplayDebugger.dll')
+  1631: [2026.07.24-11.11.34:996][  0]LogNetVersion: Set ProjectVersion to 1.0.0. Version Checksum will be recalculated on next use.
+  1632: [2026.07.24-11.11.34:996][  0]LogInit: Texture streaming: Disabled
+  1633: [2026.07.24-11.11.34:996][  0]LogModuleManager: InternalLoadLibrary: 'ImageWriteQueue' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-ImageWriteQueue.dll')
+  1634: [2026.07.24-11.11.34:996][  0]LogModuleManager: InternalLoadLibrary: 'ImageWrapper' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-ImageWrapper.dll')
+  1635: [2026.07.24-11.11.34:996][  0]LogModuleManager: InternalLoadLibrary: 'StreamingPauseRendering' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-StreamingPauseRendering.dll')
+  1636: [2026.07.24-11.11.34:997][  0]LogModuleManager: InternalLoadLibrary: 'MovieScene' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-MovieScene.dll')
+  1637: [2026.07.24-11.11.34:998][  0]LogModuleManager: InternalLoadLibrary: 'MovieSceneTracks' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-MovieSceneTracks.dll')
+  1638: [2026.07.24-11.11.34:999][  0]LogModuleManager: InternalLoadLibrary: 'CinematicCamera' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-CinematicCamera.dll')
+  1639: [2026.07.24-11.11.35:000][  0]LogModuleManager: InternalLoadLibrary: 'SparseVolumeTexture' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-SparseVolumeTexture.dll')
+  1640: [2026.07.24-11.11.35:000][  0]LogCsvProfiler: Display: Metadata set : largeworldcoordinates="1"
+  1641: [2026.07.24-11.11.35:003][  0]LogInit: Initializing Editor Engine Completed
+  1642: [2026.07.24-11.11.35:003][  0]LogContentValidation: Adding native validator /Script/DataValidation.DirtyFilesChangelistValidator
+  1643: [2026.07.24-11.11.35:003][  0]LogContentValidation: Adding native validator /Script/DataValidation.EditorValidator_ActionUtility
+  1644: [2026.07.24-11.11.35:003][  0]LogContentValidation: Adding native validator /Script/DataValidation.EditorValidator_Localization
+  1645: [2026.07.24-11.11.35:003][  0]LogContentValidation: Adding native validator /Script/DataValidation.EditorValidator_Material
+  1646: [2026.07.24-11.11.35:003][  0]LogContentValidation: Adding native validator /Script/DataValidation.PackageFileValidator
+  1647: [2026.07.24-11.11.35:003][  0]LogContentValidation: Adding native validator /Script/DataValidation.WorldPartitionChangelistValidator
+  1648: [2026.07.24-11.11.35:003][  0]LogContentValidation: Adding native validator /Script/InputBlueprintNodes.EnhancedInputUserWidgetValidator
+  1649: [2026.07.24-11.11.35:003][  0]LogContentValidation: Adding native validator /Script/MutableValidation.AssetValidator_CustomizableObjects
+  1650: [2026.07.24-11.11.35:003][  0]LogContentValidation: Adding native validator /Script/MutableValidation.AssetValidator_ReferencedCustomizableObjects
+  1651: [2026.07.24-11.11.35:003][  0]LogNNEDenoiser: Ray Tracing is not enabled, therefore NNEDenoiser is not registered!
+  1652: [2026.07.24-11.11.35:007][  0]LogModuleManager: InternalLoadLibrary: 'MeshPaint' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-MeshPaint.dll')
+  1653: [2026.07.24-11.11.35:007][  0]LogModuleManager: InternalLoadLibrary: 'Kismet' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Kismet.dll')
+  1654: [2026.07.24-11.11.35:008][  0]LogModuleManager: InternalLoadLibrary: 'KismetWidgets' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-KismetWidgets.dll')
+  1655: [2026.07.24-11.11.35:010][  0]LogModuleManager: InternalLoadLibrary: 'ComponentVisualizers' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-ComponentVisualizers.dll')
+  1656: [2026.07.24-11.11.35:012][  0]LogPython: Python enabled via CVar 'Engine.Python.IsEnabledByDefault'
+  1657: [2026.07.24-11.11.35:012][  0]LogPython: Using Python 3.11.8
+  1658: [2026.07.24-11.11.35:042][  0]LogPython: Display: No pip-enabled plugins with python dependencies found, skipping
+  1659: [2026.07.24-11.11.35:495][  0]LogModuleManager: InternalLoadLibrary: 'SessionServices' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-SessionServices.dll')
+  1660: [2026.07.24-11.11.35:510][  0]LogWindows: Attached monitors:
+  1661: [2026.07.24-11.11.35:510][  0]LogWindows:     resolution: 1600x1067, work area: (0, 0) -> (1600, 1019), device: '\\.\DISPLAY1' [PRIMARY]
+  1662: [2026.07.24-11.11.35:510][  0]LogWindows: Found 1 attached monitors.
+  1663: [2026.07.24-11.11.35:510][  0]LogWindows: Gathering driver information using Windows Setup API
+  1664: [2026.07.24-11.11.35:511][  0]LogWindows: Unable to find requested device '' using Setup API.
+  1665: [2026.07.24-11.11.35:511][  0]LogWindows: Failed to get driver data for device '' using Setup API. Switching to fallback method.
+  1666: [2026.07.24-11.11.35:511][  0]LogWindows: EnumDisplayDevices:
+  1667: [2026.07.24-11.11.35:511][  0]LogWindows:    0. 'Intel(R) Iris(R) Xe Graphics' (P:1 D:1), name: '\\.\DISPLAY1'
+  1668: [2026.07.24-11.11.35:511][  0]LogWindows:    1. 'Intel(R) Iris(R) Xe Graphics' (P:0 D:0), name: '\\.\DISPLAY2'
+  1669: [2026.07.24-11.11.35:511][  0]LogWindows:    2. 'Intel(R) Iris(R) Xe Graphics' (P:0 D:0), name: '\\.\DISPLAY3'
+  1670: [2026.07.24-11.11.35:512][  0]LogWindows:    3. 'Intel(R) Iris(R) Xe Graphics' (P:0 D:0), name: '\\.\DISPLAY4'
+  1671: [2026.07.24-11.11.35:512][  0]LogWindows: DebugString: PrimaryIsNotTheChoosenAdapter PrimaryIsNotTheChoosenAdapter PrimaryIsNotTheChoosenAdapter PrimaryIsNotTheChoosenAdapter FoundDriverCount:0 
+  1672: [2026.07.24-11.11.35:512][  0]LogCsvProfiler: Display: Metadata set : raytracing="0"
+  1673: [2026.07.24-11.11.35:512][  0]LogModuleManager: InternalLoadLibrary: 'ActorSequenceEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/MovieScene/ActorSequence/Binaries/Win64/UnrealEditor-ActorSequenceEditor.dll')
+  1674: [2026.07.24-11.11.35:513][  0]LogModuleManager: InternalLoadLibrary: 'LevelSequenceEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/MovieScene/LevelSequenceEditor/Binaries/Win64/UnrealEditor-LevelSequenceEditor.dll')
+  1675: [2026.07.24-11.11.35:514][  0]LogModuleManager: InternalLoadLibrary: 'PlacementMode' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-PlacementMode.dll')
+  1676: [2026.07.24-11.11.35:529][  0]LogLevelSequenceEditor: LevelSequenceEditor subsystem initialized.
+  1677: [2026.07.24-11.11.35:529][  0]LogModuleManager: InternalLoadLibrary: 'SequenceValidator' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/MovieScene/SequenceValidator/Binaries/Win64/UnrealEditor-SequenceValidator.dll')
+  1678: [2026.07.24-11.11.35:531][  0]LogModuleManager: InternalLoadLibrary: 'TemplateSequenceEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/MovieScene/TemplateSequence/Binaries/Win64/UnrealEditor-TemplateSequenceEditor.dll')
+  1679: [2026.07.24-11.11.35:534][  0]LogModuleManager: InternalLoadLibrary: 'GeometryMode' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Editor/GeometryMode/Binaries/Win64/UnrealEditor-GeometryMode.dll')
+  1680: [2026.07.24-11.11.35:536][  0]LogModuleManager: InternalLoadLibrary: 'BspMode' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Editor/GeometryMode/Binaries/Win64/UnrealEditor-BspMode.dll')
+  1681: [2026.07.24-11.11.35:537][  0]LogModuleManager: InternalLoadLibrary: 'Documentation' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Documentation.dll')
+  1682: [2026.07.24-11.11.35:539][  0]LogModuleManager: InternalLoadLibrary: 'TextureAlignMode' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Editor/GeometryMode/Binaries/Win64/UnrealEditor-TextureAlignMode.dll')
+  1683: [2026.07.24-11.11.35:539][  0]LogModuleManager: InternalLoadLibrary: 'EngineAssetDefinitions' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Editor/EngineAssetDefinitions/Binaries/Win64/UnrealEditor-EngineAssetDefinitions.dll')
+  1684: [2026.07.24-11.11.35:542][  0]LogModuleManager: InternalLoadLibrary: 'AndroidMediaEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/AndroidMedia/Binaries/Win64/UnrealEditor-AndroidMediaEditor.dll')
+  1685: [2026.07.24-11.11.35:543][  0]LogModuleManager: InternalLoadLibrary: 'AndroidMediaFactory' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/AndroidMedia/Binaries/Win64/UnrealEditor-AndroidMediaFactory.dll')
+  1686: [2026.07.24-11.11.35:544][  0]LogModuleManager: InternalLoadLibrary: 'AvfMediaEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/AvfMedia/Binaries/Win64/UnrealEditor-AvfMediaEditor.dll')
+  1687: [2026.07.24-11.11.35:545][  0]LogModuleManager: InternalLoadLibrary: 'AvfMediaFactory' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/AvfMedia/Binaries/Win64/UnrealEditor-AvfMediaFactory.dll')
+  1688: [2026.07.24-11.11.35:546][  0]LogModuleManager: InternalLoadLibrary: 'ImgMediaEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/ImgMedia/Binaries/Win64/UnrealEditor-ImgMediaEditor.dll')
+  1689: [2026.07.24-11.11.35:547][  0]LogModuleManager: InternalLoadLibrary: 'ImgMedia' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/ImgMedia/Binaries/Win64/UnrealEditor-ImgMedia.dll')
+  1690: [2026.07.24-11.11.35:548][  0]LogModuleManager: InternalLoadLibrary: 'ImgMediaFactory' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/ImgMedia/Binaries/Win64/UnrealEditor-ImgMediaFactory.dll')
+  1691: [2026.07.24-11.11.35:548][  0]LogModuleManager: InternalLoadLibrary: 'MediaIOEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/MediaIOFramework/Binaries/Win64/UnrealEditor-MediaIOEditor.dll')
+  1692: [2026.07.24-11.11.35:550][  0]LogModuleManager: InternalLoadLibrary: 'MediaCompositingEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/MediaCompositing/Binaries/Win64/UnrealEditor-MediaCompositingEditor.dll')
+  1693: [2026.07.24-11.11.35:550][  0]LogModuleManager: InternalLoadLibrary: 'SequenceRecorder' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-SequenceRecorder.dll')
+  1694: [2026.07.24-11.11.35:551][  0]LogModuleManager: InternalLoadLibrary: 'Persona' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Persona.dll')
+  1695: [2026.07.24-11.11.35:552][  0]LogModuleManager: InternalLoadLibrary: 'MirrorDataTableEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-MirrorDataTableEditor.dll')
+  1696: [2026.07.24-11.11.35:556][  0]LogModuleManager: InternalLoadLibrary: 'AdvancedPreviewScene' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-AdvancedPreviewScene.dll')
+  1697: [2026.07.24-11.11.35:561][  0]LogModuleManager: InternalLoadLibrary: 'MediaPlayerEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/MediaPlayerEditor/Binaries/Win64/UnrealEditor-MediaPlayerEditor.dll')
+  1698: [2026.07.24-11.11.35:562][  0]LogModuleManager: InternalLoadLibrary: 'MP4Utilities' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/MP4Utilities/Binaries/Win64/UnrealEditor-MP4Utilities.dll')
+  1699: [2026.07.24-11.11.35:563][  0]LogModuleManager: InternalLoadLibrary: 'MP4Boxes' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/MP4Utilities/Binaries/Win64/UnrealEditor-MP4Boxes.dll')
+  1700: [2026.07.24-11.11.35:565][  0]LogModuleManager: InternalLoadLibrary: 'MP4Muxer' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/MP4Utilities/Binaries/Win64/UnrealEditor-MP4Muxer.dll')
+  1701: [2026.07.24-11.11.35:565][  0]LogModuleManager: InternalLoadLibrary: 'TmvMedia' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/TmvMedia/Binaries/Win64/UnrealEditor-TmvMedia.dll')
+  1702: [2026.07.24-11.11.35:566][  0]LogModuleManager: InternalLoadLibrary: 'TmvMediaEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/TmvMedia/Binaries/Win64/UnrealEditor-TmvMediaEditor.dll')
+  1703: [2026.07.24-11.11.35:568][  0]LogModuleManager: InternalLoadLibrary: 'ApvMedia' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/TmvMedia/Binaries/Win64/UnrealEditor-ApvMedia.dll')
+  1704: [2026.07.24-11.11.35:570][  0]LogModuleManager: InternalLoadLibrary: 'TmvMediaMp4Utils' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/TmvMedia/Binaries/Win64/UnrealEditor-TmvMediaMp4Utils.dll')
+  1705: [2026.07.24-11.11.35:571][  0]LogModuleManager: InternalLoadLibrary: 'WebMMediaEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/WebMMedia/Binaries/Win64/UnrealEditor-WebMMediaEditor.dll')
+  1706: [2026.07.24-11.11.35:572][  0]LogModuleManager: InternalLoadLibrary: 'WebMMediaFactory' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/WebMMedia/Binaries/Win64/UnrealEditor-WebMMediaFactory.dll')
+  1707: [2026.07.24-11.11.35:572][  0]LogModuleManager: InternalLoadLibrary: 'WmfMediaEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/WmfMedia/Binaries/Win64/UnrealEditor-WmfMediaEditor.dll')
+  1708: [2026.07.24-11.11.35:573][  0]LogModuleManager: InternalLoadLibrary: 'WmfMediaFactory' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Media/WmfMedia/Binaries/Win64/UnrealEditor-WmfMediaFactory.dll')
+  1709: [2026.07.24-11.11.35:574][  0]LogModuleManager: InternalLoadLibrary: 'AndroidFileServerEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Runtime/AndroidFileServer/Binaries/Win64/UnrealEditor-AndroidFileServerEditor.dll')
+  1710: [2026.07.24-11.11.35:575][  0]LogModuleManager: InternalLoadLibrary: 'AudioCaptureEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Runtime/AudioCapture/Binaries/Win64/UnrealEditor-AudioCaptureEditor.dll')
+  1711: [2026.07.24-11.11.35:576][  0]LogModuleManager: InternalLoadLibrary: 'GooglePADEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Runtime/GooglePAD/Binaries/Win64/UnrealEditor-GooglePADEditor.dll')
+  1712: [2026.07.24-11.11.35:577][  0]LogModuleManager: InternalLoadLibrary: 'ResonanceAudioEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Runtime/ResonanceAudio/Binaries/Win64/UnrealEditor-ResonanceAudioEditor.dll')
+  1713: [2026.07.24-11.11.35:578][  0]LogModuleManager: InternalLoadLibrary: 'RigVMEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Runtime/RigVM/Binaries/Win64/UnrealEditor-RigVMEditor.dll')
+  1714: [2026.07.24-11.11.35:579][  0]LogModuleManager: InternalLoadLibrary: 'WaveTableEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Runtime/WaveTable/Binaries/Win64/UnrealEditor-WaveTableEditor.dll')
+  1715: [2026.07.24-11.11.35:581][  0]LogModuleManager: InternalLoadLibrary: 'SmartSnapping' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/2D/Paper2D/Binaries/Win64/UnrealEditor-SmartSnapping.dll')
+  1716: [2026.07.24-11.11.35:582][  0]LogModuleManager: InternalLoadLibrary: 'AnimatorKitSettings' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/AnimatorKit/Binaries/Win64/UnrealEditor-AnimatorKitSettings.dll')
+  1717: [2026.07.24-11.11.35:583][  0]LogModuleManager: InternalLoadLibrary: 'ControlRigEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/ControlRig/Binaries/Win64/UnrealEditor-ControlRigEditor.dll')
+  1718: [2026.07.24-11.11.35:589][  0]LogModuleManager: InternalLoadLibrary: 'RewindDebugger' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/GameplayInsights/Binaries/Win64/UnrealEditor-RewindDebugger.dll')
+  1719: [2026.07.24-11.11.35:594][  0]LogModuleManager: InternalLoadLibrary: 'RewindDebuggerVLog' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/GameplayInsights/Binaries/Win64/UnrealEditor-RewindDebuggerVLog.dll')
+  1720: [2026.07.24-11.11.35:599][  0]LogModuleManager: InternalLoadLibrary: 'OptimusEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/DeformerGraph/Binaries/Win64/UnrealEditor-OptimusEditor.dll')
+  1721: [2026.07.24-11.11.35:603][  0]LogModuleManager: InternalLoadLibrary: 'IKRigEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/IKRig/Binaries/Win64/UnrealEditor-IKRigEditor.dll')
+  1722: [2026.07.24-11.11.35:618][  0]LogModuleManager: InternalLoadLibrary: 'PhysicsControlEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/PhysicsControl/Binaries/Win64/UnrealEditor-PhysicsControlEditor.dll')
+  1723: [2026.07.24-11.11.35:622][  0]LogModuleManager: InternalLoadLibrary: 'CameraShakePreviewer' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Cameras/CameraShakePreviewer/Binaries/Win64/UnrealEditor-CameraShakePreviewer.dll')
+  1724: [2026.07.24-11.11.35:622][  0]LogModuleManager: InternalLoadLibrary: 'GameplayCamerasEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Cameras/GameplayCameras/Binaries/Win64/UnrealEditor-GameplayCamerasEditor.dll')
+  1725: [2026.07.24-11.11.35:628][  0]LogModuleManager: InternalLoadLibrary: 'CharacterAI' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/CharacterAI/Binaries/Win64/UnrealEditor-CharacterAI.dll')
+  1726: [2026.07.24-11.11.35:629][  0]LogModuleManager: InternalLoadLibrary: 'FractureEngine' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/Fracture/Binaries/Win64/UnrealEditor-FractureEngine.dll')
+  1727: [2026.07.24-11.11.35:629][  0]LogModuleManager: InternalLoadLibrary: 'PlanarCut' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/PlanarCutPlugin/Binaries/Win64/UnrealEditor-PlanarCut.dll')
+  1728: [2026.07.24-11.11.35:630][  0]LogModuleManager: InternalLoadLibrary: 'WaterEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/Water/Binaries/Win64/UnrealEditor-WaterEditor.dll')
+  1729: [2026.07.24-11.11.35:642][  0]LogModuleManager: InternalLoadLibrary: 'AVCodecsCore' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/AVCodecs/AVCodecsCore/Binaries/Win64/UnrealEditor-AVCodecsCore.dll')
+  1730: [2026.07.24-11.11.35:642][  0]LogModuleManager: InternalLoadLibrary: 'ScribbleEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/Animation/Scribble/Binaries/Win64/UnrealEditor-ScribbleEditor.dll')
+  1731: [2026.07.24-11.11.35:658][  0]LogModuleManager: InternalLoadLibrary: 'ActorPickerMode' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-ActorPickerMode.dll')
+  1732: [2026.07.24-11.11.35:658][  0]LogModuleManager: InternalLoadLibrary: 'SceneDepthPickerMode' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-SceneDepthPickerMode.dll')
+  1733: [2026.07.24-11.11.35:658][  0]LogModuleManager: InternalLoadLibrary: 'LandscapeEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-LandscapeEditor.dll')
+  1734: [2026.07.24-11.11.35:667][  0]LogModuleManager: InternalLoadLibrary: 'EditorWidgets' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-EditorWidgets.dll')
+  1735: [2026.07.24-11.11.35:668][  0]LogModuleManager: InternalLoadLibrary: 'FoliageEdit' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-FoliageEdit.dll')
+  1736: [2026.07.24-11.11.35:669][  0]LogModuleManager: InternalLoadLibrary: 'VirtualTexturingEditor' ('C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-VirtualTexturingEditor.dll')
+  1737: [2026.07.24-11.11.35:671][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/ToolsetRegistry/Content/Python/init_unreal.py... started...
+  1738: [2026.07.24-11.11.35:742][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Experimental/ToolsetRegistry/Content/Python/init_unreal.py... took 71.637 ms
+  1739: [2026.07.24-11.11.35:743][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/IKRig/Content/Python/init_unreal.py... started...
+  1740: [2026.07.24-11.11.35:745][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/IKRig/Content/Python/init_unreal.py... took 2.839 ms (total: 74.476 ms)
+  1741: [2026.07.24-11.11.35:745][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/ControlRig/Content/Python/init_unreal.py... started...
+  1742: [2026.07.24-11.11.35:757][  0]LogPython: registering <class 'ControlRigWorkflows.workflow_deformation_rig_preset.provider'>
+  1743: 
+  1744: [2026.07.24-11.11.35:768][  0]LogPython: Display: Running start-up script C:/Program Files/Epic Games/UE_5.8/Engine/Plugins/Animation/ControlRig/Content/Python/init_unreal.py... took 21.435 ms (total: 95.912 ms)
+  1745: [2026.07.24-11.11.35:768][  0]LogPython: Python enabled via IPythonScriptPlugin::ForceEnablePythonAtRuntime: D:\build\++UE5\Sync\Engine\Plugins\Experimental\PythonScriptPlugin\Source\PythonScriptPlugin\Private\PythonScriptCommandlet.cpp(43:30) int __cdecl UPythonScriptCommandlet::Main(const class FString &)
+  1746: [2026.07.24-11.11.35:768][  0]SourceControl: Revision control is disabled
+  1747: [2026.07.24-11.11.35:768][  0]LogPythonScriptCommandlet: Display: Running Python script: C:\Users\silve\OneDrive\Desktop\Goose1\GrandCoreRepo\lab\unreal\Scripts\build_master_shell.py
+  1748: [2026.07.24-11.11.35:771][  0]LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1749: [2026.07.24-11.11.35:771][  0]LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1750: [2026.07.24-11.11.35:771][  0]LogPython: Error:                                          ^
+  1751: [2026.07.24-11.11.35:771][  0]LogPythonScriptCommandlet: Error: Python script executed with errors
+  1752: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: Commandlet PythonScriptCommandlet_0 finished execution (result -1))
+  1753: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1754: [2026.07.24-11.11.35:771][  0]LogInit: Display: Warning/Error Summary (Unique only)
+  1755: [2026.07.24-11.11.35:771][  0]LogInit: Display: -----------------------------------
+  1756: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error: SyntaxError: unterminated string literal (detected at line 438) (C:/Users/silve/OneDrive/Desktop/Goose1/GrandCoreRepo/lab/unreal/Scripts/build_master_shell.py, line 438)
+  1757: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:               safe_set(camera_component, "current_focal_length, 22.0)
+  1758: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPython: Error:                                          ^
+  1759: [2026.07.24-11.11.35:771][  0]LogInit: Display: LogPythonScriptCommandlet: Error: Python script executed with errors
+  1760: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1761: [2026.07.24-11.11.35:771][  0]LogInit: Display: Commandlet->Main return this error code: -1
+  1762: [2026.07.24-11.11.35:771][  0]LogInit: Display: With 4 error(s), 0 warning(s)
+  1763: [2026.07.24-11.11.35:771][  0]LogInit: Display: 
+  1764: Execution of commandlet took:  0.10 seconds, PeakPhysMemoryMB=1597 MB, PeakVirtMemoryMB=1384 MB
+  1765: [2026.07.24-11.11.35:771][  0]LogCore: Engine exit requested (reason: EngineExit() was called; note: exit was already requested)
+  1766: [2026.07.24-11.11.35:772][  0]LogStaticMesh: Abandoning remaining async distance field tasks for shutdown
+  1767: [2026.07.24-11.11.35:772][  0]LogStaticMesh: Abandoning remaining async card representation tasks for shutdown
+  1768: [2026.07.24-11.11.35:772][  0]MassEntity: New Page: MassEntity
+  1769: [2026.07.24-11.11.35:772][  0]LogMovieScene: USequencerBakeSubsystem subsystem deinitialized.
+  1770: [2026.07.24-11.11.35:773][  0]LogToolsetRegistry: Display: Unregistering Toolset ToolsetRegistry.AgentSkillToolset
+  1771: [2026.07.24-11.11.35:773][  0]LogTedsSettings: UTedsSettingsEditorSubsystem::Deinitialize
+  1772: [2026.07.24-11.11.35:773][  0]LogLevelSequenceEditor: LevelSequenceEditor subsystem deinitialized.
+  1773: [2026.07.24-11.11.35:775][  0]LogRuntimeTelemetry: Recording EnginePreExit events
+  1774: [2026.07.24-11.11.35:777][  0]LogExit: Preparing to exit.
+  1775: [2026.07.24-11.11.35:871][  0]LogUObjectHash: Compacting FUObjectHashTables data took   0.92ms
+  1776: [2026.07.24-11.11.35:874][  0]LogAssetRegistry: Display: CleanupOrphanedCacheFiles (PostWrite): 0 .ref files found, 0 referenced binaries
+  1777: [2026.07.24-11.11.35:874][  0]LogAssetRegistry: Display: CleanupOrphanedCacheFiles: 0 total binaries, 0 referenced (kept), 0 old-style pre-migration (kept), 0 orphans deleted, 0 orphans locked (kept)
+  1778: [2026.07.24-11.11.35:891][  0]LogDemo: Cleaned up 0 splitscreen connections, owner deletion: enabled
+  1779: [2026.07.24-11.11.35:897][  0]LogExit: Editor shut down
+  1780: [2026.07.24-11.11.35:913][  0]LogEditorDataStorage: Destroyed TEDS Core.
+  1781: [2026.07.24-11.11.35:913][  0]LogEditorDataStorage: Destroyed TEDS Compatibility.
+  1782: [2026.07.24-11.11.35:957][  0]LogExit: Object subsystem successfully closed.
+  1783: [2026.07.24-11.11.36:040][  0]LogShaderCompilers: Display: Exiting ShaderCompilingThread
+  1784: [2026.07.24-11.11.36:088][  0]LogObjectProfiler: Shutdown
+  1785: [2026.07.24-11.11.36:088][  0]LogMemoryProfiler: Shutdown
+  1786: [2026.07.24-11.11.36:088][  0]LogNetworkingProfiler: Shutdown
+  1787: [2026.07.24-11.11.36:088][  0]LogLoadingProfiler: Shutdown
+  1788: [2026.07.24-11.11.36:088][  0]LogTimingProfiler: Shutdown
+  1789: [2026.07.24-11.11.36:088][  0]LogChaosVDEditor: [FChaosVDExtensionsManager::UnRegisterExtension] UnRegistering CVD Extension [FChaosVDGenericDebugDrawExtension] ...
+  1790: [2026.07.24-11.11.36:088][  0]LogChaosVDEditor: [FChaosVDExtensionsManager::UnRegisterExtension] UnRegistering CVD Extension [FChaosVDAccelerationStructuresExtension] ...
+  1791: [2026.07.24-11.11.36:088][  0]LogChaosVDEditor: [FChaosVDExtensionsManager::UnRegisterExtension] UnRegistering CVD Extension [FChaosVDCameraTracesExtension] ...
+  1792: [2026.07.24-11.11.36:088][  0]LogChaosVDEditor: [FChaosVDExtensionsManager::UnRegisterExtension] UnRegistering CVD Extension [FChaosVDParticleExtraDataExtension] ...
+  1793: [2026.07.24-11.11.36:088][  0]LogChaosVDEditor: [FChaosVDExtensionsManager::UnRegisterExtension] UnRegistering CVD Extension [FPerformanceMetricsExtension] ...
+  1794: [2026.07.24-11.11.36:140][  0]LogChaosDD: Chaos Debug Draw Shutdown
+  1795: [2026.07.24-11.11.36:141][  0]LogNFORDenoise: NFORDenoise function shutting down
+  1796: [2026.07.24-11.11.36:159][  0]LogEOSShared: FEOSSDKManager::Shutdown EOS_Shutdown Result=[EOS_Success]
+  1797: [2026.07.24-11.11.36:159][  0]LogXGEController: Cleaning working directory: C:/Users/silve/AppData/Local/Temp/UnrealXGEWorkingDir/
+  1798: [2026.07.24-11.11.36:160][  0]LogPakFile: Destroying PakPlatformFile
+  1799: [2026.07.24-11.11.36:175][  0]LogExit: Exiting.
+  1800: [2026.07.24-11.11.36:181][  0]Log file closed, 07/24/26 06:11:36
