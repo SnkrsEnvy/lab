@@ -1,3 +1,5 @@
+import ephemeralViewerUrl from '../stream-endpoint.js';
+
 export default function handler(request, response) {
   response.setHeader('Cache-Control', 'no-store, max-age=0');
 
@@ -5,6 +7,7 @@ export default function handler(request, response) {
     process.env.PIXEL_STREAMING_VIEWER_URL ||
     process.env.NEXT_PUBLIC_PIXEL_STREAMING_VIEWER_URL ||
     process.env.NEXT_PUBLIC_PIXEL_STREAMING_URL ||
+    ephemeralViewerUrl ||
     '';
 
   const value = rawValue.trim();
@@ -31,6 +34,7 @@ export default function handler(request, response) {
     configured: Boolean(viewerUrl),
     viewerUrl,
     streamUrl,
+    source: process.env.PIXEL_STREAMING_VIEWER_URL ? 'environment' : ephemeralViewerUrl ? 'ephemeral-broadcast' : 'none',
     environment: process.env.VERCEL_ENV || 'unknown',
     commit: process.env.VERCEL_GIT_COMMIT_SHA || '',
   });
