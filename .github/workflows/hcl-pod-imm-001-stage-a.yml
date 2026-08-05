@@ -1,0 +1,67 @@
+name: HCL POD IMM 001 — UE5.8 Stage A
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Stage A action
+        required: true
+        default: preflight
+        type: choice
+        options:
+          - preflight
+          - interactive-stage-a
+          - package-return
+      engine_root:
+        description: Unreal Engine 5.8 root
+        required: true
+        default: C:\Program Files\Epic Games\UE_5.8
+      transfer_kit_root:
+        description: Extracted A0 transfer-kit root
+        required: true
+        default: C:\HCL_POD\HCL_POD_IMM_001_A0_UNREAL_TRANSFER_LAUNCH_KIT
+      evidence_root:
+        description: Stage A evidence-return folder
+        required: true
+        default: C:\HCL_POD\HCL_POD_IMM_001_STAGE_A_RETURN
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcl-pod-imm-001-stage-a
+  cancel-in-progress: false
+
+jobs:
+  stage-a:
+    name: ${{ inputs.mode }}
+    runs-on: [self-hosted, Windows, X64, ue58, hcl-pod]
+    timeout-minutes: 360
+
+    steps:
+      - name: Check out isolated Huckleberry branch
+        uses: actions/checkout@v4
+        with:
+          ref: huckleberry/imm-001
+          lfs: true
+          clean: false
+
+      - name: Run controlled Stage A action
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & "$env:GITHUB_WORKSPACE\automation\hcl_pod_imm_001\Invoke-HCLPodStageA.ps1" `
+            -Mode "${{ inputs.mode }}" `
+            -EngineRoot "${{ inputs.engine_root }}" `
+            -TransferKitRoot "${{ inputs.transfer_kit_root }}" `
+            -EvidenceRoot "${{ inputs.evidence_root }}" `
+            -RepositoryRoot "$env:GITHUB_WORKSPACE"
+
+      - name: Upload Stage A return artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: HCL_POD_IMM_001_STAGE_A_RETURN_${{ github.run_number }}
+          path: ${{ inputs.evidence_root }}
+          if-no-files-found: warn
+          retention-days: 30
