@@ -1,13 +1,15 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "version": 2,
+  "builds": [
+    { "src": "index.html", "use": "@vercel/static" },
+    { "src": "gg39-share-v11/**", "use": "@vercel/static" },
+    { "src": "gg39-share-v12/**", "use": "@vercel/static" }
+  ],
   "headers": [
     {
-      "source": "/gg39-share-v11/(.*)",
+      "source": "/gg39-share-v12/(.*)",
       "headers": [
-        {
-          "key": "X-Robots-Tag",
-          "value": "index, follow, max-image-preview:large"
-        }
+        { "key": "X-Robots-Tag", "value": "index, follow, max-image-preview:large" }
       ]
     }
   ]
