@@ -7,11 +7,12 @@ import z3b from './cover-parts/z3b.js';
 import z4 from './cover-parts/z4.js';
 import z5a from './cover-parts/z5a.js';
 import z5b from './cover-parts/z5b.js';
-import z6a1 from './cover-parts/z6a1.js';
+import z6a1a from './cover-parts/z6a1a.js';
+import z6a1b from './cover-parts/z6a1b.js';
 import z6a2 from './cover-parts/z6a2.js';
 import z6b from './cover-parts/z6b.js';
 
-const DATA = z1a + z1b + z2 + z3a + z3b + z4 + z5a + z5b + z6a1 + z6a2 + z6b;
+const DATA = z1a + z1b + z2 + z3a + z3b + z4 + z5a + z5b + z6a1a + z6a1b + z6a2 + z6b;
 const EXPECTED_BYTES = 39672;
 const EXPECTED_SHA256 = '264b2a0ba1bb27434352e3f29d4afe8f1ba12ec06bb22c67eb8a2b5dd643fd25';
 
