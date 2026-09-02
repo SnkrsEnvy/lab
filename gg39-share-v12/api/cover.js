@@ -1,12 +1,13 @@
 import crypto from 'node:crypto';
-import z1 from './cover-parts/z1.js';
+import z1a from './cover-parts/z1a.js';
+import z1b from './cover-parts/z1b.js';
 import z2 from './cover-parts/z2.js';
 import z3 from './cover-parts/z3.js';
 import z4 from './cover-parts/z4.js';
 import z5 from './cover-parts/z5.js';
 import z6 from './cover-parts/z6.js';
 
-const DATA = z1 + z2 + z3 + z4 + z5 + z6;
+const DATA = z1a + z1b + z2 + z3 + z4 + z5 + z6;
 const EXPECTED_BYTES = 39672;
 const EXPECTED_SHA256 = '264b2a0ba1bb27434352e3f29d4afe8f1ba12ec06bb22c67eb8a2b5dd643fd25';
 
