@@ -1,0 +1,10 @@
+{
+  "name": "gg39-share-v13",
+  "private": true,
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "sharp": "^0.34.3"
+  }
+}
