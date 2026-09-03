@@ -3,14 +3,13 @@
   "builds": [
     { "src": "index.html", "use": "@vercel/static" },
     { "src": "gg39-share-v11/**", "use": "@vercel/static" },
-    { "src": "gg39-share-v12/**", "use": "@vercel/static" }
+    { "src": "gg39-share-v12/**", "use": "@vercel/static" },
+    { "src": "broadcast-gateway/**", "use": "@vercel/static" },
+    { "src": "broadcast/**", "use": "@vercel/static" }
   ],
   "headers": [
-    {
-      "source": "/gg39-share-v12/(.*)",
-      "headers": [
-        { "key": "X-Robots-Tag", "value": "index, follow, max-image-preview:large" }
-      ]
-    }
+    {"source": "/gg39-share-v12/(.*)", "headers": [{"key": "X-Robots-Tag", "value": "index, follow, max-image-preview:large"}]},
+    {"source": "/broadcast/(.*)", "headers": [{"key": "X-Robots-Tag", "value": "index, follow, max-image-preview:large"}]},
+    {"source": "/broadcast-gateway/(.*)", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}]}
   ]
 }
