@@ -1,0 +1,57 @@
+name: Publication Ingest Validate
+on:
+  pull_request:
+    paths:
+      - 'broadcast-gateway/tools/ingest_publication.py'
+      - 'broadcast-gateway/manifests/edition-40.intake.json'
+      - '.github/workflows/publication-ingest-validate.yml'
+  workflow_dispatch:
+jobs:
+  ingest-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install ingest dependencies
+        run: pip install pymupdf pillow
+      - name: Build synthetic two-page PDF
+        run: |
+          python - <<'PY'
+          import fitz
+          d=fitz.open()
+          for i in range(2):
+              p=d.new_page(width=612,height=792)
+              p.insert_text((72,100),f'Broadcast Gateway ingest smoke page {i+1}',fontsize=22)
+          d.save('/tmp/ingest-smoke.pdf')
+          PY
+      - name: Run publication ingest
+        run: |
+          python broadcast-gateway/tools/ingest_publication.py \
+            --pdf /tmp/ingest-smoke.pdf \
+            --out /tmp/ingest-out \
+            --edition 'Edition TEST' \
+            --slug test \
+            --target-width 900 \
+            --jpeg-quality 85
+      - name: Assert deterministic output contract
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          o=pathlib.Path('/tmp/ingest-out')
+          pub=json.load(open(o/'publication.json'))
+          rec=json.load(open(o/'receipt.json'))
+          man=json.load(open(o/'broadcast/issue-manifest.json'))
+          assert pub['source']['page_count']==2
+          assert len(pub['pages'])==2
+          assert rec['status']=='INGEST_PASS'
+          assert rec['output']['cover']['sha256']
+          assert rec['output']['cover']['bytes']>0
+          assert (o/'reader/index.html').is_file()
+          assert (o/'reader/pages/page-001.jpg').is_file()
+          assert (o/'reader/pages/page-002.jpg').is_file()
+          assert man['cover']['mode']=='local'
+          assert man['destination']=='UNKNOWN'
+          print('PUBLICATION_INGEST_CONTRACT_PASS')
+          PY
