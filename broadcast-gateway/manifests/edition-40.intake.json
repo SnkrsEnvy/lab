@@ -1,0 +1,42 @@
+{
+  "schema_version": "broadcast-gateway.intake.v1",
+  "project": "Golden Goose Magazine Edition 40",
+  "status": "AWAITING_SOURCE",
+  "authority": {
+    "founder_approved_pipeline": true,
+    "previous_winner": "Broadcast Gateway v001 / Edition 39",
+    "do_not_clone_content_from_previous_issue": true
+  },
+  "known": {
+    "brand": "Golden Goose Magazine",
+    "edition": "Edition 40",
+    "slug": "40",
+    "publisher_pipeline": "PDF -> deterministic reader bundle -> Broadcast Gateway -> stage -> prove -> production -> fresh compositor"
+  },
+  "required_inputs": {
+    "source_pdf": "UNKNOWN",
+    "final_title": "Golden Goose Magazine · Edition 40",
+    "description": "Open the interactive Golden Goose Magazine Edition 40.",
+    "cover_override": "OPTIONAL; default is rendered PDF page 1",
+    "protected_destination": "GENERATED_AFTER_INGEST",
+    "share_origin": "GENERATED_AT_RELEASE"
+  },
+  "ingest_defaults": {
+    "reader_page_width_px": 1541,
+    "jpeg_quality": 90,
+    "cover_source": "page-001 rendered from source PDF",
+    "receipt_hash": "SHA-256 per source PDF, page image, reader HTML and cover"
+  },
+  "release_gates": {
+    "A_authority": 1,
+    "P_page_transport": null,
+    "T_image_transport": null,
+    "I_artifact_identity": null,
+    "M_metadata_coherence": null,
+    "K_cache_identity": 1,
+    "L_lineage": null,
+    "R_reader": null,
+    "D_device_compositor": null
+  },
+  "next_gate": "Receive the real Edition 40 source PDF. Run ingest_publication.py. Do not create or publish a fake Edition 40 issue before that input exists."
+}
