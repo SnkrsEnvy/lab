@@ -1,0 +1,32 @@
+name: Broadcast Gateway Validate
+on:
+  push:
+    paths:
+      - 'broadcast-gateway/**'
+      - 'tools/broadcast-gateway/**'
+      - 'web/broadcast-gateway/**'
+      - 'web/broadcast/**'
+      - '.github/workflows/broadcast-gateway-validate.yml'
+  pull_request:
+    paths:
+      - 'broadcast-gateway/**'
+      - 'tools/broadcast-gateway/**'
+      - 'web/broadcast-gateway/**'
+      - 'web/broadcast/**'
+jobs:
+  compile-seed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Compile Edition 39 seed
+        run: node tools/broadcast-gateway/compile.mjs --manifest broadcast-gateway/manifests/edition-39.json --out /tmp/broadcast-39
+      - name: Assert output contract
+        run: |
+          test -s /tmp/broadcast-39/index.html
+          test -s /tmp/broadcast-39/manifest.lock.json
+          test -s /tmp/broadcast-39/receipt.json
+          grep -q 'og:image' /tmp/broadcast-39/index.html
+          grep -q 'G_final' /tmp/broadcast-39/receipt.json

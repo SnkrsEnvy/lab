@@ -1,0 +1,10 @@
+{
+  "schema_version": "broadcast-gateway.issue.v1",
+  "brand": {"id": "golden-goose", "name": "Golden Goose Magazine", "site_name": "Golden Goose Magazine", "theme_color": "#0c0907"},
+  "issue": {"slug": "39", "title": "Golden Goose Magazine · Edition 39", "label": "Edition 39", "description": "Open the interactive Golden Goose Magazine Edition 39."},
+  "share": {"origin": "https://lab-beryl-zeta.vercel.app", "path": "/broadcast/39/", "version": "bg1"},
+  "cover": {"mode": "external", "url": "https://golden-goose-39-share.vercel.app/api/cover?v=16R1", "mime": "image/jpeg", "width": 900, "height": 1256, "bytes": 39672, "sha256": "064c463f52caa8f2cf6ffaee79682df8418e54261b2101021a9ad6cf72618f20"},
+  "destination": "https://golden-goose-39-public-v18.vercel.app/",
+  "alt": "Golden Goose Magazine Edition 39 cover",
+  "twitter_card": "summary_large_image"
+}
