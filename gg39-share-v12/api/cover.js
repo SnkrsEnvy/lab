@@ -15,7 +15,7 @@ import z6b from './cover-parts/z6b.js';
 
 const DATA = z1a + z1b + z2 + z3a + z3b + z4 + z5a + z5b + z6a1a1 + z6a1a2 + z6a1b + z6a2 + z6b;
 const EXPECTED_BYTES = 39672;
-const EXPECTED_SHA256 = '264b2a0ba1bb27434352e3f29d4afe8f1ba12ec06bb22c67eb8a2b5dd643fd25';
+const EXPECTED_SHA256 = '064c463f52caa8f2cf6ffaee79682df8418e54261b2101021a9ad6cf72618f20';
 
 export default function handler(req, res) {
   const buf = Buffer.from(DATA, 'base64');
@@ -31,10 +31,10 @@ export default function handler(req, res) {
     return;
   }
   res.setHeader('Content-Type', 'image/jpeg');
-  res.setHeader('Content-Disposition', 'inline; filename="edition-39-cover-v16.jpg"');
+  res.setHeader('Content-Disposition', 'inline; filename="edition-39-cover-v16R1.jpg"');
   res.setHeader('Content-Length', String(buf.length));
   res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=31536000, immutable');
   res.setHeader('X-GG-Cover-SHA256', EXPECTED_SHA256);
-  res.setHeader('X-GG-Cover-Build', 'gg39-v16-textsafe-q10');
+  res.setHeader('X-GG-Cover-Build', 'gg39-v16R1-rebaseline');
   res.status(200).send(buf);
 }
