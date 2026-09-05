@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>BOUGIE — GrandCore Public Demo v017</title>
+<title>BOUGIE — GrandCore Public Demo v018</title>
 <meta name="theme-color" content="#070304">
 <meta name="description" content="Interactive BOUGIE Stardream Opal wine-menu digital twin — FIRE STACK x GrandCore.">
 <link rel="canonical" href="https://lab-world-builders.vercel.app/bougie/">
 <meta property="og:title" content="BOUGIE — GrandCore Public Demo">
 <meta property="og:description" content="Interactive Stardream Opal menu: Front, Grazing, Lights, Back and Detail.">
-<meta property="og:image" content="https://lab-world-builders.vercel.app/bougie/preview.svg?v=17">
+<meta property="og:image" content="https://lab-world-builders.vercel.app/bougie/preview.svg?v=18">
 <meta property="og:url" content="https://lab-world-builders.vercel.app/bougie/">
-<!-- BOUGIE_FIRESTACK_PUBLIC_v017 -->
+<!-- BOUGIE_FIRESTACK_PUBLIC_v018 -->
 <style>
 :root{--wine:#6b171c;--ink:#100907;--line:rgba(230,188,151,.20);--ui:rgba(9,5,5,.86)}
 *{box-sizing:border-box;-webkit-user-select:none;user-select:none}
@@ -67,9 +67,9 @@ body.mood .controls button.active{background:#671626;border-color:#9b334a;box-sh
 <div id="app">
   <canvas id="gl"></canvas>
   <div class="fail" id="fail">3D runtime unavailable on this browser.</div>
-  <div class="top"><div class="pill"><b>BOUGIE</b> · GRANDCORE / FIRE STACK</div><div class="pill">PUBLIC DEMO · v017</div></div>
+  <div class="top"><div class="pill"><b>BOUGIE</b> · GRANDCORE / FIRE STACK</div><div class="pill">PUBLIC DEMO · v018</div></div>
   <div class="mode" id="mode">Front · rich ink / stable print</div>
-  <section class="copy" id="copy"><h1>Pearlescent wine menu</h1><p>Interactive manufacturing preview. FRONT proves print, GRAZING reveals Stardream Opal, LIGHTS shifts into an intimate hospitality mood, BACK proves substrate, and DETAIL supports close inspection.</p><div class="badges"><span>4.125 × 10.5 in</span><span>0.42 mm</span><span>Stardream Opal</span><span>FIRE STACK v017</span></div></section>
+  <section class="copy" id="copy"><h1>Pearlescent wine menu</h1><p>Interactive manufacturing preview. FRONT proves print, GRAZING reveals Stardream Opal, LIGHTS shifts into an intimate hospitality mood, BACK proves substrate, and DETAIL supports close inspection.</p><div class="badges"><span>4.125 × 10.5 in</span><span>0.42 mm</span><span>Stardream Opal</span><span>FIRE STACK v018</span></div></section>
   <div class="controls"><button class="active" data-view="front">Front</button><button data-view="grazing">Grazing</button><button data-view="lights">Lights</button><button data-view="back">Back</button><button data-view="detail">Detail</button><button id="orbit">Orbit</button><button id="build">Build</button><button id="reset">Reset</button></div>
   <div class="status" id="status">Loading GrandCore runtime…</div>
   <aside class="drawer" id="drawer"><h2>Manufacturing preview</h2><p>Reference-derived digital manufacturing preview tied to Stardream Opal.</p><div class="spec"><div class="k">Substrate</div><div class="v">Stardream Opal</div><div class="k">Stock</div><div class="v">105 lb Cover · 285 gsm · 14 pt</div><div class="k">Finished size</div><div class="v">4.125 × 10.5 in</div><div class="k">Thickness</div><div class="v">0.42 mm</div><div class="k">Finish</div><div class="v">Dual-sided mica pearlescent</div><div class="k">Print</div><div class="v">Centered burgundy + black front</div><div class="k">Reverse</div><div class="v">Blank Opal stock</div></div></aside>
@@ -81,7 +81,9 @@ import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 const app=document.getElementById('app'),canvas=document.getElementById('gl'),status=document.getElementById('status'),copy=document.getElementById('copy'),drawer=document.getElementById('drawer'),mode=document.getElementById('mode');
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight,false);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.66;
-const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x080304,.82);const camera=new THREE.PerspectiveCamera(33,innerWidth/innerHeight,.01,4);camera.position.set(.005,.154,.52);const controls=new OrbitControls(camera,canvas);controls.enableDamping=true;controls.dampingFactor=.075;controls.target.set(0,.135,0);controls.enablePan=false;controls.minDistance=.34;controls.maxDistance=.72;controls.minPolarAngle=Math.PI*.30;controls.maxPolarAngle=Math.PI*.66;
+const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x080304,.82);const camera=new THREE.PerspectiveCamera(33,innerWidth/innerHeight,.01,4);camera.position.set(.005,.154,.52);
+const STAGE_TARGET=new THREE.Vector3(0,.132,0);
+const controls=new OrbitControls(camera,canvas);controls.enableDamping=true;controls.dampingFactor=.075;controls.target.copy(STAGE_TARGET);controls.enablePan=false;controls.enableRotate=true;controls.enableZoom=true;controls.screenSpacePanning=false;controls.minDistance=.42;controls.maxDistance=.60;controls.minPolarAngle=1.22;controls.maxPolarAngle=1.49;controls.minAzimuthAngle=-.52;controls.maxAzimuthAngle=.52;
 const pmrem=new THREE.PMREMGenerator(renderer),room=new RoomEnvironment();scene.environment=pmrem.fromScene(room,.04).texture;room.dispose();pmrem.dispose();scene.add(new THREE.HemisphereLight(0x4b302a,0x0d0708,.36));
 const key=new THREE.SpotLight(0xffbd83,24,3,Math.PI*.22,.68,1.25);key.position.set(-.42,.58,.34);key.target.position.set(0,.14,0);key.castShadow=true;key.shadow.mapSize.set(2048,2048);scene.add(key,key.target);
 const fill=new THREE.SpotLight(0xffdec3,8,3,Math.PI*.28,.85,1.5);fill.position.set(.42,.33,.30);fill.target.position.set(0,.14,0);scene.add(fill,fill.target);
@@ -99,16 +101,17 @@ const plane=new THREE.PlaneGeometry(CW-.0007,CH-.0007);const front=new THREE.Mes
 const back=new THREE.Mesh(plane.clone(),faceMat(backTex));back.position.set(0,CH/2,-CD/2-.00012);back.rotation.y=Math.PI;back.castShadow=true;card.add(back);scene.add(card);
 const tableMat=new THREE.MeshPhysicalMaterial({color:0x3d1914,metalness:.35,roughness:.45,roughnessMap:rough,bumpMap:rough,bumpScale:.00045,clearcoat:.05,envMapIntensity:.80});
 const table=new THREE.Mesh(new THREE.CylinderGeometry(.72,.73,.025,128),tableMat);table.position.y=-.014;table.receiveShadow=true;scene.add(table);
-let auto=false,tween=null,glint=false;const views={front:{r:-.05,p:[.005,.154,.52],e:.66},grazing:{r:-.62,p:[.10,.158,.49],e:.60},lights:{r:-.07,p:[.005,.154,.52],e:.42},back:{r:Math.PI,p:[.005,.154,.52],e:.62},detail:{r:-.02,p:[.004,.155,.39],e:.62}};
+let auto=false,tween=null,glint=false;const views={front:{r:-.05,p:[.005,.154,.52],e:.66},grazing:{r:-.62,p:[.10,.165,.49],e:.60},lights:{r:-.07,p:[.005,.154,.52],e:.42},back:{r:Math.PI,p:[.005,.154,.52],e:.62},detail:{r:-.02,p:[.004,.165,.42],e:.62}};
 function flash(t){mode.textContent=t;mode.classList.add('show');clearTimeout(window.__mm);window.__mm=setTimeout(()=>mode.classList.remove('show'),1200)}
 function setView(n){const v=views[n];document.body.classList.toggle('mood',n==='lights');key.intensity=n==='lights'?8:(n==='grazing'?17:24);fill.intensity=n==='lights'?2.5:(n==='grazing'?6:8);red.intensity=n==='lights'?18:0;purple.intensity=n==='lights'?14:0;glint=n==='grazing';auto=false;document.getElementById('orbit').classList.remove('active');document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===n));flash({front:'Front · rich ink / stable print',grazing:'Grazing · Stardream Opal reveal',lights:'Lights · intimate red / purple mood',back:'Back · blank Opal substrate',detail:'Detail · close inspection'}[n]);tween={r0:card.rotation.y,r1:v.r,p0:camera.position.clone(),p1:new THREE.Vector3(...v.p),e0:renderer.toneMappingExposure,e1:v.e,ts:performance.now(),dur:620};copy.classList.add('compact')}
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view));
 document.getElementById('orbit').onclick=function(){auto=!auto;this.classList.toggle('active',auto);glint=false};
 document.getElementById('build').onclick=()=>drawer.classList.toggle('open');
 document.getElementById('reset').onclick=()=>{drawer.classList.remove('open');copy.classList.remove('compact');setView('front')};
-function tick(t){requestAnimationFrame(tick);if(tween){const a=Math.min(1,(t-tween.ts)/tween.dur),q=1-Math.pow(1-a,3);card.rotation.y=THREE.MathUtils.lerp(tween.r0,tween.r1,q);camera.position.lerpVectors(tween.p0,tween.p1,q);renderer.toneMappingExposure=THREE.MathUtils.lerp(tween.e0,tween.e1,q);if(a>=1)tween=null}else if(auto)card.rotation.y+=.0016;if(glint)key.position.x=-.44+Math.sin(t*.001)*.17;controls.update();renderer.render(scene,camera)}
-function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight,false);renderer.setPixelRatio(Math.min(devicePixelRatio,2))}
-addEventListener('resize',resize);resize();card.rotation.y=-.05;requestAnimationFrame(tick);window.__BOUGIE_WEBGL_READY__=true;canvas.classList.add('ready');status.textContent='GrandCore v017 · mobile-clean public candidate · drag / scroll / pinch';
+function configureStageBounds(){const mobile=innerWidth<780;controls.minDistance=mobile?.45:.42;controls.maxDistance=mobile?.58:.60;controls.minPolarAngle=mobile?1.26:1.22;controls.maxPolarAngle=mobile?1.47:1.49;controls.minAzimuthAngle=mobile?-.42:-.52;controls.maxAzimuthAngle=mobile?.42:.52;controls.target.copy(STAGE_TARGET);controls.update()}
+function tick(t){requestAnimationFrame(tick);if(tween){const a=Math.min(1,(t-tween.ts)/tween.dur),q=1-Math.pow(1-a,3);card.rotation.y=THREE.MathUtils.lerp(tween.r0,tween.r1,q);camera.position.lerpVectors(tween.p0,tween.p1,q);renderer.toneMappingExposure=THREE.MathUtils.lerp(tween.e0,tween.e1,q);if(a>=1)tween=null}else if(auto)card.rotation.y+=.0016;if(glint)key.position.x=-.44+Math.sin(t*.001)*.17;controls.target.copy(STAGE_TARGET);controls.update();renderer.render(scene,camera)}
+function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight,false);renderer.setPixelRatio(Math.min(devicePixelRatio,2));configureStageBounds()}
+addEventListener('resize',resize);resize();card.rotation.y=-.05;requestAnimationFrame(tick);window.__BOUGIE_WEBGL_READY__=true;canvas.classList.add('ready');status.textContent='GrandCore v018 · tabletop-stage lock active · drag / scroll / pinch';
 </script>
 </body>
 </html>
