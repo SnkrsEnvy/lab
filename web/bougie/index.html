@@ -3,17 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>BOUGIE — GrandCore Public Demo v018</title>
+<title>BOUGIE — GrandCore Public Demo v019</title>
 <meta name="theme-color" content="#070304">
 <meta name="description" content="Interactive BOUGIE Stardream Opal wine-menu digital twin — FIRE STACK x GrandCore.">
 <link rel="canonical" href="https://lab-world-builders.vercel.app/bougie/">
 <meta property="og:title" content="BOUGIE — GrandCore Public Demo">
 <meta property="og:description" content="Interactive Stardream Opal menu: Front, Grazing, Lights, Back and Detail.">
-<meta property="og:image" content="https://lab-world-builders.vercel.app/bougie/preview.svg?v=18">
+<meta property="og:image" content="https://lab-world-builders.vercel.app/bougie/preview.svg?v=19">
 <meta property="og:url" content="https://lab-world-builders.vercel.app/bougie/">
-<!-- BOUGIE_FIRESTACK_PUBLIC_v018 -->
+<!-- BOUGIE_FIRESTACK_PUBLIC_v019 -->
 <style>
-:root{--wine:#6b171c;--ink:#100907;--line:rgba(230,188,151,.20);--ui:rgba(9,5,5,.86)}
+:root{--wine:#6b171c;--ink:#100907;--line:rgba(230,188,151,.20);--line2:rgba(230,188,151,.12);--ui:rgba(9,5,5,.82);--ui2:rgba(20,10,9,.68)}
 *{box-sizing:border-box;-webkit-user-select:none;user-select:none}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;background:#050203;color:#f7eee8;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Arial,sans-serif}
 body{background:radial-gradient(55vw 55vh at 18% 18%,rgba(124,55,31,.23),transparent 62%),linear-gradient(180deg,#0c0605,#050203 74%,#080304)}
@@ -24,16 +24,28 @@ body.mood{background:radial-gradient(44vw 52vh at 84% 60%,rgba(126,11,31,.17),tr
 .top{position:absolute;left:22px;right:22px;top:20px;z-index:20;display:flex;justify-content:space-between;gap:12px;pointer-events:none}
 .pill{padding:10px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(8,4,4,.54);backdrop-filter:blur(14px);font-size:9px;letter-spacing:.17em;text-transform:uppercase;color:#cdb8aa;white-space:nowrap}
 .pill b{color:#fff}
-.copy{position:absolute;left:28px;bottom:28px;z-index:20;width:min(455px,calc(100vw - 56px));padding:18px 20px;border:1px solid var(--line);border-radius:19px;background:linear-gradient(145deg,rgba(10,5,5,.91),rgba(26,12,11,.68));backdrop-filter:blur(15px);transition:.25s;pointer-events:none}
-.copy.compact{opacity:.28;transform:translateY(8px)}
-.copy h1{font:500 28px/1.04 Georgia,serif;margin:0 0 7px}
-.copy p{font-size:12px;line-height:1.55;color:#c9b5a6;margin:0}
-.badges{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
-.badges span{padding:7px 9px;border:1px solid var(--line);border-radius:999px;font-size:8px;letter-spacing:.10em;text-transform:uppercase;color:#cbb7a8}
-.controls{position:absolute;right:23px;bottom:23px;z-index:22;display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end;max-width:68vw}
-.controls button{appearance:none;border:1px solid rgba(227,179,143,.24);background:var(--ui);color:#ddc9ba;border-radius:999px;padding:11px 14px;font-size:9px;letter-spacing:.11em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(12px);transition:.18s}
-.controls button:hover,.controls button.active{background:#7a392d;color:#fff;border-color:#a95d4c;transform:translateY(-1px)}
-body.mood .controls button.active{background:#671626;border-color:#9b334a;box-shadow:0 0 18px rgba(117,13,40,.22)}
+.info-card{position:absolute;left:26px;bottom:26px;z-index:21;width:min(338px,calc(100vw - 52px));border:1px solid var(--line2);border-radius:18px;background:linear-gradient(145deg,rgba(10,5,5,.88),rgba(27,13,11,.62));backdrop-filter:blur(18px);box-shadow:0 18px 60px rgba(0,0,0,.24);overflow:hidden;transition:.24s ease}
+.info-head{display:flex;align-items:center;gap:12px;padding:13px 15px;cursor:pointer}
+.info-mark{width:8px;height:8px;border-radius:50%;background:#9f4e39;box-shadow:0 0 16px rgba(159,78,57,.45);flex:0 0 auto}
+.info-title{min-width:0;flex:1}
+.info-title h1{font:500 18px/1.04 Georgia,serif;margin:0 0 3px;color:#f3e7dc}
+.info-title p{margin:0;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#aa9484;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.info-toggle{border:1px solid var(--line2);background:rgba(255,255,255,.025);color:#bba89a;border-radius:999px;padding:7px 9px;font-size:7px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+.info-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .24s ease}
+.info-body>div{overflow:hidden}
+.info-card.open .info-body{grid-template-rows:1fr}
+.info-copy{padding:0 15px 14px;border-top:1px solid rgba(255,255,255,.045)}
+.info-copy p{font-size:10px;line-height:1.5;color:#c6b1a2;margin:11px 0 10px}
+.badges{display:flex;gap:6px;flex-wrap:wrap}
+.badges span{padding:6px 8px;border:1px solid var(--line2);border-radius:999px;font-size:7px;letter-spacing:.10em;text-transform:uppercase;color:#bda99a}
+.control-dock{position:absolute;right:22px;bottom:22px;z-index:22;display:flex;align-items:center;gap:8px;padding:6px;border:1px solid var(--line2);border-radius:999px;background:rgba(7,4,4,.72);backdrop-filter:blur(16px);box-shadow:0 16px 50px rgba(0,0,0,.22)}
+.control-group{display:flex;gap:4px;align-items:center}
+.control-sep{width:1px;height:24px;background:rgba(231,188,151,.10);margin:0 1px}
+.control-dock button{appearance:none;border:1px solid transparent;background:transparent;color:#c9b6a7;border-radius:999px;padding:9px 11px;font-size:8px;letter-spacing:.10em;text-transform:uppercase;cursor:pointer;transition:.17s}
+.control-dock button:hover{background:rgba(255,255,255,.045);color:#fff}
+.control-dock button.active{background:#713226;color:#fff;border-color:#965140;box-shadow:inset 0 0 0 1px rgba(255,255,255,.025)}
+body.mood .control-dock button.active{background:#5d1423;border-color:#8f3147;box-shadow:0 0 17px rgba(108,15,42,.18)}
+.icon-btn{min-width:34px;padding-left:9px!important;padding-right:9px!important;color:#a99384!important}
 .mode{position:absolute;left:50%;top:72px;transform:translateX(-50%);z-index:19;padding:8px 12px;border:1px solid rgba(225,183,147,.16);border-radius:999px;background:rgba(8,4,5,.48);font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:#ccb7a7;opacity:0;transition:.2s;pointer-events:none}
 .mode.show{opacity:1}
 .status{position:absolute;left:50%;bottom:17px;transform:translateX(-50%);z-index:18;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:rgba(220,194,176,.40);white-space:nowrap;pointer-events:none}
@@ -50,13 +62,21 @@ body.mood .controls button.active{background:#671626;border-color:#9b334a;box-sh
 @media(max-width:780px){
   .top{left:10px;right:10px;top:max(10px,env(safe-area-inset-top));gap:7px}
   .pill{font-size:7px;padding:8px 10px;letter-spacing:.14em;max-width:49vw;overflow:hidden;text-overflow:ellipsis}
-  .copy{left:12px;right:auto;bottom:74px;width:auto;max-width:calc(100vw - 24px);padding:8px 12px;border-radius:999px;background:rgba(9,5,5,.72);box-shadow:0 12px 34px rgba(0,0,0,.25)}
-  .copy.compact{opacity:.42;transform:none}
-  .copy h1{font-size:13px;line-height:1;margin:0;white-space:nowrap}
-  .copy p,.badges{display:none}
-  .controls{left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom));max-width:none;display:flex;flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;overflow-y:hidden;gap:6px;padding:6px;border:1px solid rgba(227,179,143,.12);border-radius:999px;background:rgba(7,4,4,.72);backdrop-filter:blur(14px);scrollbar-width:none}
-  .controls::-webkit-scrollbar{display:none}
-  .controls button{flex:0 0 auto;padding:9px 11px;font-size:7.5px;letter-spacing:.10em;background:rgba(10,6,6,.88)}
+  .info-card{left:10px;bottom:68px;width:auto;max-width:calc(100vw - 20px);border-radius:999px;background:rgba(8,4,4,.70);box-shadow:0 12px 34px rgba(0,0,0,.22)}
+  .info-card.open{width:calc(100vw - 20px);border-radius:16px;background:rgba(8,4,4,.92)}
+  .info-head{padding:8px 10px;gap:8px}
+  .info-mark{width:6px;height:6px}
+  .info-title h1{font:500 12px/1 Georgia,serif;margin:0 0 2px}
+  .info-title p{font-size:6.5px;max-width:180px}
+  .info-toggle{padding:5px 7px;font-size:6px}
+  .info-copy{padding:0 11px 11px}
+  .info-copy p{font-size:9px;margin:9px 0}
+  .badges span{font-size:6px;padding:5px 7px}
+  .control-dock{left:8px;right:8px;bottom:max(8px,env(safe-area-inset-bottom));padding:5px;gap:5px;border-radius:999px;overflow-x:auto;overflow-y:hidden;justify-content:flex-start;scrollbar-width:none}
+  .control-dock::-webkit-scrollbar{display:none}
+  .control-group{flex:0 0 auto;gap:2px}
+  .control-sep{flex:0 0 auto;height:21px}
+  .control-dock button{flex:0 0 auto;padding:8px 9px;font-size:7px;letter-spacing:.08em}
   .status,.mode{display:none}
   .drawer{right:10px;top:64px;width:calc(100vw - 20px);max-height:calc(100vh - 140px);overflow:auto}
 }
@@ -67,10 +87,17 @@ body.mood .controls button.active{background:#671626;border-color:#9b334a;box-sh
 <div id="app">
   <canvas id="gl"></canvas>
   <div class="fail" id="fail">3D runtime unavailable on this browser.</div>
-  <div class="top"><div class="pill"><b>BOUGIE</b> · GRANDCORE / FIRE STACK</div><div class="pill">PUBLIC DEMO · v018</div></div>
+  <div class="top"><div class="pill"><b>BOUGIE</b> · GRANDCORE / FIRE STACK</div><div class="pill">PUBLIC DEMO · v019</div></div>
   <div class="mode" id="mode">Front · rich ink / stable print</div>
-  <section class="copy" id="copy"><h1>Pearlescent wine menu</h1><p>Interactive manufacturing preview. FRONT proves print, GRAZING reveals Stardream Opal, LIGHTS shifts into an intimate hospitality mood, BACK proves substrate, and DETAIL supports close inspection.</p><div class="badges"><span>4.125 × 10.5 in</span><span>0.42 mm</span><span>Stardream Opal</span><span>FIRE STACK v018</span></div></section>
-  <div class="controls"><button class="active" data-view="front">Front</button><button data-view="grazing">Grazing</button><button data-view="lights">Lights</button><button data-view="back">Back</button><button data-view="detail">Detail</button><button id="orbit">Orbit</button><button id="build">Build</button><button id="reset">Reset</button></div>
+  <section class="info-card" id="infoCard" aria-label="Menu material information">
+    <div class="info-head" id="infoHead"><span class="info-mark"></span><div class="info-title"><h1>Pearlescent wine menu</h1><p>Stardream Opal · interactive material proof</p></div><button class="info-toggle" id="infoToggle">Info</button></div>
+    <div class="info-body"><div><div class="info-copy"><p>Reference-derived manufacturing preview. Inspect the printed face, pearlescent grazing response, hospitality lighting, blank reverse, and close material detail.</p><div class="badges"><span>4.125 × 10.5 in</span><span>0.42 mm</span><span>285 gsm</span><span>Stardream Opal</span></div></div></div></div>
+  </section>
+  <nav class="control-dock" aria-label="GrandCore viewer controls">
+    <div class="control-group"><button class="active" data-view="front">Front</button><button data-view="grazing">Grazing</button><button data-view="lights">Lights</button><button data-view="back">Back</button><button data-view="detail">Detail</button></div>
+    <span class="control-sep"></span>
+    <div class="control-group"><button class="icon-btn" id="orbit" title="Automatic orbit">Orbit</button><button class="icon-btn" id="build" title="Manufacturing build sheet">Build</button><button class="icon-btn" id="reset" title="Reset view">Reset</button></div>
+  </nav>
   <div class="status" id="status">Loading GrandCore runtime…</div>
   <aside class="drawer" id="drawer"><h2>Manufacturing preview</h2><p>Reference-derived digital manufacturing preview tied to Stardream Opal.</p><div class="spec"><div class="k">Substrate</div><div class="v">Stardream Opal</div><div class="k">Stock</div><div class="v">105 lb Cover · 285 gsm · 14 pt</div><div class="k">Finished size</div><div class="v">4.125 × 10.5 in</div><div class="k">Thickness</div><div class="v">0.42 mm</div><div class="k">Finish</div><div class="v">Dual-sided mica pearlescent</div><div class="k">Print</div><div class="v">Centered burgundy + black front</div><div class="k">Reverse</div><div class="v">Blank Opal stock</div></div></aside>
 </div>
@@ -79,7 +106,7 @@ body.mood .controls button.active{background:#671626;border-color:#9b334a;box-sh
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
-const app=document.getElementById('app'),canvas=document.getElementById('gl'),status=document.getElementById('status'),copy=document.getElementById('copy'),drawer=document.getElementById('drawer'),mode=document.getElementById('mode');
+const app=document.getElementById('app'),canvas=document.getElementById('gl'),status=document.getElementById('status'),drawer=document.getElementById('drawer'),mode=document.getElementById('mode'),infoCard=document.getElementById('infoCard'),infoHead=document.getElementById('infoHead'),infoToggle=document.getElementById('infoToggle');
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight,false);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.66;
 const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x080304,.82);const camera=new THREE.PerspectiveCamera(33,innerWidth/innerHeight,.01,4);camera.position.set(.005,.154,.52);
 const STAGE_TARGET=new THREE.Vector3(0,.132,0);
@@ -103,15 +130,16 @@ const tableMat=new THREE.MeshPhysicalMaterial({color:0x3d1914,metalness:.35,roug
 const table=new THREE.Mesh(new THREE.CylinderGeometry(.72,.73,.025,128),tableMat);table.position.y=-.014;table.receiveShadow=true;scene.add(table);
 let auto=false,tween=null,glint=false;const views={front:{r:-.05,p:[.005,.154,.52],e:.66},grazing:{r:-.62,p:[.10,.165,.49],e:.60},lights:{r:-.07,p:[.005,.154,.52],e:.42},back:{r:Math.PI,p:[.005,.154,.52],e:.62},detail:{r:-.02,p:[.004,.165,.42],e:.62}};
 function flash(t){mode.textContent=t;mode.classList.add('show');clearTimeout(window.__mm);window.__mm=setTimeout(()=>mode.classList.remove('show'),1200)}
-function setView(n){const v=views[n];document.body.classList.toggle('mood',n==='lights');key.intensity=n==='lights'?8:(n==='grazing'?17:24);fill.intensity=n==='lights'?2.5:(n==='grazing'?6:8);red.intensity=n==='lights'?18:0;purple.intensity=n==='lights'?14:0;glint=n==='grazing';auto=false;document.getElementById('orbit').classList.remove('active');document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===n));flash({front:'Front · rich ink / stable print',grazing:'Grazing · Stardream Opal reveal',lights:'Lights · intimate red / purple mood',back:'Back · blank Opal substrate',detail:'Detail · close inspection'}[n]);tween={r0:card.rotation.y,r1:v.r,p0:camera.position.clone(),p1:new THREE.Vector3(...v.p),e0:renderer.toneMappingExposure,e1:v.e,ts:performance.now(),dur:620};copy.classList.add('compact')}
+function setView(n){const v=views[n];document.body.classList.toggle('mood',n==='lights');key.intensity=n==='lights'?8:(n==='grazing'?17:24);fill.intensity=n==='lights'?2.5:(n==='grazing'?6:8);red.intensity=n==='lights'?18:0;purple.intensity=n==='lights'?14:0;glint=n==='grazing';auto=false;document.getElementById('orbit').classList.remove('active');document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===n));flash({front:'Front · rich ink / stable print',grazing:'Grazing · Stardream Opal reveal',lights:'Lights · intimate red / purple mood',back:'Back · blank Opal substrate',detail:'Detail · close inspection'}[n]);tween={r0:card.rotation.y,r1:v.r,p0:camera.position.clone(),p1:new THREE.Vector3(...v.p),e0:renderer.toneMappingExposure,e1:v.e,ts:performance.now(),dur:620}}
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view));
+infoHead.onclick=e=>{if(e.target===infoToggle||!infoCard.classList.contains('open')){infoCard.classList.toggle('open');infoToggle.textContent=infoCard.classList.contains('open')?'Close':'Info'}};
 document.getElementById('orbit').onclick=function(){auto=!auto;this.classList.toggle('active',auto);glint=false};
 document.getElementById('build').onclick=()=>drawer.classList.toggle('open');
-document.getElementById('reset').onclick=()=>{drawer.classList.remove('open');copy.classList.remove('compact');setView('front')};
+document.getElementById('reset').onclick=()=>{drawer.classList.remove('open');infoCard.classList.remove('open');infoToggle.textContent='Info';setView('front')};
 function configureStageBounds(){const mobile=innerWidth<780;controls.minDistance=mobile?.45:.42;controls.maxDistance=mobile?.58:.60;controls.minPolarAngle=mobile?1.26:1.22;controls.maxPolarAngle=mobile?1.47:1.49;controls.minAzimuthAngle=mobile?-.42:-.52;controls.maxAzimuthAngle=mobile?.42:.52;controls.target.copy(STAGE_TARGET);controls.update()}
 function tick(t){requestAnimationFrame(tick);if(tween){const a=Math.min(1,(t-tween.ts)/tween.dur),q=1-Math.pow(1-a,3);card.rotation.y=THREE.MathUtils.lerp(tween.r0,tween.r1,q);camera.position.lerpVectors(tween.p0,tween.p1,q);renderer.toneMappingExposure=THREE.MathUtils.lerp(tween.e0,tween.e1,q);if(a>=1)tween=null}else if(auto)card.rotation.y+=.0016;if(glint)key.position.x=-.44+Math.sin(t*.001)*.17;controls.target.copy(STAGE_TARGET);controls.update();renderer.render(scene,camera)}
 function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight,false);renderer.setPixelRatio(Math.min(devicePixelRatio,2));configureStageBounds()}
-addEventListener('resize',resize);resize();card.rotation.y=-.05;requestAnimationFrame(tick);window.__BOUGIE_WEBGL_READY__=true;canvas.classList.add('ready');status.textContent='GrandCore v018 · tabletop-stage lock active · drag / scroll / pinch';
+addEventListener('resize',resize);resize();card.rotation.y=-.05;requestAnimationFrame(tick);window.__BOUGIE_WEBGL_READY__=true;canvas.classList.add('ready');status.textContent='GrandCore v019 · bounded tabletop viewer · refined interface';
 </script>
 </body>
 </html>
