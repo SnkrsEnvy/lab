@@ -4,23 +4,29 @@
   "series": 3,
   "number": 163,
   "title": "Gelato 41",
-  "release_state": "PRODUCTION_MEDIA_READY_DEVICE_GATE_OPEN",
+  "release_state": "PRODUCTION_VISUAL_REPAIR_V4_DEVICE_GATE_OPEN",
   "canonical_url": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/163-gelato-41/",
-  "test_url": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/163-gelato-41/?v=cc163-900-final",
-  "cover_url": "https://lab-beryl-zeta.vercel.app/api/cannacardz-163-cover-final",
+  "test_url": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/163-gelato-41/?v=cc163-clean-v4",
+  "cover_url": "https://lab-beryl-zeta.vercel.app/api/cannacardz-163-cover-clean-v4",
   "physical_price_usd": 3,
   "cover": {
-    "width": 900,
-    "height": 1200,
-    "bytes": 26883,
-    "sha256": "3de392249e0292b8a04e1c90fba74debfd288c1aec590005b4311e91761167dc"
+    "width": 360,
+    "height": 480,
+    "bytes": 5925,
+    "sha256": "838cb6ef802bece90c7e320ba905596396c5c6a70335078a214e718425b7c0ce",
+    "source": "previous clean v3 transport asset"
+  },
+  "failure_record": {
+    "bad_asset": "/api/cannacardz-163-cover-final",
+    "symptom": "desktop shows horizontal chroma corruption/cyan band and block damage",
+    "ruling": "technical byte-match did not prove visual integrity"
   },
   "gates": {
-    "PAGE_TRANSPORT": "PENDING_PRODUCTION_DEPLOY",
-    "IMAGE_TRANSPORT": "PENDING_PRODUCTION_DEPLOY",
-    "CRAWLER_METADATA": "PENDING_PRODUCTION_DEPLOY",
+    "PAGE_TRANSPORT": "PENDING_DEPLOY",
+    "IMAGE_TRANSPORT": "PENDING_DEPLOY",
+    "CRAWLER_METADATA": "PENDING_DEPLOY",
+    "DESKTOP_VISUAL": "PENDING_USER_PROOF",
     "DEVICE_PREVIEW": "UNKNOWN"
   },
-  "authority": "Founder-approved public-link pilot; device proof remains the active gate.",
-  "next_gate": "Fresh iMessage send of exact versioned production URL and screenshot judgment."
+  "next_gate": "Refresh fresh versioned production URL on desktop; if clean, send same fresh URL in iMessage."
 }
