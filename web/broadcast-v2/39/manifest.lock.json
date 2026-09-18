@@ -1,0 +1,57 @@
+{
+  "schema_version": "broadcast-gateway.issue.v2",
+  "brand": {
+    "id": "golden-goose",
+    "name": "Golden Goose Magazine",
+    "site_name": "Golden Goose Magazine",
+    "publisher": "Golden Goose Publishing",
+    "theme_color": "#0c0907"
+  },
+  "issue": {
+    "slug": "39-v2-regression",
+    "title": "Golden Goose Magazine · Edition 39",
+    "label": "Edition 39",
+    "description": "Open the interactive Golden Goose Magazine Edition 39.",
+    "identifier": "GG-EDITION-39"
+  },
+  "share": {
+    "origin": "https://lab-beryl-zeta.vercel.app",
+    "path": "/broadcast-v2/39/",
+    "version": "bg2-regression",
+    "build_marker": "bg2-39-regression",
+    "canonical_url": "https://lab-beryl-zeta.vercel.app/broadcast-v2/39/?v=bg2-regression"
+  },
+  "cover": {
+    "mode": "external",
+    "url": "https://golden-goose-39-share.vercel.app/api/cover?v=16R1",
+    "mime": "image/jpeg",
+    "width": 900,
+    "height": 1256,
+    "bytes": 39672,
+    "sha256": "064c463f52caa8f2cf6ffaee79682df8418e54261b2101021a9ad6cf72618f20",
+    "allow_redirects": false,
+    "source": "manifest",
+    "resolved_url": "https://golden-goose-39-share.vercel.app/api/cover?v=16R1"
+  },
+  "destination": {
+    "url": "https://golden-goose-39-public-v18.vercel.app/",
+    "frozen": true,
+    "expected_markers": [
+      {
+        "name": "gg-parent-build",
+        "value": "gg39-v18-webp-inline-final"
+      }
+    ]
+  },
+  "semantic": {
+    "type": "CreativeWork",
+    "publisher_name": "Golden Goose Publishing",
+    "is_part_of": "Golden Goose Magazine"
+  },
+  "alt": "Golden Goose Magazine Edition 39 cover",
+  "twitter_card": "summary_large_image",
+  "compiled": {
+    "compiler": "broadcast-gateway.compile-v2",
+    "runtime_gate_policy": "compile does not self-promote runtime gates"
+  }
+}
