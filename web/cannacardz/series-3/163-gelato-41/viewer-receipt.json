@@ -1,0 +1,51 @@
+{
+  "schema": "cannacardz.viewer.receipt.v1",
+  "card_id": "CC-0163",
+  "series": 3,
+  "number": 163,
+  "title": "Gelato 41",
+  "branch": "cannacardz-s3-163-viewer",
+  "build": "cc163-viewer-shell-v1-staged",
+  "frozen_share_layer": {
+    "production_url": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/163-gelato-41/",
+    "og_image": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/163-gelato-41/cover-v5-master.jpg",
+    "device_preview": "PASS"
+  },
+  "viewer": {
+    "card_mode": true,
+    "unfold_mode": true,
+    "swipe": true,
+    "keyboard": true,
+    "edge_navigation": true,
+    "fullscreen": true,
+    "page_count": 4
+  },
+  "pages": [
+    {
+      "page": 1,
+      "label": "Front Cover",
+      "asset": "cover-v5-master.jpg",
+      "state": "CANON_READY"
+    },
+    {
+      "page": 2,
+      "label": "Inside Left",
+      "asset": null,
+      "state": "CANON_ASSET_UNKNOWN"
+    },
+    {
+      "page": 3,
+      "label": "Inside Right",
+      "asset": null,
+      "state": "CANON_ASSET_UNKNOWN"
+    },
+    {
+      "page": 4,
+      "label": "Back Cover",
+      "asset": null,
+      "state": "CANON_ASSET_UNKNOWN"
+    }
+  ],
+  "promotion_gate": "BLOCKED_BY_MISSING_CANON_PAGE_ASSETS_2_3_4",
+  "doctrine": "Do not invent or substitute page art. Viewer runtime may be staged; production index remains frozen until authoritative assets are supplied or recovered."
+}
