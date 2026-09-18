@@ -28,3 +28,7 @@ Final proof:
 - Deployment READY proves platform state, not final preview composition.
 - Browser rendering proves browser behavior, not iMessage or another compositor.
 - v001 remains the frozen rollback winner until v002 completes all required downstream gates.
+
+## Connector transport guard
+
+After any connector-mediated source write, re-read the committed artifact before staging. A successful write receipt does not prove byte-correct source transport.
