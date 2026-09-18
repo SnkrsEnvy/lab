@@ -1,0 +1,26 @@
+{
+  "schema": "cannacardz.public-link.receipt.v1",
+  "card_id": "CC-0163",
+  "series": 3,
+  "number": 163,
+  "title": "Gelato 41",
+  "release_state": "SHARE_PILOT",
+  "canonical_url": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/163-gelato-41/",
+  "test_url": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/163-gelato-41/?v=s3p1",
+  "physical_price_usd": 3,
+  "cover": {
+    "file": "cover-s3v1.jpg",
+    "width": 900,
+    "height": 1200,
+    "bytes": 204361,
+    "sha256": "116dd6fb7b228671103e1b515b341d84481ce319481a68ae70939b21303b0deb"
+  },
+  "proof": {
+    "local_decode": "PASS",
+    "page_transport": "UNKNOWN",
+    "image_transport": "UNKNOWN",
+    "crawler_metadata": "UNKNOWN",
+    "device_preview": "UNKNOWN"
+  },
+  "next_gate": "Deploy preview branch and prove page/media/metadata before production promotion."
+}
