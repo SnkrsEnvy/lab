@@ -208,7 +208,7 @@ if (imageObserved.content_length !== null) requireEq(imageObserved.content_lengt
 if (!allowRedirects && imageObserved.redirected) die('image redirected but redirects are disallowed');
 
 const pageLinks = hrefs(html).map(v => { try { return new URL(v, page.url).toString(); } catch { return v; } });
-if (!pageLinks.some(v => sameUrl(v, expectedDestination)) die('protected destination handoff missing from page links', { expected: expectedDestination });
+if (!pageLinks.some(v => sameUrl(v, expectedDestination))) die('protected destination handoff missing from page links', { expected: expectedDestination });
 const destination = await fetch(expectedDestination, { redirect: 'follow' });
 if (!destination.ok) die(`protected destination returned ${destination.status}`);
 const destinationText = await destination.text();
