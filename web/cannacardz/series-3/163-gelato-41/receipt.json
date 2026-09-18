@@ -1,0 +1,26 @@
+{
+  "schema": "cannacardz.public-link.receipt.v1",
+  "card_id": "CC-0163",
+  "series": 3,
+  "number": 163,
+  "title": "Gelato 41",
+  "release_state": "PRODUCTION_CANDIDATE",
+  "canonical_url": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/163-gelato-41/",
+  "test_url": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/163-gelato-41/?v=s3p4",
+  "physical_price_usd": 3,
+  "cover": {
+    "transport": "serverless-base64-reconstruction",
+    "endpoint": "https://lab-beryl-zeta.vercel.app/api/cannacardz-163-cover-v3",
+    "width": 360,
+    "height": 480,
+    "bytes": 5925,
+    "sha256": "ad513dfb5732a166d2b094348742c8878761575d27c791682c7d4d7202349f1e"
+  },
+  "proof": {
+    "page_transport": "PASS_PREVIEW",
+    "image_transport": "PASS_PREVIEW",
+    "crawler_metadata": "PASS_PREVIEW",
+    "device_preview": "UNKNOWN"
+  },
+  "next_gate": "Promote to production, re-prove page/image/metadata on production, then send fresh production URL in iMessage and capture device proof."
+}
