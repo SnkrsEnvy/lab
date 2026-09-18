@@ -1,24 +1,26 @@
 {
-  "schema": "cannacardz.public-link.receipt.v1",
+  "schema": "cannacardz.public-link.receipt.v2",
   "card_id": "CC-0163",
   "series": 3,
   "number": 163,
   "title": "Gelato 41",
-  "release_state": "SHARE_PILOT_MEDIA_READY",
+  "release_state": "MASTER_V5_PILOT",
   "page_url": "https://lab-git-cannacardz-s3-163-pilot-world-builders.vercel.app/cannacardz/series-3/163-gelato-41/",
-  "cover_url": "https://lab-git-cannacardz-s3-163-pilot-world-builders.vercel.app/api/cannacardz-163-cover-final",
-  "physical_price_usd": 3,
+  "cover_url": "https://lab-git-cannacardz-s3-163-pilot-world-builders.vercel.app/cannacardz/series-3/163-gelato-41/cover-v5-master.jpg",
   "cover": {
-    "width": 900,
-    "height": 1200,
-    "bytes": 26883,
-    "sha256": "3de392249e0292b8a04e1c90fba74debfd288c1aec590005b4311e91761167dc"
+    "width": 1086,
+    "height": 1448,
+    "bytes": 621445,
+    "sha256": "7b1b50875b3f81ee8031a5dea29d20835b858d224c615129f13da73fbe4f0f0d"
   },
+  "source_authority": "cc163-master-q82.jpg, visually inspected clean master",
+  "transport": "GitHub binary blob created from connector-preserved Gmail MIME attachment; no manual base64 transcription",
   "gates": {
     "PAGE_TRANSPORT": "PENDING_DEPLOY",
     "IMAGE_TRANSPORT": "PENDING_DEPLOY",
     "CRAWLER_METADATA": "PENDING_DEPLOY",
+    "DESKTOP_VISUAL": "PENDING_USER_PROOF",
     "DEVICE_PREVIEW": "UNKNOWN"
   },
-  "next_gate": "Deploy branch, prove page + exact media byte count + metadata, then fresh iMessage device proof."
+  "next_gate": "Remote verify static image byte size and page metadata; then Founder desktop visual proof."
 }
