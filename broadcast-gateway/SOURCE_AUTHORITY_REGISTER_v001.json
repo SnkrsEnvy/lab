@@ -1,0 +1,119 @@
+{
+  "schema_version": "grandcore.source-authority-register.v1",
+  "system": "Golden Goose / CannaCardz Broadcast Gateway",
+  "observed_at_utc": "2026-09-18T20:46:00Z",
+  "authority": {
+    "founder": "Founder retains final sovereignty",
+    "project_walt": "Current Founder-authorized Broadcast Gateway continuation",
+    "command_state": "ONE_ACTIVE_GATE_BG_002"
+  },
+  "current_truth": {
+    "repository": "SnkrsEnvy/lab",
+    "default_branch": "main",
+    "main_head": "361ce4b4e433e7b49b2913dc96a1adbeef65e8de",
+    "current_production_deployment": "dpl_HLJakkfYwMZfESLDKTJDYAHzSJZZ",
+    "production_alias": "https://lab-beryl-zeta.vercel.app",
+    "gateway_v001_baseline": {
+      "status": "FROZEN_PROVEN_METHOD",
+      "production_commit": "9cbb574cce10e1ff9a5de06aa698cf6f8b8f482b",
+      "production_deployment": "dpl_6DCF3YBbQyHhb942CLpqeWmqPuPe",
+      "share_url": "https://lab-beryl-zeta.vercel.app/broadcast/39/?v=bg1",
+      "truthbank_case_id": "broadcast-gateway-v001-gg39-bg1-2026-09-03",
+      "device_compositor": "PASS"
+    },
+    "edition_39_media_winner": {
+      "status": "FROZEN",
+      "url": "https://golden-goose-39-share.vercel.app/api/cover?v=16R1",
+      "mime": "image/jpeg",
+      "bytes": 39672,
+      "width": 900,
+      "height": 1256,
+      "sha256": "064c463f52caa8f2cf6ffaee79682df8418e54261b2101021a9ad6cf72618f20"
+    },
+    "edition_39_protected_reader": {
+      "status": "FROZEN",
+      "url": "https://golden-goose-39-public-v18.vercel.app/",
+      "outer_build": "gg39-v19-static-cover-shell",
+      "protected_parent_build": "gg39-v18-webp-inline-final"
+    }
+  },
+  "live_gateway_core": {
+    "status": "CURRENT_SOURCE",
+    "note": "Core v001 files remain present on main; later commits added intake, TruthBank and unrelated production work without modifying the core compiler/verifier paths.",
+    "files": [
+      {"path": "broadcast-gateway/README.md", "git_blob_sha": "58cb21b6ab02d482da284257df8617ebda13db15"},
+      {"path": "broadcast-gateway/manifests/edition-39.json", "git_blob_sha": "dee33f8138081c827ef10503368cdb9a0dd8c08c"},
+      {"path": "broadcast-gateway/schema/issue-manifest.schema.json", "git_blob_sha": "734af0f031da513da085b2ba5b2a6159e5e98de2"},
+      {"path": "tools/broadcast-gateway/compile.mjs", "git_blob_sha": "7e801ead70d0d584dd928f39ac3e5e83d0a3bfca"},
+      {"path": "tools/broadcast-gateway/verify.mjs", "git_blob_sha": "7ff9c6d0cbf8bab079ef43646d4cc60c1ece474a"}
+    ]
+  },
+  "newer_capabilities": [
+    {
+      "status": "CURRENT_SOURCE",
+      "path": "broadcast-gateway/tools/ingest_publication.py",
+      "git_blob_sha": "b2478f0ee138a02ed5b071827856944ee43183c4",
+      "purpose": "PDF to deterministic reader bundle, page images, local cover and issue manifest"
+    },
+    {
+      "status": "ACTIVE_WAITING_INPUT",
+      "path": "broadcast-gateway/manifests/edition-40.intake.json",
+      "git_blob_sha": "8be2f7e634998f404592c21e1388608ab45db885",
+      "unknown": "real Edition 40 source PDF"
+    },
+    {
+      "status": "CURRENT_MEMORY",
+      "path": "broadcast-gateway/truthbank/broadcast-preview-truthbank.jsonl",
+      "git_blob_sha": "0a9158f3f2511454c03095e8eb8497678aad6fae",
+      "cases": 2
+    },
+    {
+      "status": "SERVER_PROVEN_DEVICE_UNKNOWN",
+      "subject": "CannaCardz Series 3 #163 Gelato 41",
+      "production_commit": "361ce4b4e433e7b49b2913dc96a1adbeef65e8de",
+      "production_deployment": "dpl_HLJakkfYwMZfESLDKTJDYAHzSJZZ",
+      "share_url": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/163-gelato-41/",
+      "image": {
+        "url": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/163-gelato-41/cover-v5-master.jpg",
+        "mime": "image/jpeg",
+        "bytes": 621445,
+        "width": 1086,
+        "height": 1448,
+        "sha256": "7b1b50875b3f81ee8031a5dea29d20835b858d224c615129f13da73fbe4f0f0d"
+      },
+      "recurrence_guard": "Transport/hash success does not by itself prove perceptual integrity; keep desktop visual proof separate from binary identity proof."
+    }
+  ],
+  "historical_package": {
+    "name": "Golden_Goose_Broadcast_Gateway_v001.zip",
+    "sha256": "3a2269f88ada8572d8687ba11a08cbc10b3d03650489edfece067c90a238b524",
+    "status": "HISTORICAL_REFERENCE",
+    "note": "Useful succession artifact, but its packaged receipt predates the later TruthBank compositor PASS and its packaged core files are not the live-source authority."
+  },
+  "supersession": [
+    {
+      "superseded_claim": "Gateway v001 device/compositor gate D is UNKNOWN",
+      "superseded_source": "packaged PRODUCTION_RECEIPT_v001.json",
+      "current_truth": "D=1 PASS",
+      "authority": "broadcast-gateway/truthbank/broadcast-preview-truthbank.jsonl"
+    }
+  ],
+  "frozen": [
+    "Edition 39 v16R1 media winner",
+    "Edition 39 protected reader parent build gg39-v18-webp-inline-final",
+    "Broadcast Gateway v001 compositor-PASS baseline",
+    "Unrelated lab project surfaces"
+  ],
+  "changeable": [
+    "New v002 compiler/verifier/schema files",
+    "New v002 release receipts and source-authority records",
+    "Future manifests generated for new publications",
+    "Validation workflows scoped to v002 paths"
+  ],
+  "unknown": [
+    "CannaCardz #163 final device/iMessage compositor result",
+    "Edition 40 source PDF",
+    "Edition 40 final public destination and share origin"
+  ],
+  "next_permitted_action": "Create and locally prove an isolated Broadcast Gateway v002 candidate without mutating the frozen v001 winner."
+}
