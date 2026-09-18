@@ -1,0 +1,45 @@
+name: Broadcast Gateway v2 Validate
+on:
+  push:
+    paths:
+      - 'broadcast-gateway/SOURCE_AUTHORITY_REGISTER_v001.json'
+      - 'broadcast-gateway/GATEWAY_V002_DELTA.md'
+      - 'broadcast-gateway/README_v002.md'
+      - 'broadcast-gateway/schema/issue-manifest-v2.schema.json'
+      - 'broadcast-gateway/manifests/edition-39-v2-regression.json'
+      - 'tools/broadcast-gateway/compile-v2.mjs'
+      - 'tools/broadcast-gateway/verify-v2.mjs'
+      - '.github/workflows/broadcast-gateway-v2-validate.yml'
+  pull_request:
+    paths:
+      - 'broadcast-gateway/SOURCE_AUTHORITY_REGISTER_v001.json'
+      - 'broadcast-gateway/GATEWAY_V002_DELTA.md'
+      - 'broadcast-gateway/README_v002.md'
+      - 'broadcast-gateway/schema/issue-manifest-v2.schema.json'
+      - 'broadcast-gateway/manifests/edition-39-v2-regression.json'
+      - 'tools/broadcast-gateway/compile-v2.mjs'
+      - 'tools/broadcast-gateway/verify-v2.mjs'
+      - '.github/workflows/broadcast-gateway-v2-validate.yml'
+jobs:
+  compile-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Compile Edition 39 v2 regression candidate
+        run: |
+          node tools/broadcast-gateway/compile-v2.mjs \
+            --manifest broadcast-gateway/manifests/edition-39-v2-regression.json \
+            --out /tmp/bg2-ed39
+      - name: Assert v2 compile contract
+        run: |
+          test -s /tmp/bg2-ed39/index.html
+          test -s /tmp/bg2-ed39/manifest.lock.json
+          test -s /tmp/bg2-ed39/receipt.json
+          grep -q 'broadcast-gateway-build' /tmp/bg2-ed39/index.html
+          grep -q '064c463f52caa8f2cf6ffaee79682df8418e54261b2101021a9ad6cf72618f20' /tmp/bg2-ed39/manifest.lock.json
+          grep -q 'COMPILED_NOT_RUNTIME_PROVEN' /tmp/bg2-ed39/receipt.json
+      - name: Syntax check verifier
+        run: node --check tools/broadcast-gateway/verify-v2.mjs
