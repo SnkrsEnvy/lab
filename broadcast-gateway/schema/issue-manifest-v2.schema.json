@@ -78,7 +78,7 @@
       "properties": {
         "url": {
           "type": "string",
-          "pattern": "^(https://|http://(localhost|127\\.0\\.1)(:[0-9]+)?)"
+          "pattern": "^(https://|http://(localhost|127\\.0\\.0\\.1)(:[0-9]+)?)"
         },
         "frozen": {"type": "boolean"},
         "expected_markers": {
