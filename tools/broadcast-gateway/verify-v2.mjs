@@ -161,7 +161,7 @@ const observed = {
 };
 
 requireEq(observed.page.build_marker, expectedBuild, 'build marker');
-if (!sameUrl(observed.metada.canonical, expectedCanonical)) die('canonical mismatch', { expected: expectedCanonical, actual: observed.metadata.canonical });
+if (!sameUrl(observed.metadata.canonical, expectedCanonical)) die('canonical mismatch', { expected: expectedCanonical, actual: observed.metadata.canonical });
 if (!sameUrl(observed.metadata.og_url, expectedCanonical)) die('og:url mismatch', { expected: expectedCanonical, actual: observed.metadata.og_url });
 for (const [label, value] of [
   ['image_src', observed.metadata.image_src],
@@ -170,13 +170,13 @@ for (const [label, value] of [
   ['twitter:image', observed.metadata.twitter_image]
 ])  if (!sameUrl(value, expectedImage)) die(`${label} mismatch`, { expected: expectedImage, actual: value });
 requireEq(cleanMime(observed.metadata.og_image_type), expectedMime, 'og:image:type');
-requireEq(Number(observed.metada.og_image_width), expectedWidth, 'og:image:width');
-requireEq(Number(observed.metada.og_image_height), expectedHeight, 'og:image:height');
+requireEq(Number(observed.metadata.og_image_width), expectedWidth, 'og:image:width');
+requireEq(Number(observed.metadata.og_image_height), expectedHeight, 'og:image:height');
 if (!String(observed.metadata.twitter_card || '').trim()) die('twitter:card missing');
 
 const version = lock.share.version;
 const canonicalUrl = new URL(observed.metadata.canonical);
-if (canonicalUrl.searchParams.get('v') !== version) die('cache/version token missing from canonical URL' { expected: version, actual: canonicalUrl.searchParams.get('v') });
+if (canonicalUrl.searchParams.get('v') !== version) die('cache/version token missing from canonical URL', { expected: version, actual: canonicalUrl.searchParams.get('v') });
 
 const image = await fetch(expectedImage, { redirect: allowRedirects ? 'follow' : 'manual' });
 if (!allowRedirects && image.status >= 300 && image.status < 400) die('image redirected but redirects are disallowed', { status: image.status, location: image.headers.get('location') });
