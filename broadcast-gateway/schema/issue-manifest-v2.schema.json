@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://grandcore.local/schemas/broadcast-gateway.issue.v2.json",
+  "title": "Broadcast Gateway Issue Manifest v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "brand", "issue", "share", "cover", "destination"],
+  "properties": {
+    "schema_version": {"const": "broadcast-gateway.issue.v2"},
+    "brand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "site_name"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "name": {"type": "string", "minLength": 1},
+        "site_name": {"type": "string", "minLength": 1},
+        "publisher": {"type": "string", "minLength": 1},
+        "theme_color": {"type": "string", "pattern": "^#[0-9a-fA-F]{6}$"}
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["slug", "title", "label", "description"],
+      "properties": {
+        "slug": {"type": "string", "pattern": "^[a-zA-Z0-9_-]+$"},
+        "title": {"type": "string", "minLength": 1},
+        "label": {"type": "string", "minLength": 1},
+        "description": {"type": "string", "minLength": 1},
+        "identifier": {"type": "string", "minLength": 1}
+      }
+    },
+    "share": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["origin", "path", "version"],
+      "properties": {
+        "origin": {
+          "type": "string",
+          "pattern": "^(https://|http://(localhost|127\\.0\\.0\\.1)(:[0-9]+)?)"
+        },
+        "path": {"type": "string", "pattern": "^/"},
+        "version": {"type": "string", "minLength": 1},
+        "build_marker": {"type": "string", "minLength": 1}
+      }
+    },
+    "cover": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "mime", "width", "height"],
+      "properties": {
+        "mode": {"enum": ["external", "local"]},
+        "url": {"type": "string", "minLength": 1},
+        "file": {"type": "string", "minLength": 1},
+        "mime": {"enum": ["image/jpeg", "image/png", "image/webp"]},
+        "width": {"type": "integer", "minimum": 1},
+        "height": {"type": "integer", "minimum": 1},
+        "bytes": {"type": "integer", "minimum": 1},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "allow_redirects": {"type": "boolean"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"mode": {"const": "external"}}},
+          "then": {"required": ["url", "bytes", "sha256"]}
+        },
+        {
+          "if": {"properties": {"mode": {"const": "local"}}},
+          "then": {"required": ["file"]}
+        }
+      ]
+    },
+    "destination": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url"],
+      "properties": {
+        "url": {
+          "type": "string",
+          "pattern": "^(https://|http://(localhost|127\\.0\\.1)(:[0-9]+)?)"
+        },
+        "frozen": {"type": "boolean"},
+        "expected_markers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "value"],
+            "properties": {
+              "name": {"type": "string", "minLength": 1},
+              "value": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      }
+    },
+    "semantic": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {"type": "string", "minLength": 1},
+        "publisher_name": {"type": "string", "minLength": 1},
+        "is_part_of": {"type": "string", "minLength": 1}
+      }
+    },
+    "alt": {"type": "string", "minLength": 1},
+    "twitter_card": {"enum": ["summary", "summary_large_image"]}
+  }
+}
