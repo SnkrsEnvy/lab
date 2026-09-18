@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#080705">
-<meta name="cannacardz-build" content="cc163-viewer-shell-v1-staged">
+<meta name="cannacardz-build" content="cc163-viewer-v2-canon-staged">
 <title>CannaCardz #163 · Gelato 41</title>
 <meta name="description" content="CannaCardz Series 3 · Gelato 41 · 4-page graphic trading card from Golden Goose Publishing.">
 <meta name="robots" content="noindex,nofollow">
@@ -53,7 +53,7 @@ button{font:inherit}
 .stage:after{content:"";position:absolute;left:12%;right:12%;bottom:1%;height:8%;background:radial-gradient(ellipse,rgba(0,0,0,.72),transparent 68%);filter:blur(14px);pointer-events:none}
 .single-wrap{position:relative;z-index:2;width:min(94vw,520px,calc((100dvh - 160px)*.75));aspect-ratio:var(--page-ratio);perspective:1800px;touch-action:pan-y}
 .page-card{position:absolute;inset:0;border-radius:18px;overflow:hidden;background:#f3efe5;box-shadow:0 26px 80px rgba(0,0,0,.52),0 0 0 1px rgba(226,194,115,.18);transform-origin:center;transition:transform .38s cubic-bezier(.2,.8,.2,1),opacity .28s ease}
-.page-card img{width:100%;height:100%;object-fit:cover;display:block;user-select:none;-webkit-user-drag:none}
+.page-card img{width:100%;height:100%;object-fit:contain;background:#070604;display:block;user-select:none;-webkit-user-drag:none}
 .page-card.enter-left{transform:translateX(-18%) rotateY(8deg);opacity:0}
 .page-card.enter-right{transform:translateX(18%) rotateY(-8deg);opacity:0}
 .placeholder{width:100%;height:100%;display:grid;place-items:center;text-align:center;padding:34px;background:radial-gradient(circle at 50% 22%,rgba(226,194,115,.10),transparent 32%),linear-gradient(150deg,#f5efe3,#ded3be);color:#2d2419}
@@ -68,7 +68,7 @@ button{font:inherit}
 .panel{position:relative;overflow:hidden;background:#f3efe5;box-shadow:0 26px 80px rgba(0,0,0,.45)}
 .panel.left{border-radius:18px 2px 2px 18px;transform-origin:right center;animation:openLeft .72s cubic-bezier(.2,.8,.2,1)}
 .panel.right{border-radius:2px 18px 18px 2px;transform-origin:left center;animation:openRight .72s cubic-bezier(.2,.8,.2,1)}
-.panel img{width:100%;height:100%;object-fit:cover;display:block}
+.panel img{width:100%;height:100%;object-fit:contain;background:#070604;display:block}
 .spine{position:absolute;z-index:4;left:50%;top:0;bottom:0;width:10px;transform:translateX(-50%);background:linear-gradient(90deg,rgba(0,0,0,.40),rgba(255,255,255,.16) 46%,rgba(0,0,0,.40));box-shadow:0 0 18px rgba(0,0,0,.35);pointer-events:none}
 @keyframes openLeft{from{transform:rotateY(74deg);opacity:.3}to{transform:rotateY(0);opacity:1}}
 @keyframes openRight{from{transform:rotateY(-74deg);opacity:.3}to{transform:rotateY(0);opacity:1}}
@@ -96,7 +96,7 @@ button{font:inherit}
 <div class="app">
 <header class="topbar">
   <div class="brand"><div class="medal">GG</div><div class="brandcopy"><div class="kicker">CANNACARDZ · SERIES 3</div><div class="name">#163 · Gelato 41</div></div></div>
-  <div class="issue"><strong>4-Page Graphic Trading Card</strong><span>Viewer candidate · staging</span></div>
+  <div class="issue"><strong>4-Page Graphic Trading Card</strong><span>Canon 4-page viewer · staging</span></div>
   <div class="actions">
     <button class="modebtn" id="modeBtn" type="button" aria-label="Toggle unfold mode">Unfold Card</button>
     <button class="icon" id="fsBtn" type="button" aria-label="Toggle fullscreen" title="Fullscreen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 4H4v4M16 4h4v4M8 20H4v-4M16 20h4v-4"/></svg></button>
@@ -125,10 +125,10 @@ button{font:inherit}
 <div class="notice" id="notice">Swipe or use ← → · Unfold reveals the inner spread</div>
 <script>
 const PAGES = [
-  {id:1,label:"Front Cover",role:"front",src:"cover-v5-master.jpg",ready:true},
-  {id:2,label:"Inside Left",role:"inside-left",src:null,ready:false},
-  {id:3,label:"Inside Right",role:"inside-right",src:null,ready:false},
-  {id:4,label:"Back Cover",role:"back",src:null,ready:false}
+  {id:1,label:"Front Cover",role:"front",src:"cover-v5-master.jpg",ready:true,width:1086,height:1448},
+  {id:2,label:"Inside Left",role:"inside-left",src:"page-2.jpg",ready:true,width:810,height:1200},
+  {id:3,label:"Inside Right",role:"inside-right",src:"page-3.jpg",ready:true,width:809,height:1200},
+  {id:4,label:"Back Cover",role:"back",src:"page-4.jpg",ready:true,width:900,height:1200}
 ];
 let index=0, mode="card", touchX=null, busy=false;
 const singleWrap=document.getElementById("singleWrap"), spreadWrap=document.getElementById("spreadWrap");
@@ -144,14 +144,14 @@ function pageMarkup(page){
 }
 function renderCard(direction=0){
   mode="card"; modeBtn.textContent="Unfold Card"; spreadWrap.classList.remove("show"); singleWrap.style.display="block";
-  const p=PAGES[index]; const el=document.createElement("section"); el.className="page-card"+(direction<0?" enter-left":direction>0?" enter-right":""); el.innerHTML=pageMarkup(p);
+  const p=PAGES[index]; singleWrap.style.aspectRatio=p.width+" / "+p.height; const el=document.createElement("section"); el.className="page-card"+(direction<0?" enter-left":direction>0?" enter-right":""); el.innerHTML=pageMarkup(p);
   singleWrap.replaceChildren(el); requestAnimationFrame(()=>el.classList.remove("enter-left","enter-right"));
   stateTitle.textContent=p.label; stateMeta.textContent="Page "+(index+1)+" of 4 · Card mode"; prog.style.width=((index+1)/4*100)+"%";
   prevBtn.disabled=edgePrev.disabled=index===0; nextBtn.disabled=edgeNext.disabled=index===3;
 }
 function renderUnfold(){
   mode="unfold"; singleWrap.style.display="none"; spreadWrap.classList.add("show"); modeBtn.textContent="Card Mode";
-  panelLeft.innerHTML=pageMarkup(PAGES[1]); panelRight.innerHTML=pageMarkup(PAGES[2]);
+  spreadWrap.style.aspectRatio=(PAGES[1].width+PAGES[2].width)+" / "+Math.max(PAGES[1].height,PAGES[2].height); panelLeft.innerHTML=pageMarkup(PAGES[1]); panelRight.innerHTML=pageMarkup(PAGES[2]);
   stateTitle.textContent="Inside Spread"; stateMeta.textContent="Pages 2–3 · Unfold mode"; prog.style.width="75%";
   prevBtn.disabled=edgePrev.disabled=false; nextBtn.disabled=edgeNext.disabled=false;
 }
