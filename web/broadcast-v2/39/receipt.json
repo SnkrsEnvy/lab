@@ -1,0 +1,35 @@
+{
+  "schema_version": "broadcast-gateway.receipt.v2",
+  "issue": "39-v2-regression",
+  "version": "bg2-regression",
+  "candidate": {
+    "canonical_url": "https://lab-beryl-zeta.vercel.app/broadcast-v2/39/?v=bg2-regression",
+    "cover_url": "https://golden-goose-39-share.vercel.app/api/cover?v=16R1",
+    "destination": "https://golden-goose-39-public-v18.vercel.app/",
+    "build_marker": "bg2-39-regression",
+    "image_fingerprint": {
+      "mime": "image/jpeg",
+      "bytes": 39672,
+      "width": 900,
+      "height": 1256,
+      "sha256": "064c463f52caa8f2cf6ffaee79682df8418e54261b2101021a9ad6cf72618f20",
+      "source": "manifest"
+    },
+    "metadata": "COMPILED_NOT_RUNTIME_PROVEN"
+  },
+  "gates": {
+    "A": 1,
+    "P": null,
+    "T": null,
+    "I": null,
+    "M": null,
+    "K": 1,
+    "L": null,
+    "R": null,
+    "D": null
+  },
+  "perceptual_visual_gate": null,
+  "server_gate_formula": "G_server = A * P * T * I * M * K * R",
+  "final_gate_formula": "G_final = A * P * T * I * M * K * L * R * D",
+  "next_proof": "run strict local/remote verifier, then prove deployment lineage, production alias, perceptual result and final compositor"
+}
