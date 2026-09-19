@@ -1,0 +1,81 @@
+{
+  "schema": "cannacardz.viewer.receipt.v1",
+  "card_id": "CC-0164",
+  "series": 3,
+  "number": 164,
+  "title": "Purple Cream",
+  "authority": "Founder-declared canon source: pc(1).zip",
+  "build": "cc164-viewer-v1-purple-cream",
+  "canonical_url": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/164-purple-cream/",
+  "source_archive": {
+    "name": "pc(1).zip"
+  },
+  "page_mapping": [
+    {
+      "page": 1,
+      "role": "front",
+      "source": "IMG_5785_1.png",
+      "dimensions": [
+        884,
+        1200
+      ],
+      "runtime": "page-1.jpg",
+      "runtime_bytes": 413954
+    },
+    {
+      "page": 2,
+      "role": "inside-left",
+      "source": "IMG_5559.png",
+      "dimensions": [
+        764,
+        1200
+      ],
+      "runtime": "page-2.jpg",
+      "runtime_bytes": 286329
+    },
+    {
+      "page": 3,
+      "role": "inside-right",
+      "source": "IMG_5785.png",
+      "dimensions": [
+        891,
+        1200
+      ],
+      "runtime": "page-3.jpg",
+      "runtime_bytes": 354777
+    },
+    {
+      "page": 4,
+      "role": "back",
+      "source": "IMG_5559_1.png",
+      "dimensions": [
+        750,
+        1200
+      ],
+      "runtime": "page-4.jpg",
+      "runtime_bytes": 288541
+    }
+  ],
+  "viewer_modes": [
+    "card",
+    "unfold"
+  ],
+  "interactions": [
+    "previous",
+    "next",
+    "edge-navigation",
+    "keyboard",
+    "swipe",
+    "fullscreen"
+  ],
+  "share_identity": {
+    "page": 1,
+    "og_image": "page-1.jpg"
+  },
+  "gates": {
+    "SOURCE_CANON": "PASS_FOUNDER_DECLARED",
+    "BUILD": "SEALED",
+    "REMOTE_PROOF": "PENDING",
+    "DEVICE_PREVIEW": "PENDING"
+  }
+}
