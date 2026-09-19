@@ -1,0 +1,95 @@
+{
+  "schema": "cannacardz.viewer.receipt.v1",
+  "card_id": "CC-0167",
+  "series": 3,
+  "number": 167,
+  "title": "Orange Five",
+  "authority": "Founder-declared canon source: o5.zip",
+  "build": "cc167-viewer-v1-orange-five",
+  "canonical_url": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/167-orange-five/",
+  "source_archive": {
+    "name": "o5.zip"
+  },
+  "page_mapping": [
+    {
+      "page": 1,
+      "role": "front",
+      "source": "IMG_5812_1.png",
+      "source_sha256": "81d3ba0b7275b21bc4152e4456f50a93384e8fc52495a74d7f78aa3c77f6813a",
+      "source_dimensions": [
+        880,
+        1200
+      ],
+      "runtime": "page-1.jpg",
+      "runtime_bytes": 274167,
+      "runtime_sha256": "12649839b5704d3fdcfa5644ad82a568bb6adb27737fa012e60ee0a4cbde395d"
+    },
+    {
+      "page": 2,
+      "role": "inside-left",
+      "source": "IMG_5811_1.png",
+      "source_sha256": "9e49fe0cf64011956b7d4d621cd1e9452bf93f5a1130e562d3915bc21ba1b322",
+      "source_dimensions": [
+        767,
+        1190
+      ],
+      "runtime": "page-2.jpg",
+      "runtime_bytes": 189041,
+      "runtime_sha256": "c1fd46dbbfbdeaebca091423b40fb211c8f17d12ef8287ef9124e23ad77fa877"
+    },
+    {
+      "page": 3,
+      "role": "inside-right",
+      "source": "IMG_5812.png",
+      "source_sha256": "e3440c76f2ffa1875f4090cb3f7798d615eccb08387f95ee2fa667ca31ca08ac",
+      "source_dimensions": [
+        890,
+        1200
+      ],
+      "runtime": "page-3.jpg",
+      "runtime_bytes": 225527,
+      "runtime_sha256": "362c0f2e36d6f3b6c4653b6f17f0be9b0bf10d0068186019c579f3d5b032a7d8"
+    },
+    {
+      "page": 4,
+      "role": "back",
+      "source": "IMG_5811.png",
+      "source_sha256": "543fedef0b5ccb86853e4a964f31015a13ebc6fb47b36a9544eb64b9ea6f4d29",
+      "source_dimensions": [
+        763,
+        1190
+      ],
+      "runtime": "page-4.jpg",
+      "runtime_bytes": 217195,
+      "runtime_sha256": "b05b4483cb6918dc8102d033ed5663fb643ee544c6b994ef3cf9bf9386dacce8"
+    }
+  ],
+  "viewer_modes": [
+    "card",
+    "unfold"
+  ],
+  "interactions": [
+    "previous",
+    "next",
+    "edge-navigation",
+    "keyboard",
+    "swipe",
+    "fullscreen"
+  ],
+  "share_identity": {
+    "page": 1,
+    "og_image": "page-1.jpg"
+  },
+  "gates": {
+    "SOURCE_CANON": "PASS_FOUNDER_DECLARED",
+    "BUILD": "SEALED",
+    "REMOTE_PROOF": "PENDING",
+    "DEVICE_PREVIEW": "PENDING"
+  },
+  "doctrine": [
+    "Page 1 is the broadcast/share identity.",
+    "Pages 2 and 3 form the unfolded interior spread.",
+    "Do not mutate supplied canon art during viewer construction.",
+    "Technical runtime proof remains separate from Founder visual judgment."
+  ]
+}
