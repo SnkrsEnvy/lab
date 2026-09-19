@@ -1,0 +1,23 @@
+{
+  "schema": "cannacardz.forge.batch.v1",
+  "source_canon": {
+    "card_id": "CC-0163",
+    "title": "Gelato 41",
+    "production_commit": "f0bad58daf2fa6b8c0fa5b0f4bbc98898564163d",
+    "production_deployment": "dpl_F9BFmPe32aVJTxAvKbCYq5gZo18k",
+    "viewer_build": "cc163-viewer-v2-canon-production"
+  },
+  "target_series": 3,
+  "cards": [
+    {"number":158,"title":null,"asset_state":"MISSING_AUTHORITATIVE_4_PAGE_SET","gate":"HOLD_CANON_ASSET_INTAKE"},
+    {"number":159,"title":null,"asset_state":"MISSING_AUTHORITATIVE_4_PAGE_SET","gate":"HOLD_CANON_ASSET_INTAKE"},
+    {"number":160,"title":null,"asset_state":"MISSING_AUTHORITATIVE_4_PAGE_SET","gate":"HOLD_CANON_ASSET_INTAKE"},
+    {"number":161,"title":null,"asset_state":"MISSING_AUTHORITATIVE_4_PAGE_SET","gate":"HOLD_CANON_ASSET_INTAKE"},
+    {"number":162,"title":null,"asset_state":"MISSING_AUTHORITATIVE_4_PAGE_SET","gate":"HOLD_CANON_ASSET_INTAKE"},
+    {"number":164,"title":null,"asset_state":"MISSING_AUTHORITATIVE_4_PAGE_SET","gate":"HOLD_CANON_ASSET_INTAKE"},
+    {"number":167,"title":null,"asset_state":"MISSING_AUTHORITATIVE_4_PAGE_SET","gate":"HOLD_CANON_ASSET_INTAKE"},
+    {"number":168,"title":null,"asset_state":"MISSING_AUTHORITATIVE_4_PAGE_SET","gate":"HOLD_CANON_ASSET_INTAKE"}
+  ],
+  "required_for_each": ["authoritative title","Page 1","Page 2","Page 3","Page 4"],
+  "policy": "Do not infer titles or substitute publication/exhibit images for missing four-page card masters. As each complete set arrives, validate fingerprints, clone the #163 viewer structure, stage, prove, obtain Founder judgment, and promote independently."
+}
