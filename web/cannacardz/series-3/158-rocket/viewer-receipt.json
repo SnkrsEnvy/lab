@@ -1,0 +1,81 @@
+{
+  "schema": "cannacardz.viewer.receipt.v1",
+  "card_id": "CC-0158",
+  "series": 3,
+  "number": 158,
+  "title": "Rocket",
+  "authority": "Founder-declared canon source: rocket.zip",
+  "build": "cc158-viewer-v1-rocket",
+  "canonical_url": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/158-rocket/",
+  "source_archive": {
+    "name": "rocket.zip"
+  },
+  "page_mapping": [
+    {
+      "page": 1,
+      "role": "front",
+      "source": "IMG_5698.png",
+      "dimensions": [
+        877,
+        1200
+      ],
+      "runtime": "page-1.jpg",
+      "runtime_bytes": 454741
+    },
+    {
+      "page": 2,
+      "role": "inside-left",
+      "source": "IMG_5697_1.png",
+      "dimensions": [
+        763,
+        1200
+      ],
+      "runtime": "page-2.jpg",
+      "runtime_bytes": 273075
+    },
+    {
+      "page": 3,
+      "role": "inside-right",
+      "source": "IMG_5698 (1).png",
+      "dimensions": [
+        880,
+        1200
+      ],
+      "runtime": "page-3.jpg",
+      "runtime_bytes": 363112
+    },
+    {
+      "page": 4,
+      "role": "back",
+      "source": "IMG_5697.png",
+      "dimensions": [
+        759,
+        1200
+      ],
+      "runtime": "page-4.jpg",
+      "runtime_bytes": 294036
+    }
+  ],
+  "viewer_modes": [
+    "card",
+    "unfold"
+  ],
+  "interactions": [
+    "previous",
+    "next",
+    "edge-navigation",
+    "keyboard",
+    "swipe",
+    "fullscreen"
+  ],
+  "share_identity": {
+    "page": 1,
+    "og_image": "page-1.jpg"
+  },
+  "gates": {
+    "SOURCE_CANON": "PASS_FOUNDER_DECLARED",
+    "BUILD": "SEALED",
+    "REMOTE_PROOF": "PENDING",
+    "DEVICE_PREVIEW": "PENDING"
+  }
+}
