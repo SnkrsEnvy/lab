@@ -4,7 +4,7 @@
   "series": 3,
   "number": 163,
   "title": "Gelato 41",
-  "release_state": "PRODUCTION_MASTER_V5_DESKTOP_GATE_OPEN",
+  "release_state": "CANON_VIEWER_PROMOTION_AUTHORIZED",
   "canonical_url": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/163-gelato-41/",
   "cover_url": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/163-gelato-41/cover-v5-master.jpg",
   "cover": {
@@ -18,14 +18,16 @@
     "pilot_status": 200,
     "pilot_content_type": "image/jpeg",
     "pilot_content_length": 621445,
-    "pilot_commit": "ff8fcc3b72e89ba46a687b51bc36e67007a84f50"
+    "pilot_commit": "ff8fcc3b72e89ba46a687b51bc36e67007a84f50",
+    "production_status": 200
   },
   "gates": {
-    "PAGE_TRANSPORT": "PENDING_PRODUCTION_DEPLOY",
-    "IMAGE_TRANSPORT": "PENDING_PRODUCTION_DEPLOY",
-    "CRAWLER_METADATA": "PENDING_PRODUCTION_DEPLOY",
-    "DESKTOP_VISUAL": "PENDING_FOUNDER_PROOF",
-    "DEVICE_PREVIEW": "UNKNOWN"
+    "PAGE_TRANSPORT": "PASS",
+    "IMAGE_TRANSPORT": "PASS",
+    "CRAWLER_METADATA": "PASS",
+    "DESKTOP_VISUAL": "PASS_FOUNDER_APPROVED",
+    "DEVICE_PREVIEW": "PASS",
+    "VIEWER_RUNTIME": "PASS_FOUNDER_APPROVED"
   },
-  "next_gate": "Founder opens fresh production v5 URL on desktop. If visually clean, send same fresh URL in iMessage."
+  "next_gate": "Promote exact staged viewer candidate tree to production, then smoke canonical URL."
 }

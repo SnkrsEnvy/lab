@@ -1,0 +1,87 @@
+{
+  "schema": "cannacardz.canonization.receipt.v1",
+  "card_id": "CC-0163",
+  "series": 3,
+  "number": 163,
+  "title": "Gelato 41",
+  "authority": "Founder approved",
+  "judgment": "PROMOTE_TO_CANON",
+  "source_candidate": {
+    "branch": "cannacardz-s3-163-viewer",
+    "commit": "030265cdf4e5f4bd6456b21d5cd79078ac808e79",
+    "deployment": "dpl_98DRNBtwHqFUcRaSEfHWZLQTjWPp",
+    "deployment_state": "READY"
+  },
+  "frozen_share_identity": {
+    "canonical_url": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/163-gelato-41/",
+    "og_image": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/163-gelato-41/cover-v5-master.jpg",
+    "image": {
+      "mime": "image/jpeg",
+      "width": 1086,
+      "height": 1448,
+      "bytes": 621445,
+      "sha256": "7b1b50875b3f81ee8031a5dea29d20835b858d224c615129f13da73fbe4f0f0d"
+    },
+    "device_preview": "PASS"
+  },
+  "viewer": {
+    "build": "cc163-viewer-v2-canon-production",
+    "modes": [
+      "card",
+      "unfold"
+    ],
+    "interactions": [
+      "previous",
+      "next",
+      "edge-navigation",
+      "keyboard",
+      "swipe",
+      "fullscreen"
+    ],
+    "pages": [
+      {
+        "page": 1,
+        "asset": "cover-v5-master.jpg",
+        "width": 1086,
+        "height": 1448,
+        "state": "CANON"
+      },
+      {
+        "page": 2,
+        "asset": "page-2.jpg",
+        "width": 810,
+        "height": 1200,
+        "bytes": 232133,
+        "sha256": "84881713bf629741512057254b6be7f716959c0f9f9fa68687484a27ea09c19b",
+        "state": "CANON"
+      },
+      {
+        "page": 3,
+        "asset": "page-3.jpg",
+        "width": 809,
+        "height": 1200,
+        "bytes": 205638,
+        "sha256": "6eaca3ee4af80d4ea62f20e8c7b0a918612d1c5a70d330dca869965584ebb0a2",
+        "state": "CANON"
+      },
+      {
+        "page": 4,
+        "asset": "page-4.jpg",
+        "width": 900,
+        "height": 1200,
+        "bytes": 243253,
+        "sha256": "be37e71944703ea935b426a242495042943c4c35971b49f3d08a86000651aeb5",
+        "state": "CANON"
+      }
+    ]
+  },
+  "laws": [
+    "BYTE PASS != VISUAL PASS",
+    "Share identity and viewer runtime are separate proof surfaces.",
+    "Page 1 is the broadcast identity; Pages 2-4 are viewer content unless explicitly reauthorized.",
+    "Do not invent missing canon art.",
+    "Promote the exact proven staged tree."
+  ],
+  "privacy": "Raw approval screenshots/video are not embedded because they may contain unrelated private conversation content.",
+  "next_state": "Use CC-0163 as the canonical template for subsequent Series 3 cards."
+}

@@ -1,0 +1,73 @@
+{
+  "schema": "cannacardz.viewer.receipt.v3",
+  "card_id": "CC-0163",
+  "series": 3,
+  "number": 163,
+  "title": "Gelato 41",
+  "branch": "cannacardz-s3-163-viewer",
+  "build": "cc163-viewer-v2-canon-production",
+  "frozen_share_layer": {
+    "production_url": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/163-gelato-41/",
+    "og_image": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/163-gelato-41/cover-v5-master.jpg",
+    "device_preview": "PASS"
+  },
+  "viewer": {
+    "card_mode": true,
+    "unfold_mode": true,
+    "swipe": true,
+    "keyboard": true,
+    "edge_navigation": true,
+    "fullscreen": true,
+    "page_count": 4
+  },
+  "pages": [
+    {
+      "page": 1,
+      "label": "Front Cover",
+      "asset": "cover-v5-master.jpg",
+      "width": 1086,
+      "height": 1448,
+      "state": "CANON_READY"
+    },
+    {
+      "page": 2,
+      "label": "Inside Left",
+      "asset": "page-2.jpg",
+      "width": 810,
+      "height": 1200,
+      "bytes": 232133,
+      "sha256": "84881713bf629741512057254b6be7f716959c0f9f9fa68687484a27ea09c19b",
+      "state": "CANON_READY"
+    },
+    {
+      "page": 3,
+      "label": "Inside Right",
+      "asset": "page-3.jpg",
+      "width": 809,
+      "height": 1200,
+      "bytes": 205638,
+      "sha256": "6eaca3ee4af80d4ea62f20e8c7b0a918612d1c5a70d330dca869965584ebb0a2",
+      "state": "CANON_READY"
+    },
+    {
+      "page": 4,
+      "label": "Back Cover",
+      "asset": "page-4.jpg",
+      "width": 900,
+      "height": 1200,
+      "bytes": 243253,
+      "sha256": "be37e71944703ea935b426a242495042943c4c35971b49f3d08a86000651aeb5",
+      "state": "CANON_READY"
+    }
+  ],
+  "gates": {
+    "CANON_ASSET_INTEGRATION": "PASS",
+    "VIEWER_RUNTIME": "PASS_FOUNDER_APPROVED",
+    "DESKTOP_VISUAL": "PASS_FOUNDER_APPROVED",
+    "MOBILE_VISUAL": "PASS_FOUNDER_APPROVED",
+    "DEVICE_PREVIEW": "PASS",
+    "PRODUCTION_PROMOTION": "AUTHORIZED_EXACT_TREE_ONLY"
+  },
+  "doctrine": "Page 1 remains the frozen share identity. Pages 2-4 are viewer-only canon content. Promote only the exact staged candidate tree that received Founder approval.",
+  "release_state": "FOUNDER_APPROVED_FOR_CANON_PROMOTION"
+}
