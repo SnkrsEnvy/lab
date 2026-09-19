@@ -1,0 +1,11 @@
+{
+  "schema_version": "cannacardz.forge.manifest.v1",
+  "card": {"id":"CC-XXXX","series":3,"number":0,"title":"","slug":""},
+  "share": {"canonical_url":"","page1_is_broadcast_identity":true},
+  "pages": [
+    {"page":1,"role":"front","file":"1.jpg","mime":"image/jpeg"},
+    {"page":2,"role":"inside-left","file":"2.jpg","mime":"image/jpeg"},
+    {"page":3,"role":"inside-right","file":"3.jpg","mime":"image/jpeg"},
+    {"page":4,"role":"back","file":"4.jpg","mime":"image/jpeg"}
+  ]
+}
