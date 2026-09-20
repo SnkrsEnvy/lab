@@ -1,0 +1,140 @@
+name: Publisher Studio G6D Browser Proof
+on:
+  pull_request:
+    paths:
+      - 'web/publisher-studio/**'
+      - '.github/workflows/publisher-studio-g6d-browser-proof.yml'
+
+jobs:
+  browser-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TARGET_URL: https://lab-f40c3irka-world-builders.vercel.app/publisher-studio/
+      EXPECTED_BUILD: PS-PUBLIC-DEMO-G6D-v005
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install browser proof runtime
+        run: |
+          python -m pip install --disable-pip-version-check playwright==1.55.0
+          python -m playwright install --with-deps chromium
+      - name: Run G6D interaction proof
+        run: |
+          python - <<'PY'
+          import json, os, pathlib, re
+          from playwright.sync_api import sync_playwright, expect
+
+          target = os.environ['TARGET_URL']
+          expected_build = os.environ['EXPECTED_BUILD']
+          out = pathlib.Path('publisher-studio-proof')
+          out.mkdir(exist_ok=True)
+          receipt = {
+              'target': target,
+              'expected_build': expected_build,
+              'checks': {},
+              'console_errors': [],
+              'page_errors': [],
+          }
+
+          def mark(name, value=True):
+              receipt['checks'][name] = bool(value)
+              if not value:
+                  raise AssertionError(name)
+
+          with sync_playwright() as p:
+              browser = p.chromium.launch()
+              page = browser.new_page(viewport={'width': 1440, 'height': 1000})
+              page.on('console', lambda msg: receipt['console_errors'].append(msg.text) if msg.type == 'error' else None)
+              page.on('pageerror', lambda exc: receipt['page_errors'].append(str(exc)))
+              response = page.goto(target, wait_until='networkidle', timeout=90000)
+              mark('http_200', response is not None and response.status == 200)
+              mark('build_identity', page.locator('meta[name="publisher-studio-build"]').get_attribute('content') == expected_build)
+              mark('meaningful_ui', page.locator('body').inner_text().strip() != '')
+
+              page.locator('#fileTab').click()
+              page.locator('#newDocumentBtn').click()
+              expect(page.locator('#pageCanvas')).to_be_visible()
+              editor = page.locator('.page-semantic-block .semantic-content').first
+              expect(editor).to_be_visible()
+              editor.fill('Alpha Bravo Charlie')
+              editor.press('Tab')
+              mark('native_typing', 'Alpha Bravo Charlie' in page.locator('#pageCanvas').inner_text())
+
+              editor.click()
+              page.evaluate("""
+                () => {
+                  const el = document.querySelector('.page-semantic-block .semantic-content');
+                  const text = el.firstChild;
+                  const s = text.textContent.indexOf('Bravo');
+                  const r = document.createRange();
+                  r.setStart(text, s); r.setEnd(text, s + 5);
+                  const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+                }
+              """)
+              page.locator('#boldBtn').click()
+              html = editor.inner_html().lower()
+              mark('range_bold', ('<b>bravo</b>' in html) or ('<strong>bravo</strong>' in html))
+
+              page.locator('#styleSelect').select_option('heading1')
+              block = page.locator('.page-semantic-block').first
+              mark('heading_style', 'heading1' in (block.get_attribute('class') or ''))
+
+              page.get_by_role('button', name='Insert').click()
+              page.locator('#addParagraphBtn').click()
+              para = page.locator('.page-semantic-block .semantic-content').last
+              para.fill('Needle text for replacement')
+              para.press('Tab')
+
+              page.get_by_role('button', name='Insert').click()
+              page.locator('#addTableBtn').click()
+              table = page.locator('.semantic-table').last
+              expect(table).to_be_visible()
+              cell = table.locator('td').first
+              cell.fill('Cell truth')
+              cell.press('Tab')
+              mark('table_editing', 'Cell truth' in table.inner_text())
+
+              page.get_by_role('button', name='Home').click()
+              page.locator('#findReplaceBtn').click()
+              page.locator('#findInput').fill('Needle')
+              page.locator('#replaceInput').fill('Golden')
+              page.locator('#replaceAllAction').click()
+              page.locator('#modalClose').click()
+              mark('find_replace', 'Golden text for replacement' in page.locator('#pageCanvas').inner_text())
+
+              golden = page.locator('.page-semantic-block .semantic-content').filter(has_text='Golden').first
+              golden.click()
+              page.get_by_role('button', name='Layout').click()
+              page.locator('#pageBreakBtn').click()
+              mark('page_break', page.locator('#opsThumbs .thumb').count() == 2)
+
+              page.locator('#flowMode').click()
+              expect(page.locator('#flowCanvas')).to_have_class(re.compile(r'.*active.*'))
+              flow_text = page.locator('#flowCanvas').inner_text()
+              mark('flow_preserves_text', 'Golden text for replacement' in flow_text)
+              mark('flow_preserves_table', 'Cell truth' in flow_text)
+
+              page.locator('#pageMode').click()
+              mark('page_flow_roundtrip', 'Golden text for replacement' in page.locator('#pageCanvas').inner_text())
+
+              mark('no_page_errors', len(receipt['page_errors']) == 0)
+              mark('no_console_errors', len(receipt['console_errors']) == 0)
+
+              page.screenshot(path=str(out/'g6d-browser-proof.png'), full_page=True)
+              browser.close()
+
+          receipt['status'] = 'PASS'
+          (out/'receipt.json').write_text(json.dumps(receipt, indent=2), encoding='utf-8')
+          print('PUBLISHER_STUDIO_G6D_BROWSER_PROOF_PASS')
+          print(json.dumps(receipt, indent=2))
+          PY
+      - name: Upload proof evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: publisher-studio-g6d-browser-proof
+          path: publisher-studio-proof/
+          if-no-files-found: warn
