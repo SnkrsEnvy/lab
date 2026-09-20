@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="cc-gallery-build" content="cc-gallery-luxe-v2">
+<title>CannaCardz · Luxe Transparent Gallery</title>
+<style>
+  :root{
+    --gold:#d4ae58;
+    --deep:#17365e;
+    --ink:#f8f2e5;
+    --glass:rgba(8,10,14,.34);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;width:100%;height:100%;background:transparent;overflow:hidden}
+  body{display:grid;place-items:center;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+  .cc-shell{width:min(100%,430px);height:100%;min-height:340px;position:relative;background:transparent;isolation:isolate}
+  .cc-shell:before{content:"";position:absolute;inset:0;border:1px solid color-mix(in srgb,var(--gold) 58%,transparent);border-radius:22px;pointer-events:none;z-index:4;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 14px 38px rgba(0,0,0,.16)}
+  .cc-viewport{width:100%;height:100%;overflow-y:auto;overflow-x:hidden;scroll-snap-type:y mandatory;scroll-behavior:smooth;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;background:transparent;outline:none;border-radius:22px}
+  .cc-viewport::-webkit-scrollbar{display:none}
+  .cc-stack{width:100%;min-height:100%}
+  .cc-slide{height:100%;width:100%;display:grid;place-items:center;scroll-snap-align:start;scroll-snap-stop:always;background:transparent;padding:0;margin:0}
+  .cc-card{display:block;width:100%;height:100%;outline:none;text-decoration:none;background:transparent;position:relative}
+  .cc-card:before{content:"";position:absolute;inset:4.2% 5.2%;border-radius:18px;box-shadow:0 18px 44px rgba(0,0,0,.20),0 0 28px rgba(212,174,88,.08);pointer-events:none;z-index:-1}
+  .cc-card:focus-visible{box-shadow:inset 0 0 0 3px rgba(212,174,88,.75);border-radius:22px}
+  .cc-card img{display:block;width:100%;height:100%;object-fit:contain;object-position:center;background:transparent;border:0;user-select:none;-webkit-user-drag:none;filter:saturate(1.02) contrast(1.015)}
+  .cc-chrome{position:absolute;z-index:5;pointer-events:none;left:14px;right:14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .cc-top{top:14px}
+  .cc-bottom{bottom:14px}
+  .cc-pill{display:inline-flex;align-items:center;gap:8px;min-height:30px;padding:7px 10px;border:1px solid rgba(212,174,88,.35);border-radius:999px;background:linear-gradient(180deg,rgba(16,19,25,.55),rgba(7,9,13,.32));backdrop-filter:blur(14px) saturate(1.15);-webkit-backdrop-filter:blur(14px) saturate(1.15);color:var(--ink);box-shadow:0 8px 22px rgba(0,0,0,.12);text-shadow:0 1px 8px rgba(0,0,0,.45)}
+  .cc-brand{font-family:Georgia,'Times New Roman',serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+  .cc-counter{font-size:10px;font-weight:800;letter-spacing:.08em;color:#f4d890}
+  .cc-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:72%}
+  .cc-dots{pointer-events:auto;display:flex;align-items:center;gap:6px;padding:7px 9px;border:1px solid rgba(212,174,88,.30);border-radius:999px;background:rgba(7,9,13,.28);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  .cc-dot{appearance:none;width:6px;height:6px;border:0;border-radius:999px;padding:0;background:rgba(255,255,255,.35);cursor:pointer;transition:transform .2s ease,background .2s ease,box-shadow .2s ease}
+  .cc-dot.is-active{background:var(--gold);transform:scale(1.45);box-shadow:0 0 10px rgba(212,174,88,.55)}
+  .cc-edge{position:absolute;z-index:3;pointer-events:none;top:0;bottom:0;width:1px;background:linear-gradient(180deg,transparent,rgba(212,174,88,.65) 18%,rgba(212,174,88,.65) 82%,transparent)}
+  .cc-edge.left{left:8px}.cc-edge.right{right:8px}
+  @media (max-width:420px){.cc-chrome{left:10px;right:10px}.cc-pill{min-height:28px;padding:6px 9px}.cc-label{max-width:67%}}
+  @media (prefers-reduced-motion:reduce){.cc-viewport{scroll-behavior:auto}.cc-dot{transition:none}}
+</style>
+</head>
+<body>
+  <main class="cc-shell" aria-label="CannaCardz luxe vertical gallery">
+    <div class="cc-edge left"></div><div class="cc-edge right"></div>
+    <div class="cc-chrome cc-top">
+      <div class="cc-pill cc-brand">CannaCardz · Series 3</div>
+      <div class="cc-pill cc-counter" id="counter">01 / 06</div>
+    </div>
+    <div class="cc-viewport" id="gallery" tabindex="0"></div>
+    <div class="cc-chrome cc-bottom">
+      <div class="cc-pill cc-label" id="label">#163 · Gelato 41</div>
+      <div class="cc-dots" id="dots" aria-label="Gallery position"></div>
+    </div>
+  </main>
+<script type="module">
+  import { buildGallery } from '../shared/gallery.js';
+  buildGallery({
+    viewport: document.getElementById('gallery'),
+    dots: document.getElementById('dots'),
+    counter: document.getElementById('counter'),
+    label: document.getElementById('label'),
+    variant: 'luxe'
+  });
+</script>
+</body>
+</html>
