@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      TARGET_URL: https://lab-f40c3irka-world-builders.vercel.app/publisher-studio/
+      TARGET_URL: https://lab-git-publisher-studio-authoring-g6d-v005-world-builders.vercel.app/publisher-studio/
       EXPECTED_BUILD: PS-PUBLIC-DEMO-G6D-v005
     steps:
       - uses: actions/checkout@v4
