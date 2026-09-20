@@ -97,8 +97,14 @@ jobs:
               expect(thumbs).to_have_count(2)
               mark('initial_order',thumbs.nth(0).locator('small').inner_text()=='PDF page 1' and thumbs.nth(1).locator('small').inner_text()=='PDF page 2')
 
+              bridge_state=page.evaluate("window.PublisherStudioPdfBridge.status()")
+              mark('page_reorder_capability_ready',bridge_state.get('capabilities',{}).get('pageReorder') is True,bridge_state)
               page.get_by_role('button',name='Layout',exact=True).click()
               page.locator('#movePageDownBtn').click()
+              page.wait_for_timeout(350)
+              receipt.setdefault('detail',{})['thumbs_after_first_move']=[thumbs.nth(i).locator('small').inner_text() for i in range(thumbs.count())]
+              receipt['detail']['toast_after_first_move']=page.locator('#toast').inner_text()
+              receipt['detail']['modal_open_after_first_move']=page.locator('#modalBg').get_attribute('class')
               expect(thumbs.nth(0).locator('small')).to_have_text('PDF page 2')
               expect(thumbs.nth(1).locator('small')).to_have_text('PDF page 1')
               mark('reorder_staged',True)
