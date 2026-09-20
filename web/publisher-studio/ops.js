@@ -1,7 +1,7 @@
 
 (()=>{
 'use strict';
-const BUILD='PS-PUBLIC-DEMO-G6K-v012-r1';
+const BUILD='PS-PUBLIC-DEMO-G6K-v012-r2';
 const SCHEMA='psdemo-2';
 const q=(s,r=document)=>r.querySelector(s), qa=(s,r=document)=>[...r.querySelectorAll(s)];
 const clone=v=>JSON.parse(JSON.stringify(v));
@@ -541,7 +541,11 @@ async function movePage(dir){
     const b=pdfBridge(),st=pdfBridgeState();
     if(!b?.readyFor?.('pageReorder')||st.source==null){pdfBridgeHold('Page reorder');return;}
     if(S.pdfStaged.length){modal('Page reorder is isolated','<div class="proof-item"><strong class="hold">G5I SEQUENCE TRANSACTION</strong><small>Undo or export the current staged PDF delta before reordering pages. Page identity stays unambiguous by keeping sequence edits isolated.</small></div>');return;}
-    const before=S.doc.pages.map(pg=>Number(pg.pdfPage)),next=S.doc.pages.slice(),[moved]=next.splice(i,1);next.splice(j,0,moved),pageList=next.map(pg=>Number(pg.pdfPage));
+    const before=S.doc.pages.map(pg=>Number(pg.pdfPage));
+    const next=S.doc.pages.slice();
+    const [moved]=next.splice(i,1);
+    next.splice(j,0,moved);
+    const pageList=next.map(pg=>Number(pg.pdfPage));
     try{
       const result=await b.invoke('pageReorder',{pageList,previousPageList:before});
       S.pdfStaged.push(result.operation);S.doc.pages=next;record(dir<0?'Stage PDF page earlier':'Stage PDF page later');renderAll();toast('PDF page order staged · '+pageList.join(', ')+' · Undo restores source order.');
