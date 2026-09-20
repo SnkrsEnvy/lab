@@ -1,7 +1,7 @@
 
 (()=>{
 'use strict';
-const BUILD='PS-PUBLIC-DEMO-G6J-v011';
+const BUILD='PS-PUBLIC-DEMO-G6K-v012';
 const SCHEMA='psdemo-2';
 const q=(s,r=document)=>r.querySelector(s), qa=(s,r=document)=>[...r.querySelectorAll(s)];
 const clone=v=>JSON.parse(JSON.stringify(v));
@@ -120,6 +120,13 @@ function repairDoc(doc=S.doc){
   if(!doc.pages.some(p=>p.id===doc.currentPageId))doc.currentPageId=doc.pages[0].id;
 }
 function curPage(){return S.doc?.pages.find(p=>p.id===S.doc.currentPageId)||S.doc?.pages[0]||null;}
+function applyPdfPageOrder(order){
+  if(S.doc?.kind!=='pdf'||!Array.isArray(order)||!order.length)return false;
+  const bySource=new Map(S.doc.pages.map(pg=>[Number(pg.pdfPage),pg]));
+  const next=order.map(n=>bySource.get(Number(n))).filter(Boolean);
+  if(next.length!==order.length||next.length!==S.doc.pages.length)return false;
+  S.doc.pages=next;return true;
+}
 function curObj(){const p=curPage();return p?.objects.find(o=>o.id===S.sel)||null;}
 function curBlock(){return S.doc?.flow.find(b=>b.id===S.block)||null;}
 function blockPage(blockId){return S.doc?.pages.find(p=>(p.flowBlockIds||[]).includes(blockId))||null;}
@@ -148,7 +155,10 @@ async function undo(){
     if(!b?.readyFor?.('undo')||st.source==null){pdfBridgeHold('Undo PDF delta');return;}
     try{
       const result=await b.undo();
-      if(result?.status==='UNDONE'){S.pdfStaged.pop();record('Undo PDF engine delta');renderAll();toast('PDF delta undone.');}
+      if(result?.status==='UNDONE'){
+        if(result?.operation?.type==='reorder_pages'&&Array.isArray(result.operation.previousPageList))applyPdfPageOrder(result.operation.previousPageList);
+        S.pdfStaged.pop();record('Undo PDF engine delta');renderAll();toast('PDF delta undone.');
+      }
       else toast('No staged PDF delta to undo.');
     }catch(error){modal('PDF undo failed','<div class="proof-item"><strong class="hold">UNDO · FAIL</strong><small>'+esc(error?.message||error)+'</small></div>');}
     return;
@@ -504,7 +514,7 @@ async function runPdfTool(tool){
   if(tool==='replaceText'){openPdfTextReplacementPicker();return;}
   if(tool==='redact'){openPdfRedactionPicker();return;}
   if(tool==='links'){openPdfLinkPicker();return;}
-  modal('PDF tool boundary','<div class="proof-item"><strong class="hold">'+esc(tool.toUpperCase())+' · NOT PROMOTED</strong><small>The current public transport checkpoint proves bounded Edit Text, true redaction, and URI link insertion only. This tool remains disabled until its interaction and verification path is independently proven.</small></div>');
+  modal('PDF tool boundary','<div class="proof-item"><strong class="hold">'+esc(tool.toUpperCase())+' · NOT PROMOTED</strong><small>The current public transport checkpoint proves bounded Edit Text, true redaction, URI link insertion, and isolated page reorder only. This tool remains disabled until its interaction and verification path is independently proven.</small></div>');
 }
 
 function addTextFrame(){
@@ -524,9 +534,21 @@ function deleteCurrentPage(){
     const next=S.doc.pages[Math.min(idx,S.doc.pages.length-1)];S.doc.currentPageId=next.id;S.block=next.flowBlockIds[0]||null;S.sel=null;
   });
 }
-function movePage(dir){
-  if(!need('Move page'))return;if(S.doc.kind==='pdf'){toast('Native PDF page reorder is pending the connected PDF engine.');return;}
+async function movePage(dir){
+  if(!need('Move page'))return;
   const p=curPage(),i=S.doc.pages.indexOf(p),j=i+dir;if(!p||j<0||j>=S.doc.pages.length){toast('Page is already at that edge.');return;}
+  if(S.doc.kind==='pdf'){
+    const b=pdfBridge(),st=pdfBridgeState();
+    if(!b?.readyFor?.('pageReorder')||st.source==null){pdfBridgeHold('Page reorder');return;}
+    if(S.pdfStaged.length){modal('Page reorder is isolated','<div class="proof-item"><strong class="hold">G5I SEQUENCE TRANSACTION</strong><small>Undo or export the current staged PDF delta before reordering pages. Page identity stays unambiguous by keeping sequence edits isolated.</small></div>');return;}
+    const before=S.doc.pages.map(pg=>Number(pg.pdfPage)),next=S.doc.pages.slice(),[moved]=next.splice(i,1);next.splice(j,0,moved),pageList=next.map(pg=>Number(pg.pdfPage));
+    try{
+      const result=await b.invoke('pageReorder',{pageList,previousPageList:before});
+      S.pdfStaged.push(result.operation);S.doc.pages=next;record(dir<0?'Stage PDF page earlier':'Stage PDF page later');renderAll();toast('PDF page order staged · '+pageList.join(', ')+' · Undo restores source order.');
+      window.dispatchEvent(new CustomEvent('publisherstudio:pdfcommand',{detail:{tool:'pageReorder',result}}));
+    }catch(error){modal('PDF page reorder failed','<div class="proof-item"><strong class="hold">PAGE REORDER · FAIL</strong><small>'+esc(error?.message||error)+'</small></div>');}
+    return;
+  }
   mutate(dir<0?'Move page earlier':'Move page later',()=>{const [x]=S.doc.pages.splice(i,1);S.doc.pages.splice(j,0,x);S.doc.pages.forEach((pg,k)=>pg.label='Page '+(k+1));});
 }
 function addBlock(type){

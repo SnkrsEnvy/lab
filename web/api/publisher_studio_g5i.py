@@ -156,6 +156,26 @@ def apply_operations(source_raw: bytes, operations: list[dict[str, Any]]) -> tup
     doc = validate_pdf(source_raw)
     results: list[dict[str, Any]] = []
     try:
+        sequence_ops = [op for op in operations if isinstance(op, dict) and op.get("type") == "reorder_pages"]
+        if sequence_ops:
+            if len(sequence_ops) != 1 or len(operations) != 1:
+                raise HTTPException(409, "Page-sequence edits are isolated transactions in G1.4 so page identity stays unambiguous")
+            op = sequence_ops[0]
+            op_id = str(op.get("id") or uuid.uuid4())
+            try:
+                order = [int(x) for x in (op.get("pageList") or [])]
+            except Exception:
+                raise HTTPException(400, "reorder_pages pageList must contain valid 1-based source page numbers")
+            if not order or any(x < 1 or x > doc.page_count for x in order):
+                raise HTTPException(400, "reorder_pages pageList must contain valid 1-based source page numbers")
+            if len(set(order)) != len(order):
+                raise HTTPException(409, "G1.4 reorder does not duplicate pages; each source page may appear once")
+            doc.select([x - 1 for x in order])
+            results.append({"id": op_id, "type": "reorder_pages", "pageList": order, "pageCount": doc.page_count})
+            out = io.BytesIO()
+            doc.save(out, garbage=4, deflate=True, clean=True)
+            return out.getvalue(), results
+
         for op in operations:
             if not isinstance(op, dict):
                 raise HTTPException(400, "Every operation must be an object")
@@ -228,13 +248,32 @@ def verify_render(source_raw: bytes, output_raw: bytes, operations: list[dict[st
     src_doc = fitz.open(stream=source_raw, filetype="pdf")
     out_doc = fitz.open(stream=output_raw, filetype="pdf")
     try:
-        if src_doc.page_count != out_doc.page_count:
-            return {"pass": False, "reason": "Page count changed without a sequence operation", "pageCountEqual": False}
+        src_count = src_doc.page_count
+        out_count = out_doc.page_count
         src_rects = [fitz.Rect(p.rect) for p in src_doc]
-        page_count = src_doc.page_count
     finally:
         src_doc.close(); out_doc.close()
 
+    sequence = next((op for op in operations if isinstance(op, dict) and op.get("type") == "reorder_pages"), None)
+    if sequence:
+        order = [int(x) for x in (sequence.get("pageList") or [])]
+        if out_count != len(order):
+            return {"pass": False, "reason": "Output page count does not match page lineage", "sourcePageCount": src_count, "outputPageCount": out_count, "pageLineage": order}
+        rows = []; max_ratio = 0.0
+        for out_idx, src_page in enumerate(order, start=1):
+            src = render_doc_page(source_raw, src_page - 1)
+            out = render_doc_page(output_raw, out_idx - 1)
+            if src.size != out.size:
+                rows.append({"outputPage": out_idx, "sourcePage": src_page, "pass": False, "reason": "Rendered size changed"}); max_ratio = 1.0; continue
+            diff = ImageChops.difference(src, out).convert("L")
+            hist = diff.histogram(); total = max(1, src.size[0] * src.size[1])
+            ratio = (total - hist[0]) / total; max_ratio = max(max_ratio, ratio)
+            rows.append({"outputPage": out_idx, "sourcePage": src_page, "renderDifferenceRatio": ratio, "pass": ratio < OUTSIDE_TOLERANCE})
+        return {"pass": all(r["pass"] for r in rows), "sourcePageCount": src_count, "outputPageCount": out_count, "pageLineage": order, "maxOutsideAuthorizedEditRatio": max_ratio, "pages": rows, "claim": "Page-sequence export preserves each retained source page raster."}
+
+    if src_count != out_count:
+        return {"pass": False, "reason": "Page count changed without a sequence operation", "pageCountEqual": False}
+    page_count = src_count
     touched = {int(op.get("page") or 0) for op in operations}
     rows = []
     max_outside = 0.0
@@ -279,6 +318,12 @@ def verify_structure(source_raw: bytes, output_raw: bytes, operations: list[dict
     doc = fitz.open(stream=output_raw, filetype="pdf")
     try:
         checks = []
+        sequence = next((op for op in operations if isinstance(op, dict) and op.get("type") == "reorder_pages"), None)
+        if sequence:
+            order = [int(x) for x in (sequence.get("pageList") or [])]
+            passed = doc.page_count == len(order)
+            checks.append({"id": str(sequence.get("id") or "page-sequence"), "type": "page_sequence", "pass": passed, "evidence": {"expectedPageCount": len(order), "actualPageCount": doc.page_count, "lineage": order}})
+            return {"pass": all(x["pass"] for x in checks), "checks": checks, "claim": "Page-sequence structure and page count were reparsed from the exported PDF."}
         for op in operations:
             op_id = str(op.get("id") or "")
             op_type = str(op.get("type") or "")
@@ -347,7 +392,7 @@ def build_receipt(source_raw: bytes, output_raw: bytes, operations: list[dict[st
         "operationResults": operation_results,
         "preset": preset,
         "verification": verification,
-        "claim": "Stateless public transport executes frozen G5I bounded text-replacement/redaction mutation rules and render/structural proof thresholds in one invocation. Text replacement preserves underlying non-text content but uses builtin Helvetica fallback in this checkpoint; no source-font-perfect claim or server persistence is implied.",
+        "claim": "Stateless public transport executes frozen G5I bounded text-replacement/redaction/link/page-reorder mutation rules and render/structural proof thresholds in one invocation. Page reorder is isolated by transaction family; no page insert/delete, source-font-perfect replacement, or server persistence is implied.",
     }
 
 
@@ -444,10 +489,10 @@ async def capabilities(request: Request, selftest: str | None = None) -> JSONRes
         "transport": TRANSPORT,
         "stateless": True,
         "maxPdfBytes": MAX_PDF_BYTES,
-        "capabilities": {"replaceText": True, "redact": True, "links": True, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
-        "editing": ["bounded native text replacement", "true redaction", "bounded URI link insertion", "staged client-side undo", "bounded export proof"],
+        "capabilities": {"replaceText": True, "redact": True, "links": True, "pageReorder": True, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
+        "editing": ["bounded native text replacement", "true redaction", "bounded URI link insertion", "isolated page reorder transaction", "staged client-side undo", "bounded export proof"],
         "frozen": ["client source bytes", "source hash", "untouched regions"],
-        "limitOfClaim": "This transport checkpoint proves bounded native text replacement with builtin Helvetica fallback, true redaction, and URI link insertion. It does not claim source-font-perfect replacement, text reflow, OCR/forms transport, durable server workspaces, distributed collaboration, or independent Poppler witness proof.",
+        "limitOfClaim": "This transport checkpoint proves bounded native text replacement with builtin Helvetica fallback, true redaction, URI link insertion, and isolated page reorder. It does not claim page insert/delete, source-font-perfect replacement, text reflow, OCR/forms transport, durable server workspaces, distributed collaboration, or independent Poppler witness proof.",
     }, headers={"Cache-Control": "no-store"})
 
 
