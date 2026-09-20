@@ -1,7 +1,7 @@
 
 (()=>{
 'use strict';
-const BUILD='PS-PUBLIC-DEMO-G6H-v009';
+const BUILD='PS-PUBLIC-DEMO-G6I-v010';
 const SCHEMA='psdemo-2';
 const q=(s,r=document)=>r.querySelector(s), qa=(s,r=document)=>[...r.querySelectorAll(s)];
 const clone=v=>JSON.parse(JSON.stringify(v));
@@ -307,6 +307,13 @@ function renderPage(){
         Object.assign(el.style,{left:(x0/meta.width*100)+'%',top:(y0/meta.height*100)+'%',width:((x1-x0)/meta.width*100)+'%',height:((y1-y0)/meta.height*100)+'%'});
         layer.appendChild(el);
       });
+      S.pdfStaged.filter(op=>op.type==='replace_text'&&Number(op.page)===pageNo).forEach(op=>{
+        const [x0,y0,x1,y1]=(op.bbox||[]).map(Number);if([x0,y0,x1,y1].some(Number.isNaN))return;
+        const el=document.createElement('div');el.className='pdf-replacement-overlay';el.title='Staged text replacement · Undo removes this delta';
+        Object.assign(el.style,{left:(x0/meta.width*100)+'%',top:(y0/meta.height*100)+'%',width:((x1-x0)/meta.width*100)+'%',height:((y1-y0)/meta.height*100)+'%'});
+        el.innerHTML='<span>'+esc(op.newText||'')+'</span>';
+        layer.appendChild(el);
+      });
     }
   }
   q('#opsPage').addEventListener('pointerdown',e=>{if(e.target.id==='opsPage'||e.target.id==='opsLayer'){S.sel=null;markSelections();inspector();}});
@@ -434,6 +441,22 @@ async function connectPdfSource(file){
     renderAll();updatePdfBridgeUi();toast('G5I inspected '+(inspection?.pageCount||1)+' PDF page(s). Source remains frozen.');return result;
   }catch(error){updatePdfBridgeUi();toast('PDF source opened locally; public G5I transport remains on HOLD.');return {status:'HOLD',reason:String(error)};}
 }
+function openPdfTextReplacementPicker(){
+  const pageNo=Number(curPage()?.pdfPage||1),meta=S.pdfInspection?.pages?.find(x=>Number(x.page)===pageNo);
+  if(!meta?.blocks?.length){modal('Edit PDF text','<div class="proof-item"><strong class="hold">NO NATIVE TEXT BLOCKS</strong><small>G5I found no native text blocks on this page. OCR transport is not promoted.</small></div>');return;}
+  const rows=meta.blocks.map(b=>'<button class="pdf-block-choice" data-block="'+esc(b.id)+'"><strong>'+esc(b.text.slice(0,120))+'</strong><small>Page '+pageNo+' · '+b.bbox.map(v=>Number(v).toFixed(1)).join(', ')+'</small></button>').join('');
+  modal('Edit existing PDF text','<p class="pdf-tool-note">Choose one G5I-detected native text block. Replacement is bounded to the same PDF box, removes text only so underlying non-text content survives, and uses a builtin Helvetica fallback in this checkpoint.</p><div class="pdf-block-list">'+rows+'</div>');
+  qa('.pdf-block-choice').forEach(btn=>btn.onclick=async()=>{
+    const block=meta.blocks.find(x=>x.id===btn.dataset.block);if(!block)return;
+    const next=prompt('Replacement text for this exact PDF block:',block.text);if(next==null||!next.trim())return;
+    try{
+      const b=pdfBridge();const result=await b.invoke('replaceText',{page:pageNo,bbox:block.bbox,oldText:block.text,newText:next,backgroundMode:'preserve',fontSize:10,color:'#000000',align:'left'});
+      S.pdfStaged.push(result.operation);record('Stage bounded PDF text replacement');q('#modalBg').classList.remove('open');renderAll();toast('PDF text replacement staged. Undo removes it before export.');
+      window.dispatchEvent(new CustomEvent('publisherstudio:pdfcommand',{detail:{tool:'replaceText',result}}));
+    }catch(error){modal('PDF text replacement failed','<div class="proof-item"><strong class="hold">EDIT TEXT · FAIL</strong><small>'+esc(error?.message||error)+'</small></div>');}
+  });
+}
+
 function openPdfRedactionPicker(){
   const pageNo=Number(curPage()?.pdfPage||1),meta=S.pdfInspection?.pages?.find(x=>Number(x.page)===pageNo);
   if(!meta?.blocks?.length){modal('Redact PDF text','<div class="proof-item"><strong class="hold">NO TEXT BLOCKS</strong><small>G5I found no native text blocks on this page. OCR transport is not yet promoted.</small></div>');return;}
@@ -454,8 +477,9 @@ async function runPdfTool(tool){
   if(S.doc.kind!=='pdf'){toast('Open a PDF source before using native PDF tools.');return;}
   const b=pdfBridge(),st=pdfBridgeState();
   if(!b?.readyFor?.(tool)||st.source==null){pdfBridgeHold(tool);return;}
+  if(tool==='replaceText'){openPdfTextReplacementPicker();return;}
   if(tool==='redact'){openPdfRedactionPicker();return;}
-  modal('PDF tool boundary','<div class="proof-item"><strong class="hold">'+esc(tool.toUpperCase())+' · NOT PROMOTED</strong><small>The current public transport checkpoint proves true redaction only. This tool remains disabled until its interaction and verification path is independently proven.</small></div>');
+  modal('PDF tool boundary','<div class="proof-item"><strong class="hold">'+esc(tool.toUpperCase())+' · NOT PROMOTED</strong><small>The current public transport checkpoint proves bounded Edit Text and true redaction only. This tool remains disabled until its interaction and verification path is independently proven.</small></div>');
 }
 
 function addTextFrame(){
@@ -668,7 +692,7 @@ capture('#preflightBtn',()=>{
   const all=S.doc.pages.flatMap(p=>p.objects),bad=all.filter(o=>o.x<0||o.y<0||o.x+o.w>100||o.y+o.h>100),emptyBlocks=S.doc.flow.filter(b=>b.type==='table'?b.cells.flat().every(x=>!String(x).trim()):!String(b.text||'').trim()),orphan=S.doc.flow.filter(b=>!blockPage(b.id));
   modal('Document Preflight','<div class="proof-grid"><div class="proof-item"><strong class="pass">PASS · Document state</strong><small>'+S.doc.pages.length+' page(s), r'+S.doc.revision+'</small></div><div class="proof-item"><strong class="'+(bad.length?'hold':'pass')+'">'+(bad.length?'CHECK':'PASS')+' · Page bounds</strong><small>'+bad.length+' out-of-bounds positioned object(s)</small></div><div class="proof-item"><strong class="'+(orphan.length?'hold':'pass')+'">'+(orphan.length?'CHECK':'PASS')+' · Semantic mapping</strong><small>'+orphan.length+' orphan semantic block(s)</small></div><div class="proof-item"><strong class="'+(emptyBlocks.length?'hold':'pass')+'">'+(emptyBlocks.length?'CHECK':'PASS')+' · Empty paragraphs</strong><small>'+emptyBlocks.length+' empty semantic block(s)</small></div><div class="proof-item"><strong class="'+(S.doc.kind==='pdf'?'hold':'pass')+'">'+(S.doc.kind==='pdf'?'BOUNDARY':'PASS')+' · Source authority</strong><small>'+esc(S.doc.source.claim)+'</small></div><div class="proof-item"><strong class="hold">UNKNOWN · PDF/X certification</strong><small>Not inferred by this public slice</small></div></div>');
 });
-capture('#proofBtn',()=>modal('Proof State','<div class="proof-grid"><div class="proof-item"><strong class="pass">G5I kernel · controlled PASS</strong><small>Engineering reference remains frozen</small></div><div class="proof-item"><strong class="pass">G6D native authoring · deepened</strong><small>Shared Page/Flow state + range formatting + styles + tables + find/replace + page breaks</small></div><div class="proof-item"><strong class="pass">Save / reopen path</strong><small>Browser save + portable project snapshot</small></div><div class="proof-item"><strong class="pass">G6H public G5I · REDACTION TRANSPORT</strong><small>Same-origin stateless G5I inspection, staged true redaction, Undo and verified export are connected. OCR/forms/links remain outside this checkpoint.</small></div></div>'));
+capture('#proofBtn',()=>modal('Proof State','<div class="proof-grid"><div class="proof-item"><strong class="pass">G5I kernel · controlled PASS</strong><small>Engineering reference remains frozen</small></div><div class="proof-item"><strong class="pass">G6D native authoring · deepened</strong><small>Shared Page/Flow state + range formatting + styles + tables + find/replace + page breaks</small></div><div class="proof-item"><strong class="pass">Save / reopen path</strong><small>Browser save + portable project snapshot</small></div><div class="proof-item"><strong class="pass">G6I PDF Edit Text · CANDIDATE</strong><small>Bounded existing-PDF text replacement inherits G5I text-only removal, same-box insertion, staged Undo and verified export. Builtin Helvetica fallback only; source-font-perfect replacement and reflow remain outside this checkpoint.</small></div></div>'));
 capture('#historyBtn',()=>{renderHistory();q('#historyPanel').classList.toggle('open');});
 q('#addComment')?.addEventListener('click',e=>{if(!S.active)return;e.preventDefault();e.stopImmediatePropagation();const text=prompt('Review note');if(!text)return;mutate('Add review comment',()=>S.doc.comments.push({author:'You',text,revision:S.doc.revision+1}));},true);
 

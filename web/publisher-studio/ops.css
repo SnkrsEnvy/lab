@@ -116,3 +116,6 @@
 .pdf-block-choice strong,.pdf-block-choice small{display:block}
 .pdf-block-choice strong{font:600 11px/1.4 var(--ui)}
 .pdf-block-choice small{margin-top:4px;font-size:8px;color:#7b8178}
+
+.pdf-replacement-overlay{position:absolute;z-index:13;border:1.5px solid #2e65d6;background:rgba(255,255,255,.9);box-shadow:0 0 0 2px rgba(46,101,214,.12);pointer-events:none;overflow:hidden}
+.pdf-replacement-overlay span{display:block;padding:2px 3px;font:500 9px/1.05 Arial,sans-serif;color:#173b82;white-space:pre-wrap;overflow:hidden}

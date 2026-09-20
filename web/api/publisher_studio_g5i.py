@@ -49,6 +49,22 @@ def rect_list(rect: fitz.Rect) -> list[float]:
     return [round(float(rect.x0), 3), round(float(rect.y0), 3), round(float(rect.x1), 3), round(float(rect.y1), 3)]
 
 
+def fit_insert(page: fitz.Page, target: fitz.Rect, text: str, *, fs: float, color: tuple[float, float, float], align: int) -> dict[str, Any]:
+    if not text:
+        return {"inserted": True, "fontSizeUsed": fs, "result": 0}
+    last = None
+    for factor in (1.0, 0.96, 0.92, 0.88, 0.84, 0.78, 0.72, 0.66, 0.60, 0.54):
+        size = max(3.5, fs * factor)
+        result = page.insert_textbox(
+            target, text, fontsize=size, fontname="helv", color=color, align=align,
+            lineheight=1.0, overlay=True,
+        )
+        last = result
+        if result >= 0:
+            return {"inserted": True, "fontSizeUsed": round(size, 3), "result": result}
+    return {"inserted": False, "fontSizeUsed": round(max(3.5, fs * 0.54), 3), "result": last}
+
+
 def normalize_bbox(raw: Any, *, page_rect: fitz.Rect | None = None) -> fitz.Rect:
     if not isinstance(raw, list) or len(raw) != 4:
         raise HTTPException(400, "Operation bbox must be [x0,y0,x1,y1]")
@@ -154,6 +170,32 @@ def apply_operations(source_raw: bytes, operations: list[dict[str, Any]]) -> tup
             page = doc[page_num - 1]
             rect = normalize_bbox(op.get("bbox"), page_rect=page.rect)
 
+            if op_type == "replace_text":
+                old_text = str(op.get("oldText") or "")
+                new_text = str(op.get("newText") or "")
+                background_mode = str(op.get("backgroundMode") or "preserve")
+                if background_mode == "preserve":
+                    fill = None
+                elif background_mode == "explicit":
+                    fill = hex_rgb(str(op.get("fill") or "#ffffff"), (1, 1, 1))
+                else:
+                    raise HTTPException(400, f"Stateless text replacement supports preserve or explicit background only, not: {background_mode}")
+                page.add_redact_annot(rect, fill=fill, cross_out=False)
+                page.apply_redactions(
+                    images=fitz.PDF_REDACT_IMAGE_NONE,
+                    graphics=fitz.PDF_REDACT_LINE_ART_NONE,
+                    text=fitz.PDF_REDACT_TEXT_REMOVE,
+                )
+                align = {"left": fitz.TEXT_ALIGN_LEFT, "center": fitz.TEXT_ALIGN_CENTER, "right": fitz.TEXT_ALIGN_RIGHT, "justify": fitz.TEXT_ALIGN_JUSTIFY}.get(str(op.get("align") or "left"), fitz.TEXT_ALIGN_LEFT)
+                target = fitz.Rect(rect.x0 + 0.25, rect.y0 + 0.05, rect.x1 - 0.25, rect.y1 - 0.05)
+                default_fs = max(4.0, min(rect.height * 0.72, 144.0))
+                fs = max(4.0, min(float(op.get("fontSize") or default_fs), 144.0))
+                insertion = fit_insert(page, target, new_text, fs=fs, color=hex_rgb(str(op.get("color") or "#000000"), (0, 0, 0)), align=align)
+                if not insertion["inserted"]:
+                    raise HTTPException(409, f"Replacement text does not fit the authorized box for operation {op_id}")
+                results.append({"id": op_id, "type": op_type, "page": page_num, "status": "APPLIED", "oldText": old_text, "newText": new_text, "backgroundMode": background_mode, "insertion": insertion, "bbox": rect_list(rect)})
+                continue
+
             if op_type == "redact":
                 fill = str(op.get("fill") or "#000000")
                 page.add_redact_annot(rect, fill=hex_rgb(fill, (0, 0, 0)), cross_out=False)
@@ -248,7 +290,15 @@ def verify_structure(source_raw: bytes, output_raw: bytes, operations: list[dict
             rect = fitz.Rect(*[float(v) for v in op.get("bbox")])
             passed = True
             evidence: dict[str, Any] = {}
-            if op_type == "redact":
+            if op_type == "replace_text":
+                old_text = str(op.get("oldText") or "").strip()
+                new_text = str(op.get("newText") or "").strip()
+                old_hits = [r for r in page.search_for(old_text) if rects_overlap(fitz.Rect(r), rect, 0.5)] if old_text else []
+                new_hits = [r for r in page.search_for(new_text) if rects_overlap(fitz.Rect(r), rect, 1.5)] if new_text else []
+                passed = len(old_hits) == 0 and (not new_text or bool(new_hits))
+                evidence["remainingOldTextHits"] = len(old_hits)
+                evidence["replacementTextHits"] = len(new_hits)
+            elif op_type == "redact":
                 old_text = str(op.get("oldText") or "").strip()
                 if old_text:
                     hits = [r for r in page.search_for(old_text) if rects_overlap(fitz.Rect(r), rect, 0.5)]
@@ -297,7 +347,7 @@ def build_receipt(source_raw: bytes, output_raw: bytes, operations: list[dict[st
         "operationResults": operation_results,
         "preset": preset,
         "verification": verification,
-        "claim": "Stateless public transport executes the frozen G5I redaction/link mutation rules and frozen render/structural proof thresholds in one invocation. No server-side document persistence is implied.",
+        "claim": "Stateless public transport executes frozen G5I bounded text-replacement/redaction mutation rules and render/structural proof thresholds in one invocation. Text replacement preserves underlying non-text content but uses builtin Helvetica fallback in this checkpoint; no source-font-perfect claim or server persistence is implied.",
     }
 
 
@@ -394,10 +444,10 @@ async def capabilities(request: Request, selftest: str | None = None) -> JSONRes
         "transport": TRANSPORT,
         "stateless": True,
         "maxPdfBytes": MAX_PDF_BYTES,
-        "capabilities": {"redact": True, "links": False, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
-        "editing": ["true redaction", "staged client-side undo", "bounded export proof"],
+        "capabilities": {"replaceText": True, "redact": True, "links": False, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
+        "editing": ["bounded native text replacement", "true redaction", "staged client-side undo", "bounded export proof"],
         "frozen": ["client source bytes", "source hash", "untouched regions"],
-        "limitOfClaim": "This transport checkpoint does not provide durable server workspaces, OCR transport, forms transport, distributed collaboration, or independent Poppler witness proof.",
+        "limitOfClaim": "This transport checkpoint proves bounded native text replacement with builtin Helvetica fallback plus true redaction. It does not claim source-font-perfect replacement, text reflow, durable server workspaces, OCR/forms/links transport, distributed collaboration, or independent Poppler witness proof.",
     }, headers={"Cache-Control": "no-store"})
 
 

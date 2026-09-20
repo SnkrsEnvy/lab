@@ -8,12 +8,18 @@ function uid(prefix='source'){return prefix+'_'+Date.now().toString(36)+'_'+Math
 function clone(v){return JSON.parse(JSON.stringify(v));}
 function ensureOk(response,label){if(response.ok)return response;const err=new Error(label+' failed: HTTP '+response.status);err.status=response.status;return response.text().then(t=>{err.detail=t;throw err;});}
 function filenameFromDisposition(value,fallback){const m=String(value||'').match(/filename="?([^";]+)"?/i);return m?.[1]||fallback;}
-function normalizeCaps(body){const caps=body?.capabilities||{};return {redact:caps.redact===true,ocr:caps.ocr===true,forms:caps.forms===true,links:caps.links===true,undo:caps.undo===true,exportPdf:caps.exportPdf===true};}
+function normalizeCaps(body){const caps=body?.capabilities||{};return {replaceText:caps.replaceText===true,redact:caps.redact===true,ocr:caps.ocr===true,forms:caps.forms===true,links:caps.links===true,undo:caps.undo===true,exportPdf:caps.exportPdf===true};}
 function operationFor(tool,payload={}){
   if(payload.operation&&typeof payload.operation==='object')return clone(payload.operation);
   const page=Number(payload.page ?? (Number(payload.pageIndex)+1));
   if(!Number.isInteger(page)||page<1)throw new Error('PDF operation requires a 1-based page number.');
   const base={id:payload.id||uid(tool),page,bbox:Array.isArray(payload.bbox)?payload.bbox.map(Number):null};
+  if(tool==='replaceText'){
+    if(!base.bbox||base.bbox.length!==4)throw new Error('Text replacement requires a bounded text block or bbox.');
+    const newText=String(payload.newText??'');
+    if(!newText.trim())throw new Error('Replacement text cannot be blank.');
+    return {...base,type:'replace_text',oldText:String(payload.oldText||''),newText,backgroundMode:payload.backgroundMode||'preserve',fontSize:Number(payload.fontSize||10),color:payload.color||'#000000',align:payload.align||'left'};
+  }
   if(tool==='redact'){
     if(!base.bbox||base.bbox.length!==4)throw new Error('Redaction requires a bounded text block or bbox.');
     return {...base,type:'redact',oldText:String(payload.oldText||''),fill:payload.fill||'#000000'};
