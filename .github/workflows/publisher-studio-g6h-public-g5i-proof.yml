@@ -1,5 +1,14 @@
 name: Publisher Studio G6I PDF Text Replace Proof
 on:
+  push:
+    branches:
+      - 'publisher-studio-pdf-text-replace-g6i-v010'
+    paths:
+      - 'web/api/publisher_studio_g5i.py'
+      - 'web/requirements.txt'
+      - 'web/vercel.json'
+      - 'web/publisher-studio/**'
+      - '.github/workflows/publisher-studio-g6h-public-g5i-proof.yml'
   pull_request:
     paths:
       - 'web/api/publisher_studio_g5i.py'
