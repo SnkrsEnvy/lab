@@ -1,14 +1,14 @@
 
 (()=>{
 'use strict';
-const BUILD='PS-PUBLIC-DEMO-G6G-v008';
+const BUILD='PS-PUBLIC-DEMO-G6H-v009';
 const SCHEMA='psdemo-2';
 const q=(s,r=document)=>r.querySelector(s), qa=(s,r=document)=>[...r.querySelectorAll(s)];
 const clone=v=>JSON.parse(JSON.stringify(v));
 const uid=(p='id')=>p+'_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const toast=msg=>{const t=q('#toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(window.__opsToast);window.__opsToast=setTimeout(()=>t.classList.remove('show'),2300);};
-const S={active:false,mode:'page',doc:null,sel:null,block:null,undo:[],redo:[],baseline:null,pdfUrl:null,pdfFile:null,count:1,drag:null,focusAfter:null};
+const S={active:false,mode:'page',doc:null,sel:null,block:null,undo:[],redo:[],baseline:null,pdfUrl:null,pdfFile:null,pdfInspection:null,pdfStaged:[],lastPdfReceipt:null,count:1,drag:null,focusAfter:null};
 
 function blockType(type='paragraph'){
   if(type==='heading')return 'heading2';
@@ -142,7 +142,17 @@ function commit(label){
   if(state()===before)return;
   S.undo.push(before);if(S.undo.length>80)S.undo.shift();S.redo=[];record(label);persist();renderHistory();renderThumbs();renderStructure();status();authority();inspector();
 }
-function undo(){
+async function undo(){
+  if(S.active&&S.doc?.kind==='pdf'&&S.pdfStaged.length){
+    const b=pdfBridge(),st=pdfBridgeState();
+    if(!b?.readyFor?.('undo')||st.source==null){pdfBridgeHold('Undo PDF delta');return;}
+    try{
+      const result=await b.undo();
+      if(result?.status==='UNDONE'){S.pdfStaged.pop();record('Undo PDF engine delta');renderAll();toast('PDF delta undone.');}
+      else toast('No staged PDF delta to undo.');
+    }catch(error){modal('PDF undo failed','<div class="proof-item"><strong class="hold">UNDO · FAIL</strong><small>'+esc(error?.message||error)+'</small></div>');}
+    return;
+  }
   if(!S.active||!S.undo.length){toast('Nothing to undo.');return;}
   const cur=state();S.doc=JSON.parse(S.undo.pop());S.redo.push(cur);repairDoc();S.sel=null;S.block=S.doc.flow[0]?.id||null;renderAll();toast('Undo');
 }
@@ -165,7 +175,7 @@ function refreshResume(){
 }
 function activate(doc,pdfUrl=null,{focus=true}={}){
   if(S.pdfUrl&&S.pdfUrl!==pdfUrl){try{URL.revokeObjectURL(S.pdfUrl);}catch(e){}}
-  S.pdfUrl=pdfUrl;S.doc=migrate(doc);S.active=true;S.sel=null;S.block=S.doc.flow[0]?.id||null;S.undo=[];S.redo=[];S.baseline=null;closeBackstage();
+  S.pdfUrl=pdfUrl;S.doc=migrate(doc);S.active=true;S.sel=null;S.block=S.doc.flow[0]?.id||null;S.undo=[];S.redo=[];S.baseline=null;if(S.doc.kind!=='pdf'){S.pdfFile=null;S.pdfInspection=null;S.pdfStaged=[];S.lastPdfReceipt=null;}closeBackstage();
   q('.tab[data-tab="home"]')?.click();
   setMode('page');renderAll();
   if(focus&&S.doc.kind!=='pdf')setTimeout(()=>focusSemantic(S.block),40);
@@ -280,13 +290,25 @@ function focusSemantic(id,end=false){
 }
 function renderPage(){
   const host=q('#pageCanvas');if(!host||!S.active)return;const p=curPage();if(!p){host.innerHTML='';return;}
-  const pdf=p.kind==='pdf-source'&&S.pdfUrl?'<div class="pdf-source"><embed src="'+esc(S.pdfUrl)+'#toolbar=0&navpanes=0" type="application/pdf"><div class="pdf-source-note">PDF source · local view + bounded overlays</div></div>':'';
+  const pageNo=Number(p.pdfPage||1);
+  const pdf=p.kind==='pdf-source'&&S.pdfUrl?'<div class="pdf-source"><embed src="'+esc(S.pdfUrl)+'#page='+pageNo+'&toolbar=0&navpanes=0" type="application/pdf"><div class="pdf-source-note">PDF source · local page '+pageNo+' · bounded G5I overlays</div></div>':'';
   const semantic=S.doc.kind==='pdf'?'':'<div class="semantic-sheet '+(p.flowBlockIds.length?'':'empty')+'" id="semanticSheet"></div>';
   host.innerHTML='<article class="paper native-page '+(S.doc.guides?'guides ':'')+((p.objects.length||p.flowBlockIds.length||p.kind==='pdf-source')?'has-objects has-semantic':'')+'" id="opsPage" style="--margin-guide:'+(S.doc.marginPct||9.4)+'%"><div class="paper-inner"></div>'+pdf+semantic+'<div class="blank-placeholder"><span>Blank page<small>Start typing or insert a layout object</small></span></div><div class="object-layer" id="opsLayer"></div></article>';
   if(S.doc.kind!=='pdf'){
     const sheet=q('#semanticSheet');p.flowBlockIds.map(id=>S.doc.flow.find(b=>b.id===id)).filter(Boolean).forEach(b=>sheet.appendChild(semanticBlockEl(b,'page')));
   }
   const layer=q('#opsLayer');p.objects.slice().sort((a,b)=>(a.z||10)-(b.z||10)).forEach(o=>layer.appendChild(objectEl(o)));
+  if(S.doc.kind==='pdf'&&S.pdfInspection){
+    const meta=S.pdfInspection.pages?.find(x=>Number(x.page)===pageNo);
+    if(meta){
+      S.pdfStaged.filter(op=>op.type==='redact'&&Number(op.page)===pageNo).forEach(op=>{
+        const [x0,y0,x1,y1]=(op.bbox||[]).map(Number);if([x0,y0,x1,y1].some(Number.isNaN))return;
+        const el=document.createElement('div');el.className='pdf-redaction-overlay';el.title='Staged true redaction · Undo removes this delta';
+        Object.assign(el.style,{left:(x0/meta.width*100)+'%',top:(y0/meta.height*100)+'%',width:((x1-x0)/meta.width*100)+'%',height:((y1-y0)/meta.height*100)+'%'});
+        layer.appendChild(el);
+      });
+    }
+  }
   q('#opsPage').addEventListener('pointerdown',e=>{if(e.target.id==='opsPage'||e.target.id==='opsLayer'){S.sel=null;markSelections();inspector();}});
 }
 function objectEl(o){
@@ -361,7 +383,7 @@ function renderComments(){
 }
 function authority(){
   if(!S.active)return;const rows=qa('#authorityPanel .authority-row');
-  const m={Source:S.doc.kind==='pdf'?'LOCAL PDF':'NATIVE SEMANTIC','Page deltas':S.doc.pages.reduce((n,p)=>n+p.objects.length,0)+' objects',Flow:S.doc.kind==='pdf'?'Not promoted':S.doc.flow.length+' blocks',Assets:S.doc.pages.flatMap(p=>p.objects).filter(o=>o.type==='image').length+' local',Checkpoint:'r'+S.doc.revision};
+  const m={Source:S.doc.kind==='pdf'?'LOCAL PDF':'NATIVE SEMANTIC','Page deltas':S.doc.kind==='pdf'?(S.pdfStaged.length+' staged G5I delta'+(S.pdfStaged.length===1?'':'s')):(S.doc.pages.reduce((n,p)=>n+p.objects.length,0)+' objects'),Flow:S.doc.kind==='pdf'?'Not promoted':S.doc.flow.length+' blocks',Assets:S.doc.pages.flatMap(p=>p.objects).filter(o=>o.type==='image').length+' local',Checkpoint:'r'+S.doc.revision};
   rows.forEach(r=>{const k=q('span',r)?.textContent;if(k&&m[k]!=null)q('strong',r).textContent=m[k];});
 }
 function status(){
@@ -399,23 +421,41 @@ function updatePdfBridgeUi(){
   });
 }
 async function connectPdfSource(file){
-  S.pdfFile=file;const b=pdfBridge();
+  S.pdfFile=file;S.pdfInspection=null;S.pdfStaged=[];S.lastPdfReceipt=null;const b=pdfBridge();
   if(!b){updatePdfBridgeUi();return {status:'HOLD',reason:'bridge_script_unavailable'};}
   try{
     const result=await b.openSource(file,{documentName:S.doc?.name||file.name,sourceAuthority:'LOCAL_PDF_SOURCE'});
-    updatePdfBridgeUi();toast('PDF engine adapter connected to this source.');return result;
-  }catch(error){updatePdfBridgeUi();toast('PDF source opened locally; engine adapter remains on HOLD.');return {status:'HOLD',reason:String(error)};}
+    const inspection=result?.result?.manifest||null;S.pdfInspection=inspection;
+    if(inspection?.pageCount){
+      S.doc.pages=(inspection.pages||[]).map((meta,i)=>({id:uid('page'),label:'PDF page '+(i+1),kind:'pdf-source',flowBlockIds:[],objects:[],sourceUrl:S.pdfUrl,pdfPage:i+1}));
+      if(!S.doc.pages.length)S.doc.pages=[{id:uid('page'),label:'PDF source',kind:'pdf-source',flowBlockIds:[],objects:[],sourceUrl:S.pdfUrl,pdfPage:1}];
+      S.doc.currentPageId=S.doc.pages[0].id;S.doc.source.sourceSha256=inspection.sourceSha256;S.doc.source.transport=inspection.transport;
+    }
+    renderAll();updatePdfBridgeUi();toast('G5I inspected '+(inspection?.pageCount||1)+' PDF page(s). Source remains frozen.');return result;
+  }catch(error){updatePdfBridgeUi();toast('PDF source opened locally; public G5I transport remains on HOLD.');return {status:'HOLD',reason:String(error)};}
+}
+function openPdfRedactionPicker(){
+  const pageNo=Number(curPage()?.pdfPage||1),meta=S.pdfInspection?.pages?.find(x=>Number(x.page)===pageNo);
+  if(!meta?.blocks?.length){modal('Redact PDF text','<div class="proof-item"><strong class="hold">NO TEXT BLOCKS</strong><small>G5I found no native text blocks on this page. OCR transport is not yet promoted.</small></div>');return;}
+  const rows=meta.blocks.map(b=>'<button class="pdf-block-choice" data-block="'+esc(b.id)+'"><strong>'+esc(b.text.slice(0,120))+'</strong><small>Page '+pageNo+' · '+b.bbox.map(v=>Number(v).toFixed(1)).join(', ')+'</small></button>').join('');
+  modal('Stage true redaction','<p class="pdf-tool-note">Choose one G5I-detected text block. The source PDF remains unchanged; this stages a destructive redaction delta for verified export.</p><div class="pdf-block-list">'+rows+'</div>');
+  qa('.pdf-block-choice').forEach(btn=>btn.onclick=async()=>{
+    const block=meta.blocks.find(x=>x.id===btn.dataset.block);if(!block)return;
+    const ok=confirm('Stage true redaction for this exact text block?\n\n'+block.text);if(!ok)return;
+    try{
+      const st=pdfBridgeState(),b=pdfBridge();const result=await b.invoke('redact',{page:pageNo,bbox:block.bbox,oldText:block.text,fill:'#000000'});
+      S.pdfStaged.push(result.operation);record('Stage true PDF redaction');q('#modalBg').classList.remove('open');renderAll();toast('True redaction staged. Undo removes it before export.');
+      window.dispatchEvent(new CustomEvent('publisherstudio:pdfcommand',{detail:{tool:'redact',result}}));
+    }catch(error){modal('PDF redaction failed','<div class="proof-item"><strong class="hold">REDACT · FAIL</strong><small>'+esc(error?.message||error)+'</small></div>');}
+  });
 }
 async function runPdfTool(tool){
   if(!need('PDF '+tool))return;
   if(S.doc.kind!=='pdf'){toast('Open a PDF source before using native PDF tools.');return;}
   const b=pdfBridge(),st=pdfBridgeState();
   if(!b?.readyFor?.(tool)||st.source==null){pdfBridgeHold(tool);return;}
-  try{
-    const result=await b.invoke(tool,{document:{name:S.doc.name,revision:S.doc.revision},pageIndex:Math.max(0,S.doc.pages.indexOf(curPage()))});
-    record('PDF engine · '+tool);renderHistory();status();authority();toast('PDF engine '+tool+' command completed.');
-    window.dispatchEvent(new CustomEvent('publisherstudio:pdfcommand',{detail:{tool,result}}));
-  }catch(error){modal('PDF engine command failed','<div class="proof-item"><strong class="hold">'+esc(tool.toUpperCase())+' · FAIL</strong><small>'+esc(error?.message||error)+'</small></div>');}
+  if(tool==='redact'){openPdfRedactionPicker();return;}
+  modal('PDF tool boundary','<div class="proof-item"><strong class="hold">'+esc(tool.toUpperCase())+' · NOT PROMOTED</strong><small>The current public transport checkpoint proves true redaction only. This tool remains disabled until its interaction and verification path is independently proven.</small></div>');
 }
 
 function addTextFrame(){
@@ -606,12 +646,14 @@ async function printPdf(){
     const b=pdfBridge(),st=pdfBridgeState();
     if(!b?.readyFor?.('exportPdf')||st.source==null){pdfBridgeHold('Export PDF');return;}
     try{
-      const result=await b.exportPdf({document:{name:S.doc.name,revision:S.doc.revision}});
+      const result=await b.exportPdf({preset:'screen',document:{name:S.doc.name,revision:S.doc.revision}});
       const blob=result instanceof Blob?result:result?.blob;
       if(!(blob instanceof Blob))throw new Error('Adapter exportPdf() did not return a Blob.');
+      S.lastPdfReceipt=result?.receipt||null;
       const name=result?.filename||S.doc.name.replace(/\.pdf$/i,'')+'-edited.pdf';
       const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000);
-      toast('Edited PDF exported by the connected engine adapter.');
+      record('Export verified PDF');renderAll();
+      toast('G5I verified PDF exported · '+(result?.receipt?.verification?.outputSha256||'proof receipt returned').slice(0,16)+'…');
     }catch(error){modal('PDF export failed','<div class="proof-item"><strong class="hold">EXPORT · FAIL</strong><small>'+esc(error?.message||error)+'</small></div>');}
     return;
   }
@@ -626,7 +668,7 @@ capture('#preflightBtn',()=>{
   const all=S.doc.pages.flatMap(p=>p.objects),bad=all.filter(o=>o.x<0||o.y<0||o.x+o.w>100||o.y+o.h>100),emptyBlocks=S.doc.flow.filter(b=>b.type==='table'?b.cells.flat().every(x=>!String(x).trim()):!String(b.text||'').trim()),orphan=S.doc.flow.filter(b=>!blockPage(b.id));
   modal('Document Preflight','<div class="proof-grid"><div class="proof-item"><strong class="pass">PASS · Document state</strong><small>'+S.doc.pages.length+' page(s), r'+S.doc.revision+'</small></div><div class="proof-item"><strong class="'+(bad.length?'hold':'pass')+'">'+(bad.length?'CHECK':'PASS')+' · Page bounds</strong><small>'+bad.length+' out-of-bounds positioned object(s)</small></div><div class="proof-item"><strong class="'+(orphan.length?'hold':'pass')+'">'+(orphan.length?'CHECK':'PASS')+' · Semantic mapping</strong><small>'+orphan.length+' orphan semantic block(s)</small></div><div class="proof-item"><strong class="'+(emptyBlocks.length?'hold':'pass')+'">'+(emptyBlocks.length?'CHECK':'PASS')+' · Empty paragraphs</strong><small>'+emptyBlocks.length+' empty semantic block(s)</small></div><div class="proof-item"><strong class="'+(S.doc.kind==='pdf'?'hold':'pass')+'">'+(S.doc.kind==='pdf'?'BOUNDARY':'PASS')+' · Source authority</strong><small>'+esc(S.doc.source.claim)+'</small></div><div class="proof-item"><strong class="hold">UNKNOWN · PDF/X certification</strong><small>Not inferred by this public slice</small></div></div>');
 });
-capture('#proofBtn',()=>modal('Proof State','<div class="proof-grid"><div class="proof-item"><strong class="pass">G5I kernel · controlled PASS</strong><small>Engineering reference remains frozen</small></div><div class="proof-item"><strong class="pass">G6D native authoring · deepened</strong><small>Shared Page/Flow state + range formatting + styles + tables + find/replace + page breaks</small></div><div class="proof-item"><strong class="pass">Save / reopen path</strong><small>Browser save + portable project snapshot</small></div><div class="proof-item"><strong class="hold">G6E PDF bridge · CONTRACT READY</strong><small>Public adapter seam is wired; real G5I engine bytes/adapter remain unconnected.</small></div></div>'));
+capture('#proofBtn',()=>modal('Proof State','<div class="proof-grid"><div class="proof-item"><strong class="pass">G5I kernel · controlled PASS</strong><small>Engineering reference remains frozen</small></div><div class="proof-item"><strong class="pass">G6D native authoring · deepened</strong><small>Shared Page/Flow state + range formatting + styles + tables + find/replace + page breaks</small></div><div class="proof-item"><strong class="pass">Save / reopen path</strong><small>Browser save + portable project snapshot</small></div><div class="proof-item"><strong class="pass">G6H public G5I · REDACTION TRANSPORT</strong><small>Same-origin stateless G5I inspection, staged true redaction, Undo and verified export are connected. OCR/forms/links remain outside this checkpoint.</small></div></div>'));
 capture('#historyBtn',()=>{renderHistory();q('#historyPanel').classList.toggle('open');});
 q('#addComment')?.addEventListener('click',e=>{if(!S.active)return;e.preventDefault();e.stopImmediatePropagation();const text=prompt('Review note');if(!text)return;mutate('Add review comment',()=>S.doc.comments.push({author:'You',text,revision:S.doc.revision+1}));},true);
 

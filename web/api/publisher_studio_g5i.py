@@ -303,8 +303,8 @@ def capabilities() -> JSONResponse:
         "transport": TRANSPORT,
         "stateless": True,
         "maxPdfBytes": MAX_PDF_BYTES,
-        "capabilities": {"redact": True, "links": True, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
-        "editing": ["true redaction", "link add", "staged client-side undo", "bounded export proof"],
+        "capabilities": {"redact": True, "links": False, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
+        "editing": ["true redaction", "staged client-side undo", "bounded export proof"],
         "frozen": ["client source bytes", "source hash", "untouched regions"],
         "limitOfClaim": "This transport checkpoint does not provide durable server workspaces, OCR transport, forms transport, distributed collaboration, or independent Poppler witness proof.",
     }, headers={"Cache-Control": "no-store"})
