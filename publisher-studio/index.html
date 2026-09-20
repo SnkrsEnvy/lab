@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#121310">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Publisher Studio — Golden Goose Publishing Suite public interactive demo. Word-class semantic authoring and Acrobat-class page precision in one authority-aware studio.">
+<meta name="publisher-studio-build" content="PS-PUBLIC-DEMO-G6A-v002">
+<title>Publisher Studio · Golden Goose Publishing Suite</title>
+<link rel="stylesheet" href="./style.css?v=PS-PUBLIC-DEMO-G6A-v002">
+</head>
+<body>
+<div class="app" data-build="PS-PUBLIC-DEMO-G6A-v002">
+  <header class="titlebar">
+    <div class="brand"><div class="mark">GG</div><div><strong>Publisher Studio</strong><small>Golden Goose Publishing Suite</small></div></div>
+    <div class="docname" id="docName">Publisher Studio · Public Demonstration</div>
+    <div class="title-actions"><span class="badge">G5I reference</span><span class="badge gold">Public demo</span></div>
+  </header>
+  <nav class="tabs" aria-label="Publisher Studio ribbon tabs">
+    <button class="tab active" data-tab="home">Home</button><button class="tab" data-tab="insert">Insert</button><button class="tab" data-tab="layout">Layout</button><button class="tab" data-tab="review">Review</button><button class="tab" data-tab="pdf">PDF</button><button class="tab" data-tab="export">Export</button>
+  </nav>
+  <section class="ribbon" id="ribbon">
+    <div class="group"><div class="group-label">Mode<div class="mode-pill"><button id="pageMode" class="active">Page</button><button id="flowMode">Flow</button></div></div></div>
+    <div class="group tab-tools" data-for="home"><button class="rbtn" id="undo">↶ Undo</button><button class="rbtn">↷ Redo</button><button class="rbtn">B</button><button class="rbtn"><em>I</em></button><button class="rbtn">U</button><button class="rbtn">Align</button></div>
+    <div class="group tab-tools hidden" data-for="insert"><button class="rbtn">Text Frame</button><button class="rbtn">Image</button><button class="rbtn">Table</button><button class="rbtn">Field</button><button class="rbtn">Page Break</button></div>
+    <div class="group tab-tools hidden" data-for="layout"><button class="rbtn">Margins</button><button class="rbtn">Columns</button><button class="rbtn">Guides</button><button class="rbtn">Snap 8pt</button><button class="rbtn">Arrange</button></div>
+    <div class="group tab-tools hidden" data-for="review"><button class="rbtn primary" id="commentBtn">Comment</button><button class="rbtn" id="trackBtn">Track Changes</button><button class="rbtn" id="historyBtn">History</button><button class="rbtn">Compare</button></div>
+    <div class="group tab-tools hidden" data-for="pdf"><button class="rbtn" id="preflightBtn">Preflight</button><button class="rbtn">Redact</button><button class="rbtn">OCR</button><button class="rbtn">Forms</button><button class="rbtn">Links</button></div>
+    <div class="group tab-tools hidden" data-for="export"><button class="rbtn gold" id="exportBtn">Export</button><button class="rbtn">PDF</button><button class="rbtn">DOCX</button><button class="rbtn">Project</button><button class="rbtn">Proof Receipt</button></div>
+    <div class="group"><button class="rbtn primary" id="proofBtn">Proof State</button></div>
+  </section>
+
+  <main class="workspace">
+    <aside class="left">
+      <div class="panel-tabs"><button class="panel-tab active" data-left="pages">Pages</button><button class="panel-tab" data-left="structure">Structure</button></div>
+      <div class="left-body" id="leftBody">
+        <div id="pagesPane">
+          <div class="thumb active" data-page="1"><div class="thumb-page"></div><div class="thumb-label"><strong>1</strong><small>Cover</small></div></div>
+          <div class="thumb" data-page="2"><div class="thumb-page"></div><div class="thumb-label"><strong>2</strong><small>Editorial</small></div></div>
+          <div class="thumb" data-page="3"><div class="thumb-page"></div><div class="thumb-label"><strong>3</strong><small>Proof Ledger</small></div></div>
+        </div>
+        <div id="structurePane" class="hidden">
+          <div class="structure-row"><span class="tag">T</span>Publisher Studio</div>
+          <div class="structure-row"><span class="tag">H1</span>Authority before conversion</div>
+          <div class="structure-row"><span class="tag">P</span>Semantic authoring</div>
+          <div class="structure-row"><span class="tag">Q</span>Beauty carries function</div>
+          <div class="structure-row"><span class="tag">H2</span>Proof state</div>
+          <div class="structure-row"><span class="tag">TB</span>Capability ledger</div>
+        </div>
+      </div>
+    </aside>
+
+    <section class="center" id="center">
+      <div class="demo-hint">Try Page / Flow, Review, PDF Preflight, History, and Export</div>
+      <div class="canvas" id="pageCanvas">
+        <article class="paper cover-page" data-page-panel="1">
+          <div class="paper-inner"><div class="cover-band"><div class="cover-main"><div class="cover-logo">Golden Goose Publishing Suite</div><h1 class="cover-title">Publisher<br>Studio</h1><p class="cover-sub">A single publishing environment for semantic authoring, page-accurate PDF work, review, proof, history and authority-aware collaboration.</p></div><div class="cover-foot"><span>Page truth + semantic structure</span><span>Public interaction demo · 2026</span></div></div></div>
+        </article>
+        <article class="paper hidden" data-page-panel="2" id="articlePage">
+          <div class="paper-inner">
+            <div class="page-kicker">Designing the unified publishing surface</div>
+            <h1 class="page-title" id="selectableTitle">Authority before conversion.</h1>
+            <p class="page-deck">Publisher Studio keeps Word-like semantic structure and Acrobat-like page truth powerful precisely because it refuses to pretend they are the same thing.</p><div class="rule"></div>
+            <div class="article-grid"><div class="article-copy"><p class="dropcap">A professional publishing system should let writers think in paragraphs, headings, fields and sections while letting production teams think in exact pages, crops, links, annotations, redactions and export proof. The difficult part is not placing both toolsets in one window. It is preserving which representation has authority.</p><p>In Page Mode, a PDF remains page truth. Edits are bounded deltas over the frozen source. In Flow Mode, semantic blocks remain semantic state. DOCX import keeps the original bytes frozen while Publisher Studio works against a normalized authoring model.</p><p id="trackedText">The result is a document workspace where revisions stay reversible, provenance remains inspectable and export never silently promotes a derived representation into source truth.</p></div><aside><div class="side-card"><div class="eyebrow">Core doctrine</div><h3>FROZEN SOURCE + AUTHORIZED DELTAS</h3><p>Every consequential change is explicit. UNKNOWN remains visible. A successful command is not automatically successful work.</p></div><div class="quote">“Beauty carries function when the interface makes truth easier to see.”</div></aside></div>
+            <div class="folio"><span>Publisher Studio / Golden Goose</span><span>02</span></div>
+          </div>
+          <div class="selection-frame" id="selectionFrame"><i></i><i></i><i></i><i></i></div>
+        </article>
+        <article class="paper ledger-page hidden" data-page-panel="3"><div class="paper-inner"><div class="ledger-head"><div><div class="page-kicker">Controlled proof state</div><h2>Capability ledger</h2></div><small>G1 → G5I reference build</small></div><div class="gate-list">
+          <div class="gate-card"><strong class="pass">PAGE MODE · CORE PASS</strong><small>Text, images, links, forms, OCR, redaction, vectors, page geometry and preflight evidence.</small></div>
+          <div class="gate-card"><strong class="pass">FLOW MODE · CORE PASS</strong><small>Rich runs, styles, sections, comments, tracked changes, notes, fields, tables and DOCX semantics.</small></div>
+          <div class="gate-card"><strong class="pass">PROJECT AUTHORITY · CORE PASS</strong><small>Hash-verified .psproj packages, checkpoints, branch history and explicit restore.</small></div>
+          <div class="gate-card"><strong class="pass">COLLABORATION · REFERENCE PASS</strong><small>Auth, presence, leases, semantic CAS, provider authority and conflict-safe deltas.</small></div>
+          <div class="gate-card"><strong class="hold">PDF.JS · HOLD</strong><small>Permissive browser-reader target verified; bundled asset transport remains unpromoted.</small></div>
+          <div class="gate-card"><strong class="hold">CLOUD HA · UNKNOWN</strong><small>Reference provider is not a claim of multi-region production infrastructure.</small></div>
+        </div><div class="ledger-note">The public demo demonstrates the interaction model and product direction. Controlled engineering proof remains separate from public presentation, and unsupported claims remain visibly bounded.</div><div class="folio"><span>CLAIM ≤ EVIDENCE</span><span>03</span></div></div></article>
+      </div>
+
+      <div class="canvas flow-wrap" id="flowCanvas" aria-label="Flow Mode semantic document">
+        <div class="flow-head"><div><div class="page-kicker">Semantic document</div><h1>Publisher Studio</h1></div><span class="source-pill">Semantic authority</span></div>
+        <div class="block selected" tabindex="0" data-block="title"><span class="handle">⋮⋮</span><span class="type">TITLE</span><h2 contenteditable="true">Authority before conversion.</h2></div>
+        <div class="block" tabindex="0" data-block="p1"><span class="handle">⋮⋮</span><span class="type">P</span><p contenteditable="true">Publisher Studio combines semantic authoring and exact page production without allowing one representation to silently overwrite the authority of another.</p></div>
+        <div class="block quote-block" tabindex="0" data-block="quote"><span class="handle">⋮⋮</span><span class="type">QUOTE</span><p contenteditable="true">Beauty carries function when the interface makes truth easier to see.</p></div>
+        <div class="block" tabindex="0" data-block="p2"><span class="handle">⋮⋮</span><span class="type">P</span><p contenteditable="true">Rich text, sections, fields, comments, tracked revisions and structured tables belong here. Exact PDF redaction, positioned objects and page geometry remain Page Mode responsibilities.</p></div>
+        <div class="block" tabindex="0" data-block="h2"><span class="handle">⋮⋮</span><span class="type">H2</span><h3 contenteditable="true">Proof before promotion</h3></div>
+        <div class="block" tabindex="0" data-block="p3"><span class="handle">⋮⋮</span><span class="type">P</span><p contenteditable="true">Every export carries a claim ceiling: source identity, supported semantics, bounded deltas and the proof that was actually performed.</p></div>
+      </div>
+    </section>
+
+    <aside class="right">
+      <div class="panel-tabs"><button class="panel-tab active" data-right="format">Format</button><button class="panel-tab" data-right="review">Review</button><button class="panel-tab" data-right="authority">Authority</button></div>
+      <div class="right-body" id="rightBody">
+        <section id="formatPanel">
+          <div class="inspector-title">Selection</div>
+          <div class="field"><label><span>Typeface</span><span>Serif</span></label><select><option>Editorial Serif</option><option>System Sans</option></select></div>
+          <div class="field"><label><span>Size</span><span>34 pt</span></label><input value="34 pt"></div>
+          <div class="field"><label><span>Alignment</span></label><div class="seg"><button class="active">Left</button><button>Center</button><button>Right</button></div></div>
+          <div class="field"><label><span>Spacing</span><span>Auto</span></label><input type="range" min="0" max="100" value="42"></div>
+          <div class="inspector-card"><h4>Object</h4><div class="authority-row"><span>Type</span><strong id="objectType">Page</strong></div><div class="authority-row"><span>Revision</span><strong>r12</strong></div><div class="authority-row"><span>Snap</span><strong>8 pt</strong></div></div>
+        </section>
+        <section id="reviewPanel" class="hidden"><div class="live-row"><div><div class="inspector-title" style="margin-bottom:3px">Live review</div><small>3 collaborators · document room</small></div><div class="avatar-stack"><div class="avatar">A</div><div class="avatar">R</div><div class="avatar">M</div></div></div><div class="comment"><strong>Editorial</strong><p>The authority language is clear. Keep this line visible in the final export.</p></div><div class="comment"><strong>Production</strong><p>Page 2 preflight is clean. No out-of-bounds objects detected.</p></div><button class="rbtn primary" style="width:100%;color:white;background:#315f4b" id="addComment">Add review note</button></section>
+        <section id="authorityPanel" class="hidden"><div class="inspector-title">Authority stack</div><div class="inspector-card"><h4>Current document</h4><div class="authority-row"><span>Source</span><strong>FROZEN PDF</strong></div><div class="authority-row"><span>Page deltas</span><strong>3 bounded</strong></div><div class="authority-row"><span>Flow</span><strong>Parallel semantic</strong></div><div class="authority-row"><span>Assets</span><strong>Hash-bound</strong></div><div class="authority-row"><span>Checkpoint</span><strong>proof-r12</strong></div></div><div class="inspector-card"><h4>Claim boundary</h4><div style="font-size:9px;line-height:1.5;color:#5d645b">PDF truth ≠ Word truth.<br>Derived representation ≠ authority promotion.<br>UNKNOWN remains UNKNOWN.</div></div></section>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="statusbar"><div class="status-left"><span class="dot"></span><span>Frozen source preserved</span><span id="modeStatus">Page Mode</span><span>3 pages</span></div><div class="status-right"><span>100%</span><span>PS-PUBLIC-DEMO-G6A-v002</span></div></footer>
+</div>
+
+<div class="history-panel" id="historyPanel"><div class="history-head"><strong>Version History</strong><button id="closeHistory">×</button></div><div class="history-list"><div class="history-item active"><div class="row"><strong>proof-r12</strong><span>now</span></div><p>Public demo editorial state · exact source retained.</p></div><div class="history-item"><div class="row"><strong>layout-r11</strong><span>18 min</span></div><p>Page furniture refined; Flow semantics unchanged.</p></div><div class="history-item"><div class="row"><strong>review-r10</strong><span>42 min</span></div><p>Review comments resolved; source authority unchanged.</p></div></div></div>
+<div class="modal-bg" id="modalBg" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><div class="modal-head"><h3 id="modalTitle">Publisher Studio</h3><button class="close" id="modalClose">Close</button></div><div class="modal-body" id="modalBody"></div><div class="modal-foot"><button class="close" id="modalDone">Done</button></div></div></div>
+<div class="toast" id="toast">Ready</div>
+
+<script src="./app.js?v=PS-PUBLIC-DEMO-G6A-v002" defer></script>
+</body>
+</html>
