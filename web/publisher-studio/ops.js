@@ -1,7 +1,7 @@
 
 (()=>{
 'use strict';
-const BUILD='PS-PUBLIC-DEMO-G6I-v010';
+const BUILD='PS-PUBLIC-DEMO-G6J-v011';
 const SCHEMA='psdemo-2';
 const q=(s,r=document)=>r.querySelector(s), qa=(s,r=document)=>[...r.querySelectorAll(s)];
 const clone=v=>JSON.parse(JSON.stringify(v));
@@ -314,6 +314,13 @@ function renderPage(){
         el.innerHTML='<span>'+esc(op.newText||'')+'</span>';
         layer.appendChild(el);
       });
+      S.pdfStaged.filter(op=>op.type==='add_link'&&Number(op.page)===pageNo).forEach(op=>{
+        const [x0,y0,x1,y1]=(op.bbox||[]).map(Number);if([x0,y0,x1,y1].some(Number.isNaN))return;
+        const el=document.createElement('div');el.className='pdf-link-overlay';el.title='Staged URI link · '+(op.uri||'')+' · Undo removes this delta';
+        Object.assign(el.style,{left:(x0/meta.width*100)+'%',top:(y0/meta.height*100)+'%',width:((x1-x0)/meta.width*100)+'%',height:((y1-y0)/meta.height*100)+'%'});
+        el.innerHTML='<span>↗ '+esc(op.uri||'LINK')+'</span>';
+        layer.appendChild(el);
+      });
     }
   }
   q('#opsPage').addEventListener('pointerdown',e=>{if(e.target.id==='opsPage'||e.target.id==='opsLayer'){S.sel=null;markSelections();inspector();}});
@@ -457,6 +464,23 @@ function openPdfTextReplacementPicker(){
   });
 }
 
+function openPdfLinkPicker(){
+  const pageNo=Number(curPage()?.pdfPage||1),meta=S.pdfInspection?.pages?.find(x=>Number(x.page)===pageNo);
+  if(!meta?.blocks?.length){modal('Add PDF link','<div class="proof-item"><strong class="hold">NO NATIVE TEXT BLOCKS</strong><small>G5I found no native text blocks on this page. Link insertion in this checkpoint attaches a URI to an existing detected text box.</small></div>');return;}
+  const rows=meta.blocks.map(b=>'<button class="pdf-block-choice" data-block="'+esc(b.id)+'"><strong>'+esc(b.text.slice(0,120))+'</strong><small>Page '+pageNo+' · '+b.bbox.map(v=>Number(v).toFixed(1)).join(', ')+'</small></button>').join('');
+  modal('Add link to existing PDF content','<p class="pdf-tool-note">Choose one G5I-detected native text block. Publisher Studio will stage a URI link over that exact authorized box without changing the visible text.</p><div class="pdf-block-list">'+rows+'</div>');
+  qa('.pdf-block-choice').forEach(btn=>btn.onclick=async()=>{
+    const block=meta.blocks.find(x=>x.id===btn.dataset.block);if(!block)return;
+    const uri=prompt('URI for this PDF link:','https://');if(uri==null||!uri.trim())return;
+    if(!/^(https?:|mailto:)/i.test(uri.trim())){modal('PDF link rejected','<div class="proof-item"><strong class="hold">URI · HOLD</strong><small>G6J accepts http:, https:, or mailto: links only.</small></div>');return;}
+    try{
+      const b=pdfBridge();const result=await b.invoke('links',{page:pageNo,bbox:block.bbox,uri:uri.trim()});
+      S.pdfStaged.push(result.operation);record('Stage bounded PDF URI link');q('#modalBg').classList.remove('open');renderAll();toast('PDF link staged. Undo removes it before export.');
+      window.dispatchEvent(new CustomEvent('publisherstudio:pdfcommand',{detail:{tool:'links',result}}));
+    }catch(error){modal('PDF link failed','<div class="proof-item"><strong class="hold">LINK · FAIL</strong><small>'+esc(error?.message||error)+'</small></div>');}
+  });
+}
+
 function openPdfRedactionPicker(){
   const pageNo=Number(curPage()?.pdfPage||1),meta=S.pdfInspection?.pages?.find(x=>Number(x.page)===pageNo);
   if(!meta?.blocks?.length){modal('Redact PDF text','<div class="proof-item"><strong class="hold">NO TEXT BLOCKS</strong><small>G5I found no native text blocks on this page. OCR transport is not yet promoted.</small></div>');return;}
@@ -479,7 +503,8 @@ async function runPdfTool(tool){
   if(!b?.readyFor?.(tool)||st.source==null){pdfBridgeHold(tool);return;}
   if(tool==='replaceText'){openPdfTextReplacementPicker();return;}
   if(tool==='redact'){openPdfRedactionPicker();return;}
-  modal('PDF tool boundary','<div class="proof-item"><strong class="hold">'+esc(tool.toUpperCase())+' · NOT PROMOTED</strong><small>The current public transport checkpoint proves bounded Edit Text and true redaction only. This tool remains disabled until its interaction and verification path is independently proven.</small></div>');
+  if(tool==='links'){openPdfLinkPicker();return;}
+  modal('PDF tool boundary','<div class="proof-item"><strong class="hold">'+esc(tool.toUpperCase())+' · NOT PROMOTED</strong><small>The current public transport checkpoint proves bounded Edit Text, true redaction, and URI link insertion only. This tool remains disabled until its interaction and verification path is independently proven.</small></div>');
 }
 
 function addTextFrame(){

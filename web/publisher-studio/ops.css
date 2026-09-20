@@ -119,3 +119,7 @@
 
 .pdf-replacement-overlay{position:absolute;z-index:13;border:1.5px solid #2e65d6;background:rgba(255,255,255,.9);box-shadow:0 0 0 2px rgba(46,101,214,.12);pointer-events:none;overflow:hidden}
 .pdf-replacement-overlay span{display:block;padding:2px 3px;font:500 9px/1.05 Arial,sans-serif;color:#173b82;white-space:pre-wrap;overflow:hidden}
+
+.pdf-link-overlay{position:absolute;z-index:14;border:2px solid rgba(38,91,180,.78);background:rgba(55,115,220,.10);box-shadow:0 0 0 1px rgba(255,255,255,.85) inset;pointer-events:none;overflow:hidden}
+.pdf-link-overlay:after{content:"";position:absolute;left:0;right:0;bottom:0;border-bottom:2px solid rgba(38,91,180,.9)}
+.pdf-link-overlay span{position:absolute;right:2px;top:2px;max-width:92%;padding:2px 4px;border-radius:3px;background:rgba(26,65,132,.92);color:white;font:600 6px/1.25 var(--ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

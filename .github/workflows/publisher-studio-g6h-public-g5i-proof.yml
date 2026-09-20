@@ -1,8 +1,8 @@
-name: Publisher Studio G6I PDF Text Replace Proof
+name: Publisher Studio G6J PDF Links Proof
 on:
   push:
     branches:
-      - 'publisher-studio-pdf-text-replace-g6i-v010'
+      - 'publisher-studio-pdf-links-g6j-v011'
     paths:
       - 'web/api/publisher_studio_g5i.py'
       - 'web/requirements.txt'
@@ -15,16 +15,16 @@ on:
       - 'web/requirements.txt'
       - 'web/vercel.json'
       - 'web/publisher-studio/**'
-      - '.github/workflows/publisher-studio-g6i-pdf-text-replace-proof.yml'
+      - '.github/workflows/publisher-studio-g6i-pdf-links-proof.yml'
 
 jobs:
-  pdf-text-replace-proof:
+  pdf-links-proof:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
-      TARGET_URL: https://lab-git-publisher-studio-pdf-text-replace-41b336-world-builders.vercel.app/publisher-studio/
-      API_URL: https://lab-git-publisher-studio-pdf-text-replace-41b336-world-builders.vercel.app/api/publisher-studio-g5i
-      EXPECTED_BUILD: PS-PUBLIC-DEMO-G6I-v010
+      TARGET_URL: https://lab-git-lab-git-publisher-studio-pdf-links-g6j-v011-world-builders.vercel.app/publisher-studio/
+      API_URL: https://lab-git-lab-git-publisher-studio-pdf-links-g6j-v011-world-builders.vercel.app/api/publisher-studio-g5i
+      EXPECTED_BUILD: PS-PUBLIC-DEMO-G6J-v011
       EXPECTED_SOURCE_SHA: da37ed6b61739777d399c7292dbe5f88661f34ade3abae245aaf287d826e3c92
     steps:
       - uses: actions/checkout@v4
@@ -47,7 +47,7 @@ jobs:
           expected_build=os.environ['EXPECTED_BUILD']
           expected_source=os.environ['EXPECTED_SOURCE_SHA']
           fixture=pathlib.Path('web/publisher-studio/proof/publisher-studio-demo-g5i.pdf')
-          out=pathlib.Path('publisher-studio-g6i-proof'); out.mkdir(exist_ok=True)
+          out=pathlib.Path('publisher-studio-g6j-proof'); out.mkdir(exist_ok=True)
           target_text='Select this sentence in Page Mode and stage a bounded replacement.'
           control_text='A one-page edit should leave this control page render-identical.'
           receipt={'target':target,'api':api,'expected_build':expected_build,'checks':{},'console_errors':[],'page_errors':[]}
@@ -65,7 +65,7 @@ jobs:
           caps=cap.json()
           mark('api_identity',caps.get('version')=='0.35.0-g5i' and caps.get('gate')=='G5I Distributed Page Delta Lifecycle + Conflict-Safe Undo')
           mark('api_stateless',caps.get('stateless') is True and caps.get('transport')=='g6h-stateless-same-origin-v001')
-          mark('capability_ceiling',caps.get('capabilities')=={'replaceText':True,'redact':True,'links':False,'undo':True,'exportPdf':True,'ocr':False,'forms':False})
+          mark('capability_ceiling',caps.get('capabilities')=={'replaceText':True,'redact':True,'links':True,'undo':True,'exportPdf':True,'ocr':False,'forms':False})
 
           with sync_playwright() as p:
               browser=p.chromium.launch()
@@ -86,34 +86,34 @@ jobs:
               expect(page.locator('#pageCountStatus')).to_contain_text('2 pages')
               mark('source_hash_in_ui_state',page.evaluate("window.PublisherStudioPdfBridge.status().source != null"))
 
-              replacement='Publisher Studio replaces this text inside the authorized PDF box.'
+              link_uri='https://example.com/publisher-studio-g6j-proof'
               page.get_by_role('button',name='PDF',exact=True).click()
               expect(page.locator('#pdfReplaceTextBtn')).to_be_enabled()
               expect(page.locator('#pdfRedactBtn')).to_be_enabled()
+              expect(page.locator('#pdfLinksBtn')).to_be_enabled()
               mark('ocr_disabled',page.locator('#pdfOcrBtn').is_disabled())
               mark('forms_disabled',page.locator('#pdfFormsBtn').is_disabled())
-              mark('links_disabled',page.locator('#pdfLinksBtn').is_disabled())
 
-              page.locator('#pdfReplaceTextBtn').click()
+              page.locator('#pdfLinksBtn').click()
               choice=page.locator('.pdf-block-choice').filter(has_text=target_text).first
               expect(choice).to_be_visible()
-              page.once('dialog',lambda dialog: dialog.accept(replacement))
+              page.once('dialog',lambda dialog: dialog.accept(link_uri))
               choice.click()
-              expect(page.locator('.pdf-replacement-overlay')).to_have_count(1)
-              mark('replacement_staged',page.locator('.pdf-replacement-overlay').count()==1)
-              mark('replacement_preview',replacement in page.locator('.pdf-replacement-overlay').inner_text())
+              expect(page.locator('.pdf-link-overlay')).to_have_count(1)
+              mark('link_staged',page.locator('.pdf-link-overlay').count()==1)
+              mark('link_preview',link_uri in page.locator('.pdf-link-overlay').inner_text())
 
               page.get_by_role('button',name='Home',exact=True).click()
               page.locator('#undo').click()
-              expect(page.locator('.pdf-replacement-overlay')).to_have_count(0)
-              mark('pdf_undo',page.locator('.pdf-replacement-overlay').count()==0)
+              expect(page.locator('.pdf-link-overlay')).to_have_count(0)
+              mark('pdf_undo',page.locator('.pdf-link-overlay').count()==0)
 
               page.get_by_role('button',name='PDF',exact=True).click()
-              page.locator('#pdfReplaceTextBtn').click()
+              page.locator('#pdfLinksBtn').click()
               choice=page.locator('.pdf-block-choice').filter(has_text=target_text).first
-              page.once('dialog',lambda dialog: dialog.accept(replacement))
+              page.once('dialog',lambda dialog: dialog.accept(link_uri))
               choice.click()
-              expect(page.locator('.pdf-replacement-overlay')).to_have_count(1)
+              expect(page.locator('.pdf-link-overlay')).to_have_count(1)
 
               page.get_by_role('button',name='Export',exact=True).first.click()
               export_response={}
@@ -125,10 +125,10 @@ jobs:
               with page.expect_download(timeout=90000) as download_info:
                   page.locator('#printPdfBtn').click()
               download=download_info.value
-              edited=out/'public-g6i-replaced.pdf'
+              edited=out/'public-g6j-linked.pdf'
               download.save_as(str(edited))
               page.wait_for_timeout(500)
-              page.screenshot(path=str(out/'g6i-pdf-text-replace-proof.png'),full_page=True)
+              page.screenshot(path=str(out/'g6i-pdf-links-proof.png'),full_page=True)
 
               mark('download_exists',edited.is_file() and edited.stat().st_size>0)
               edited_bytes=edited.read_bytes()
@@ -146,9 +146,19 @@ jobs:
               try:
                   all_text='\n'.join(pg.get_text('text') for pg in doc)
                   page2=doc[1].get_text('text') if doc.page_count>1 else ''
+                  links=[lnk for lnk in doc[0].get_links() if lnk.get('uri')==link_uri]
+                  target_hits=doc[0].search_for(target_text)
+                  target_rect=target_hits[0] if target_hits else None
+                  overlap=False
+                  if target_rect:
+                      for lnk in links:
+                          lr=fitz.Rect(lnk.get('from')) if lnk.get('from') is not None else fitz.Rect()
+                          if not (lr & fitz.Rect(target_rect)).is_empty:
+                              overlap=True; break
                   mark('page_count_preserved',doc.page_count==2)
-                  mark('old_text_absent',target_text not in all_text)
-                  mark('replacement_text_present',replacement in all_text)
+                  mark('target_text_preserved',target_text in all_text)
+                  mark('link_uri_present',len(links)>=1)
+                  mark('link_bbox_overlaps_target',overlap)
                   mark('control_page_preserved',control_text in page2)
               finally:
                   doc.close()
@@ -159,13 +169,13 @@ jobs:
 
           receipt['status']='PASS'
           (out/'receipt.json').write_text(json.dumps(receipt,indent=2),encoding='utf-8')
-          print('PUBLISHER_STUDIO_G6I_PDF_TEXT_REPLACE_PROOF_PASS')
+          print('PUBLISHER_STUDIO_G6J_PDF_LINKS_PROOF_PASS')
           print(json.dumps(receipt,indent=2))
           PY
       - name: Upload public proof evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: publisher-studio-g6i-pdf-text-replace-proof
-          path: publisher-studio-g6i-proof/
+          name: publisher-studio-g6i-pdf-links-proof
+          path: publisher-studio-g6j-proof/
           if-no-files-found: warn
