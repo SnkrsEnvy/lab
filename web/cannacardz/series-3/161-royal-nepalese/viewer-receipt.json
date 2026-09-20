@@ -1,0 +1,81 @@
+{
+  "schema": "cannacardz.viewer.receipt.v1",
+  "card_id": "CC-0161",
+  "series": 3,
+  "number": 161,
+  "title": "Royal Nepalese",
+  "authority": "Founder-declared canon source: royal.zip",
+  "build": "cc161-viewer-v1-royal-nepalese",
+  "canonical_url": "https://lab-beryl-zeta.vercel.app/cannacardz/series-3/161-royal-nepalese/",
+  "source_archive": {
+    "name": "royal.zip"
+  },
+  "page_mapping": [
+    {
+      "page": 1,
+      "role": "front",
+      "source": "1.png",
+      "dimensions": [
+        898,
+        1200
+      ],
+      "runtime": "page-1.png",
+      "runtime_bytes": 2190862
+    },
+    {
+      "page": 2,
+      "role": "inside-left",
+      "source": "2.png",
+      "dimensions": [
+        811,
+        1200
+      ],
+      "runtime": "page-2.png",
+      "runtime_bytes": 1672186
+    },
+    {
+      "page": 3,
+      "role": "inside-right",
+      "source": "3.png",
+      "dimensions": [
+        823,
+        1200
+      ],
+      "runtime": "page-3.png",
+      "runtime_bytes": 1374299
+    },
+    {
+      "page": 4,
+      "role": "back",
+      "source": "4.png",
+      "dimensions": [
+        899,
+        1200
+      ],
+      "runtime": "page-4.png",
+      "runtime_bytes": 1373109
+    }
+  ],
+  "viewer_modes": [
+    "card",
+    "unfold"
+  ],
+  "interactions": [
+    "previous",
+    "next",
+    "edge-navigation",
+    "keyboard",
+    "swipe",
+    "fullscreen"
+  ],
+  "share_identity": {
+    "page": 1,
+    "og_image": "page-1.png"
+  },
+  "gates": {
+    "SOURCE_CANON": "PASS_FOUNDER_DECLARED",
+    "BUILD": "SEALED",
+    "REMOTE_PROOF": "PENDING",
+    "DEVICE_PREVIEW": "PENDING"
+  }
+}
