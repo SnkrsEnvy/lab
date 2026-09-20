@@ -1,0 +1,114 @@
+name: Publisher Studio G6E PDF Bridge Proof
+on:
+  pull_request:
+    paths:
+      - 'web/publisher-studio/**'
+      - '.github/workflows/publisher-studio-g6e-pdf-bridge-proof.yml'
+
+jobs:
+  bridge-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TARGET_URL: https://lab-git-publisher-studio-pdf-bridge-g6e-v006-world-builders.vercel.app/publisher-studio/
+      EXPECTED_BUILD: PS-PUBLIC-DEMO-G6E-v006
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install browser proof runtime
+        run: |
+          python -m pip install --disable-pip-version-check playwright==1.55.0
+          python -m playwright install --with-deps chromium
+      - name: Run G6E bridge proof
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          from playwright.sync_api import sync_playwright, expect
+
+          target=os.environ['TARGET_URL']
+          expected=os.environ['EXPECTED_BUILD']
+          out=pathlib.Path('publisher-studio-g6e-proof'); out.mkdir(exist_ok=True)
+          receipt={'target':target,'expected_build':expected,'checks':{},'console_errors':[],'page_errors':[]}
+          def mark(name,value=True):
+              receipt['checks'][name]=bool(value)
+              if not value: raise AssertionError(name)
+
+          tiny_pdf=(b'%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n'
+                    b'2 0 obj<</Type/Pages/Count 0/Kids[]>>endobj\ntrailer<</Root 1 0 R>>\n%%EOF\n')
+
+          with sync_playwright() as p:
+              browser=p.chromium.launch()
+              page=browser.new_page(viewport={'width':1440,'height':1000})
+              page.on('console', lambda msg: receipt['console_errors'].append(msg.text) if msg.type=='error' else None)
+              page.on('pageerror', lambda exc: receipt['page_errors'].append(str(exc)))
+              response=page.goto(target,wait_until='networkidle',timeout=90000)
+              mark('http_200', response is not None and response.status==200)
+              mark('build_identity', page.locator('meta[name="publisher-studio-build"]').get_attribute('content')==expected)
+              mark('bridge_global', page.evaluate("typeof window.PublisherStudioPdfBridge === 'object'"))
+              initial=page.evaluate('PublisherStudioPdfBridge.status()')
+              mark('honest_initial_hold', initial['status']=='HOLD' and initial['reason']=='adapter_not_registered')
+
+              page.get_by_role('button',name='PDF').click()
+              mark('hold_badge', 'HOLD' in page.locator('#pdfEngineStatus').inner_text())
+              mark('redact_disabled_without_adapter', page.locator('#pdfRedactBtn').is_disabled())
+              mark('ocr_disabled_without_adapter', page.locator('#pdfOcrBtn').is_disabled())
+
+              page.evaluate("""
+                async () => {
+                  window.__pdfProofCalls=[];
+                  await PublisherStudioPdfBridge.register({
+                    id:'proof-stub-adapter',
+                    capabilities: async()=>({redact:true,ocr:true,forms:true,links:true,undo:true,exportPdf:true}),
+                    openSource: async({file,context,contract})=>{
+                      window.__pdfProofCalls.push({kind:'openSource',name:file.name,size:file.size,context,contract});
+                      return {source:'proof-source-1'};
+                    },
+                    invoke: async(args)=>{window.__pdfProofCalls.push({kind:'invoke',...args}); return {status:'APPLIED',tool:args.tool};},
+                    undo: async(args)=>{window.__pdfProofCalls.push({kind:'undo',...args}); return {status:'UNDONE'};},
+                    exportPdf: async()=>({blob:new Blob(['%PDF-1.4\\n% proof stub\\n%%EOF\\n'],{type:'application/pdf'}),filename:'proof-edited.pdf'})
+                  });
+                }
+              """)
+              ready=page.evaluate('PublisherStudioPdfBridge.status()')
+              mark('adapter_ready', ready['status']=='READY' and ready['adapterId']=='proof-stub-adapter')
+
+              page.locator('#fileTab').click()
+              page.locator('.file-nav[data-file-view="open"]').click()
+              page.locator('#pdfFileInput').set_input_files({'name':'proof.pdf','mimeType':'application/pdf','buffer':tiny_pdf})
+              expect(page.locator('#pageCanvas')).to_be_visible()
+              connected=page.evaluate('PublisherStudioPdfBridge.status()')
+              mark('source_connected', connected['status']=='CONNECTED' and connected['source']=='proof-source-1')
+              mark('source_authority_preserved', 'Local PDF source preserved' in page.locator('#sourceStatus').inner_text())
+
+              page.get_by_role('button',name='PDF').click()
+              expect(page.locator('#pdfRedactBtn')).to_be_enabled()
+              mark('connected_badge', 'CONNECTED' in page.locator('#pdfEngineStatus').inner_text())
+              page.locator('#pdfRedactBtn').click()
+              calls=page.evaluate('window.__pdfProofCalls')
+              mark('redact_routed', any(c.get('kind')=='invoke' and c.get('tool')=='redact' for c in calls))
+              mark('open_source_routed', any(c.get('kind')=='openSource' and c.get('name')=='proof.pdf' for c in calls))
+
+              page.locator('#flowMode').click()
+              flow=page.locator('#flowCanvas').inner_text()
+              mark('pdf_not_promoted_to_flow', 'has not been promoted into semantic Flow truth' in flow)
+              page.locator('#pageMode').click()
+
+              mark('no_page_errors', len(receipt['page_errors'])==0)
+              mark('no_console_errors', len(receipt['console_errors'])==0)
+              page.screenshot(path=str(out/'g6e-pdf-bridge-proof.png'),full_page=True)
+              browser.close()
+
+          receipt['status']='PASS'
+          (out/'receipt.json').write_text(json.dumps(receipt,indent=2),encoding='utf-8')
+          print('PUBLISHER_STUDIO_G6E_PDF_BRIDGE_PROOF_PASS')
+          print(json.dumps(receipt,indent=2))
+          PY
+      - name: Upload proof evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: publisher-studio-g6e-pdf-bridge-proof
+          path: publisher-studio-g6e-proof/
+          if-no-files-found: warn
