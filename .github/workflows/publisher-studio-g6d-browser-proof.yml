@@ -118,6 +118,7 @@ jobs:
               mark('flow_preserves_table', 'Cell truth' in flow_text)
 
               page.locator('#pageMode').click()
+              page.locator('#opsThumbs .thumb').first.click()
               mark('page_flow_roundtrip', 'Golden text for replacement' in page.locator('#pageCanvas').inner_text())
 
               mark('no_page_errors', len(receipt['page_errors']) == 0)
