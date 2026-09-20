@@ -6,28 +6,28 @@
 <meta name="theme-color" content="#121310">
 <meta name="robots" content="noindex,nofollow">
 <meta name="description" content="Publisher Studio — Golden Goose Publishing Suite public interactive demo. Word-class semantic authoring and Acrobat-class page precision in one authority-aware studio.">
-<meta name="publisher-studio-build" content="PS-PUBLIC-DEMO-G6A-v002">
+<meta name="publisher-studio-build" content="PS-PUBLIC-DEMO-G6B-v003">
 <title>Publisher Studio · Golden Goose Publishing Suite</title>
-<link rel="stylesheet" href="./style.css?v=PS-PUBLIC-DEMO-G6A-v002">
-</head>
+<link rel="stylesheet" href="./style.css?v=PS-PUBLIC-DEMO-G6B-v003">
+<link rel="stylesheet" href="./ops.css?v=PS-PUBLIC-DEMO-G6B-v003">\n</head>
 <body>
-<div class="app" data-build="PS-PUBLIC-DEMO-G6A-v002">
+<div class="app" data-build="PS-PUBLIC-DEMO-G6B-v003">
   <header class="titlebar">
     <div class="brand"><div class="mark">GG</div><div><strong>Publisher Studio</strong><small>Golden Goose Publishing Suite</small></div></div>
     <div class="docname" id="docName">Publisher Studio · Public Demonstration</div>
     <div class="title-actions"><span class="badge">G5I reference</span><span class="badge gold">Public demo</span></div>
   </header>
   <nav class="tabs" aria-label="Publisher Studio ribbon tabs">
-    <button class="tab active" data-tab="home">Home</button><button class="tab" data-tab="insert">Insert</button><button class="tab" data-tab="layout">Layout</button><button class="tab" data-tab="review">Review</button><button class="tab" data-tab="pdf">PDF</button><button class="tab" data-tab="export">Export</button>
+    <button class="tab file-tab" id="fileTab" data-tab="file">File</button><button class="tab active" data-tab="home">Home</button><button class="tab" data-tab="insert">Insert</button><button class="tab" data-tab="layout">Layout</button><button class="tab" data-tab="review">Review</button><button class="tab" data-tab="pdf">PDF</button><button class="tab" data-tab="export">Export</button>
   </nav>
   <section class="ribbon" id="ribbon">
     <div class="group"><div class="group-label">Mode<div class="mode-pill"><button id="pageMode" class="active">Page</button><button id="flowMode">Flow</button></div></div></div>
-    <div class="group tab-tools" data-for="home"><button class="rbtn" id="undo">↶ Undo</button><button class="rbtn">↷ Redo</button><button class="rbtn">B</button><button class="rbtn"><em>I</em></button><button class="rbtn">U</button><button class="rbtn">Align</button></div>
-    <div class="group tab-tools hidden" data-for="insert"><button class="rbtn">Text Frame</button><button class="rbtn">Image</button><button class="rbtn">Table</button><button class="rbtn">Field</button><button class="rbtn">Page Break</button></div>
-    <div class="group tab-tools hidden" data-for="layout"><button class="rbtn">Margins</button><button class="rbtn">Columns</button><button class="rbtn">Guides</button><button class="rbtn">Snap 8pt</button><button class="rbtn">Arrange</button></div>
+    <div class="group tab-tools" data-for="home"><button class="rbtn" id="undo">↶ Undo</button><button class="rbtn" id="redo">↷ Redo</button><button class="rbtn format-btn" id="boldBtn" data-format="bold"><b>B</b></button><button class="rbtn format-btn" id="italicBtn" data-format="italic"><em>I</em></button><button class="rbtn format-btn" id="underlineBtn" data-format="underline"><u>U</u></button><button class="rbtn" id="duplicateBtn">Duplicate</button><button class="rbtn" id="deleteBtn">Delete</button></div>
+    <div class="group tab-tools hidden" data-for="insert"><button class="rbtn primary" id="addTextFrame">Text Frame</button><button class="rbtn" id="addPageBtn">Page</button><button class="rbtn" id="addHeadingBtn">Heading</button><button class="rbtn" id="addParagraphBtn">Paragraph</button><button class="rbtn" id="imageBtn">Image</button></div>
+    <div class="group tab-tools hidden" data-for="layout"><button class="rbtn" id="marginBtn">Margins</button><button class="rbtn" id="guideBtn">Guides</button><button class="rbtn" id="snapBtn">Snap 8pt</button><button class="rbtn" id="bringFrontBtn">Bring Front</button><button class="rbtn" id="sendBackBtn">Send Back</button></div>
     <div class="group tab-tools hidden" data-for="review"><button class="rbtn primary" id="commentBtn">Comment</button><button class="rbtn" id="trackBtn">Track Changes</button><button class="rbtn" id="historyBtn">History</button><button class="rbtn">Compare</button></div>
     <div class="group tab-tools hidden" data-for="pdf"><button class="rbtn" id="preflightBtn">Preflight</button><button class="rbtn">Redact</button><button class="rbtn">OCR</button><button class="rbtn">Forms</button><button class="rbtn">Links</button></div>
-    <div class="group tab-tools hidden" data-for="export"><button class="rbtn gold" id="exportBtn">Export</button><button class="rbtn">PDF</button><button class="rbtn">DOCX</button><button class="rbtn">Project</button><button class="rbtn">Proof Receipt</button></div>
+    <div class="group tab-tools hidden" data-for="export"><button class="rbtn gold" id="exportBtn">Export</button><button class="rbtn" id="printPdfBtn">Print / PDF</button><button class="rbtn" id="downloadProjectBtn">Project</button><button class="rbtn" id="downloadHtmlBtn">HTML</button><button class="rbtn" id="proofReceiptBtn">Proof Receipt</button></div>
     <div class="group"><button class="rbtn primary" id="proofBtn">Proof State</button></div>
   </section>
 
@@ -93,11 +93,11 @@
       <div class="right-body" id="rightBody">
         <section id="formatPanel">
           <div class="inspector-title">Selection</div>
-          <div class="field"><label><span>Typeface</span><span>Serif</span></label><select><option>Editorial Serif</option><option>System Sans</option></select></div>
-          <div class="field"><label><span>Size</span><span>34 pt</span></label><input value="34 pt"></div>
-          <div class="field"><label><span>Alignment</span></label><div class="seg"><button class="active">Left</button><button>Center</button><button>Right</button></div></div>
-          <div class="field"><label><span>Spacing</span><span>Auto</span></label><input type="range" min="0" max="100" value="42"></div>
-          <div class="inspector-card"><h4>Object</h4><div class="authority-row"><span>Type</span><strong id="objectType">Page</strong></div><div class="authority-row"><span>Revision</span><strong>r12</strong></div><div class="authority-row"><span>Snap</span><strong>8 pt</strong></div></div>
+          <div class="field"><label><span>Typeface</span><span>Serif</span></label><select id="fontFamily"><option value="Georgia, Times New Roman, serif">Editorial Serif</option><option value="Inter, Segoe UI, Arial, sans-serif">System Sans</option><option value="Courier New, monospace">Monospace</option></select></div>
+          <div class="field"><label><span>Size</span><span id="sizeLabel">34 pt</span></label><input id="fontSize" type="number" min="6" max="144" value="34"></div>
+          <div class="field"><label><span>Alignment</span></label><div class="seg"><button class="alignBtn active" data-align="left">Left</button><button class="alignBtn" data-align="center">Center</button><button class="alignBtn" data-align="right">Right</button></div></div>
+          <div class="field"><label><span>Opacity</span><span id="opacityLabel">100%</span></label><input id="opacityRange" type="range" min="10" max="100" value="100"></div>
+          <div class="inspector-card"><h4>Object</h4><div class="authority-row"><span>Type</span><strong id="objectType">Page</strong></div><div class="authority-row"><span>Revision</span><strong id="revisionLabel">r0</strong></div><div class="authority-row"><span>Snap</span><strong id="snapLabel">8 pt</strong></div></div>
         </section>
         <section id="reviewPanel" class="hidden"><div class="live-row"><div><div class="inspector-title" style="margin-bottom:3px">Live review</div><small>3 collaborators · document room</small></div><div class="avatar-stack"><div class="avatar">A</div><div class="avatar">R</div><div class="avatar">M</div></div></div><div class="comment"><strong>Editorial</strong><p>The authority language is clear. Keep this line visible in the final export.</p></div><div class="comment"><strong>Production</strong><p>Page 2 preflight is clean. No out-of-bounds objects detected.</p></div><button class="rbtn primary" style="width:100%;color:white;background:#315f4b" id="addComment">Add review note</button></section>
         <section id="authorityPanel" class="hidden"><div class="inspector-title">Authority stack</div><div class="inspector-card"><h4>Current document</h4><div class="authority-row"><span>Source</span><strong>FROZEN PDF</strong></div><div class="authority-row"><span>Page deltas</span><strong>3 bounded</strong></div><div class="authority-row"><span>Flow</span><strong>Parallel semantic</strong></div><div class="authority-row"><span>Assets</span><strong>Hash-bound</strong></div><div class="authority-row"><span>Checkpoint</span><strong>proof-r12</strong></div></div><div class="inspector-card"><h4>Claim boundary</h4><div style="font-size:9px;line-height:1.5;color:#5d645b">PDF truth ≠ Word truth.<br>Derived representation ≠ authority promotion.<br>UNKNOWN remains UNKNOWN.</div></div></section>
@@ -105,13 +105,45 @@
     </aside>
   </main>
 
-  <footer class="statusbar"><div class="status-left"><span class="dot"></span><span>Frozen source preserved</span><span id="modeStatus">Page Mode</span><span>3 pages</span></div><div class="status-right"><span>100%</span><span>PS-PUBLIC-DEMO-G6A-v002</span></div></footer>
+  <footer class="statusbar"><div class="status-left"><span class="dot"></span><span id="sourceStatus">Reference document</span><span id="modeStatus">Page Mode</span><span id="pageCountStatus">3 pages</span></div><div class="status-right"><span>100%</span><span id="buildMarker">PS-PUBLIC-DEMO-G6B-v003</span></div></footer>
 </div>
 
+
+<div class="file-backstage" id="fileBackstage" aria-hidden="true">
+  <div class="file-rail">
+    <div class="file-brand"><div class="mark">GG</div><div><strong>File</strong><small>Document commands</small></div></div>
+    <button class="file-nav active" data-file-view="new">New</button>
+    <button class="file-nav" data-file-view="open">Open</button>
+    <button class="file-nav" data-file-view="save">Save</button>
+    <button class="file-nav" data-file-view="export">Export</button>
+    <button class="file-nav file-close" id="fileClose">← Back to document</button>
+  </div>
+  <div class="file-content">
+    <section class="file-view" data-file-panel="new">
+      <div class="file-eyebrow">New</div><h2>Create a document</h2><p>Start from a genuinely fresh editable page. No demo content is carried forward.</p>
+      <button class="new-doc-card" id="newDocumentBtn"><span class="blank-sheet"></span><span><strong>Document</strong><small>Blank 8.5 × 11 in publication</small></span></button>
+    </section>
+    <section class="file-view hidden" data-file-panel="open">
+      <div class="file-eyebrow">Open</div><h2>Open a file</h2><p>Open a local PDF into Page Mode. This operational slice supports source viewing plus bounded overlay edits. Full native PDF-object editing remains owned by the G5I PDF engine connection.</p>
+      <button class="new-doc-card" id="openPdfBtn"><span class="pdf-sheet">PDF</span><span><strong>PDF document</strong><small>Load local source without uploading it</small></span></button>
+      <input id="pdfFileInput" type="file" accept="application/pdf" hidden>
+      <button class="new-doc-card secondary-card" id="openProjectBtn"><span class="project-sheet">PS</span><span><strong>Publisher Studio project</strong><small>Open a .psdemo.json project saved from this demo</small></span></button>
+      <input id="projectFileInput" type="file" accept="application/json,.json" hidden>
+    </section>
+    <section class="file-view hidden" data-file-panel="save">
+      <div class="file-eyebrow">Save</div><h2>Keep your work</h2><p>The current native document can be saved locally in this browser or downloaded as a portable project snapshot.</p>
+      <div class="file-actions"><button class="file-action" id="saveLocalBtn"><strong>Save now</strong><small>Store current document in browser storage</small></button><button class="file-action" id="downloadProjectBtn2"><strong>Download project</strong><small>Portable .psdemo.json snapshot</small></button></div>
+    </section>
+    <section class="file-view hidden" data-file-panel="export">
+      <div class="file-eyebrow">Export</div><h2>Export the current work</h2><p>Native documents can be printed to PDF by the browser or downloaded as HTML. Full PDF rewrite/export remains a core-engine responsibility.</p>
+      <div class="file-actions"><button class="file-action" id="filePrintPdf"><strong>Print / Save as PDF</strong><small>Use browser print pipeline</small></button><button class="file-action" id="fileDownloadHtml"><strong>Download HTML</strong><small>Export native page composition</small></button></div>
+    </section>
+  </div>
+</div>
 <div class="history-panel" id="historyPanel"><div class="history-head"><strong>Version History</strong><button id="closeHistory">×</button></div><div class="history-list"><div class="history-item active"><div class="row"><strong>proof-r12</strong><span>now</span></div><p>Public demo editorial state · exact source retained.</p></div><div class="history-item"><div class="row"><strong>layout-r11</strong><span>18 min</span></div><p>Page furniture refined; Flow semantics unchanged.</p></div><div class="history-item"><div class="row"><strong>review-r10</strong><span>42 min</span></div><p>Review comments resolved; source authority unchanged.</p></div></div></div>
 <div class="modal-bg" id="modalBg" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><div class="modal-head"><h3 id="modalTitle">Publisher Studio</h3><button class="close" id="modalClose">Close</button></div><div class="modal-body" id="modalBody"></div><div class="modal-foot"><button class="close" id="modalDone">Done</button></div></div></div>
 <div class="toast" id="toast">Ready</div>
 
-<script src="./app.js?v=PS-PUBLIC-DEMO-G6A-v002" defer></script>
+<script src="./app.js?v=PS-PUBLIC-DEMO-G6B-v003" defer></script>\n<script src="./ops.js?v=PS-PUBLIC-DEMO-G6B-v003" defer></script>
 </body>
 </html>
