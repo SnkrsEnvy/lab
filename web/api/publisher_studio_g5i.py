@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import hashlib
 import io
 import json
@@ -17,6 +18,10 @@ TRANSPORT = "g6h-stateless-same-origin-v001"
 MAX_PDF_BYTES = 3_500_000
 RENDER_SCALE = 2.0
 OUTSIDE_TOLERANCE = 0.00005
+SELFTEST_PDF_B64 = "JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUiAvRjMgNCAwIFIgL0Y0IDUgMCBSCj4+CmVuZG9iagoyIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhIC9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nIC9OYW1lIC9GMSAvU3VidHlwZSAvVHlwZTEgL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjMgMCBvYmoKPDwKL0Jhc2VGb250IC9IZWx2ZXRpY2EtQm9sZCAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjIgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iago0IDAgb2JqCjw8Ci9CYXNlRm9udCAvVGltZXMtQm9sZCAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjMgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iago1IDAgb2JqCjw8Ci9CYXNlRm9udCAvQ291cmllciAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjQgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iago2IDAgb2JqCjw8Ci9Db250ZW50cyAxMSAwIFIgL01lZGlhQm94IFsgMCAwIDYxMiA3OTIgXSAvUGFyZW50IDEwIDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago3IDAgb2JqCjw8Ci9Db250ZW50cyAxMiAwIFIgL01lZGlhQm94IFsgMCAwIDYxMiA3OTIgXSAvUGFyZW50IDEwIDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago4IDAgb2JqCjw8Ci9QYWdlTW9kZSAvVXNlTm9uZSAvUGFnZXMgMTAgMCBSIC9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iago5IDAgb2JqCjw8Ci9BdXRob3IgKGFub255bW91cykgL0NyZWF0aW9uRGF0ZSAoRDoyMDI2MDkyMDAyNTMwMCswMCcwMCcpIC9DcmVhdG9yIChhbm9ueW1vdXMpIC9LZXl3b3JkcyAoKSAvTW9kRGF0ZSAoRDoyMDI2MDkyMDAyNTMwMCswMCcwMCcpIC9Qcm9kdWNlciAoUmVwb3J0TGFiIFBERiBMaWJyYXJ5IC0gXChvcGVuc291cmNlXCkpIAogIC9TdWJqZWN0ICh1bnNwZWNpZmllZCkgL1RpdGxlICh1bnRpdGxlZCkgL1RyYXBwZWQgL0ZhbHNlCj4+CmVuZG9iagoxMCAwIG9iago8PAovQ291bnQgMiAvS2lkcyBbIDYgMCBSIDcgMCBSIF0gL1R5cGUgL1BhZ2VzCj4+CmVuZG9iagoxMSAwIG9iago8PAovRmlsdGVyIFsgL0FTQ0lJODVEZWNvZGUgL0ZsYXRlRGVjb2RlIF0gL0xlbmd0aCA1MDUKPj4Kc3RyZWFtCkdhcm89OTk3Z00nU1o7VydrYzNbPCwrKzk3LXVOXCcxXT9tOEtzUjpmNylNbkRKXiVxLzlUPl4/ZColWEJlaSMqXEQyR0dGKz5LU0tEVyV0SjEkJlMzdDxtOWNKWGpXVycpb0RAUFduXD4oWjhpUTNkZDBCZTVEUWstPm07OF06JEwkNyNgX2lWXW9oPmpzLkpdRE8+cDs8N0YhOj8tPDhwQlVkQyhQRz1eSDosMiVeU3UyXicrbUo9cGlNdCpeNy86XS4uI2AyKUNNPFEpK0AyLzU9PkMkSEZPXTpoOyU8K1JDTSEuTmA0aUJUVW9tK2dORjVXKUQtcStUYzd1JDA4KC50JkJfOG9BPSRlXzkkXyE3Tkg5OjFiRi9XOl8hW2l0TzhdLDFLYTRaRTBeNzdNZ2hGQlFfZnMhUGdUcCwvKWxXI2ZLW04kQUFANkVtRV5FLixGa1wqcXJgbGs5L3BvUic1WkxTL0c5YWUiJnFbJVxBTj5cO0M1SitsQ1xhcihvOzFvKTQsXkZeW0hZWz1fa28/Jy5kXkk8XShpYlNoN2ZYVFhNKkhKS0M9XzlMN2U0MHF1dHQiT288QTFnIzRwbm5DUHAlW1Q9RjduRTo1OSwpN0QjSSVNRG5HIjkiVVk+OWtwZVo2aVJMXT86N3I8ITU5Wm5ffj5lbmRzdHJlYW0KZW5kb2JqCjEyIDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDI0MQo+PgpzdHJlYW0KR2FyVzJfLnBrQSUjNDRyTVo6MSVpXlFdMEZOOlBrVl0/ITUqWycqTWoscXQ9RVZmVVhdSj1YSSFYWE9vbWhfWyRNZlE5T243JlVgJzFmdUY1YEtHYj8/JWBTK0EjMGk2VnVUMlY6TVg8P0l0Ukk3N00lNU4oRW8qWEYjOUc8Sis9UTBJKjFHZnVEdD5lbTAuPjUhay1ibUZnRzg2Xm0jPUpiYXVQNTU+JF9qXT8xP3M3UFlYQigjYVRFO0IxL0FgamBoNHRfSypedGshNEg5XT1ILFR0dTwqI3FiTkc4dWRUaCZ1XCJVVVVEUmpbXDV+PmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDEzCjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDA2MSAwMDAwMCBuIAowMDAwMDAwMTIyIDAwMDAwIG4gCjAwMDAwMDAyMjkgMDAwMDAgbiAKMDAwMDAwMDM0MSAwMDAwMCBuIAowMDAwMDAwNDQ5IDAwMDAwIG4gCjAwMDAwMDA1NTQgMDAwMDAgbiAKMDAwMDAwMDc0OSAwMDAwMCBuIAowMDAwMDAwOTQ0IDAwMDAwIG4gCjAwMDAwMDEwMTMgMDAwMDAgbiAKMDAwMDAwMTI3NCAwMDAwMCBuIAowMDAwMDAxMzQwIDAwMDAwIG4gCjAwMDAwMDE5MzYgMDAwMDAgbiAKdHJhaWxlcgo8PAovSUQgCls8ZDdhZjBlM2Q5YzQyZjk4ZTAzMDM5NjkyYjA0NWUzYzg+PGQ3YWYwZTNkOWM0MmY5OGUwMzAzOTY5MmIwNDVlM2M4Pl0KJSBSZXBvcnRMYWIgZ2VuZXJhdGVkIFBERiBkb2N1bWVudCAtLSBkaWdlc3QgKG9wZW5zb3VyY2UpCgovSW5mbyA5IDAgUgovUm9vdCA4IDAgUgovU2l6ZSAxMwo+PgpzdGFydHhyZWYKMjI2OAolJUVPRgo="
+SELFTEST_SOURCE_SHA256 = "da37ed6b61739777d399c7292dbe5f88661f34ade3abae245aaf287d826e3c92"
+SELFTEST_TARGET = "Select this sentence in Page Mode and stage a bounded replacement."
+SELFTEST_CONTROL = "A one-page edit should leave this control page render-identical."
 
 app = FastAPI(title="Publisher Studio G5I Stateless Transport", version=APP_VERSION)
 
@@ -298,7 +303,46 @@ def build_receipt(source_raw: bytes, output_raw: bytes, operations: list[dict[st
 @app.get("/")
 @app.get("/api/publisher_studio_g5i")
 @app.get("/api/publisher-studio-g5i")
-def capabilities() -> JSONResponse:
+def capabilities(selftest: bool = False) -> JSONResponse:
+    if selftest:
+        raw = base64.b64decode(SELFTEST_PDF_B64)
+        inspected = inspect_pdf(raw)
+        if inspected["sourceSha256"] != SELFTEST_SOURCE_SHA256:
+            raise HTTPException(500, "Embedded self-test fixture hash mismatch")
+        target = next((b for b in inspected["pages"][0]["blocks"] if SELFTEST_TARGET in b["text"]), None)
+        if target is None:
+            raise HTTPException(500, "Self-test target text block missing")
+        op = {"id": "g6h-public-selftest-redact", "type": "redact", "page": 1, "bbox": target["bbox"], "oldText": target["text"], "fill": "#000000"}
+        output, op_results = apply_operations(raw, [op])
+        proof = build_receipt(raw, output, [op], op_results, "screen")
+        doc = fitz.open(stream=output, filetype="pdf")
+        try:
+            all_text = "\n".join(page.get_text("text") for page in doc)
+            page2_text = doc[1].get_text("text") if doc.page_count > 1 else ""
+            assertions = {
+                "sourceHashExact": inspected["sourceSha256"] == SELFTEST_SOURCE_SHA256,
+                "outputHashChanged": sha256_bytes(output) != SELFTEST_SOURCE_SHA256,
+                "pageCountPreserved": doc.page_count == 2,
+                "redactedTextAbsent": SELFTEST_TARGET not in all_text,
+                "controlPagePreserved": SELFTEST_CONTROL in page2_text,
+                "verificationPass": bool(proof["verification"]["pass"]),
+                "renderPass": bool(proof["verification"]["renderPass"]),
+                "structuralPass": bool(proof["verification"]["structural"]["pass"]),
+            }
+        finally:
+            doc.close()
+        return JSONResponse({
+            "status": "PASS" if all(assertions.values()) else "FAIL",
+            "version": APP_VERSION,
+            "gate": ACTIVE_GATE,
+            "transport": TRANSPORT,
+            "sourceSha256": inspected["sourceSha256"],
+            "outputSha256": sha256_bytes(output),
+            "outputBytes": len(output),
+            "assertions": assertions,
+            "proofSha256": sha256_bytes(json.dumps(proof, sort_keys=True, separators=(",", ":")).encode("utf-8")),
+            "claim": "Public Vercel function self-test executes the authentic frozen G5I sample through the same stateless redaction and verification code path used by browser export.",
+        }, headers={"Cache-Control": "no-store"})
     return JSONResponse({
         "version": APP_VERSION,
         "gate": ACTIVE_GATE,
