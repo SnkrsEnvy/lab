@@ -1,0 +1,53 @@
+{
+  "gate": "G6J Bounded PDF URI Links",
+  "status": "PASS_PUBLIC_RUNTIME_BOUNDED",
+  "date": "2026-09-20",
+  "branch": "publisher-studio-pdf-links-g6j-v011",
+  "build": "PS-PUBLIC-DEMO-G6J-v011",
+  "workflowRun": 35542618342,
+  "artifactId": 10614389609,
+  "artifactSha256": "ec375787db52ae240d5ffbc4c48fbe19c91a43a3352cb533024b8b08c49342e8",
+  "sourceSha256": "da37ed6b61739777d399c7292dbe5f88661f34ade3abae245aaf287d826e3c92",
+  "outputSha256": "48a7944359440485c446ed2b33753bc3ff7a62af5ec6bd5af99cfe908c1c4a9e",
+  "proofSha256": "b9391966f1c2c2da4d307cc09c8b03802b04dcf5cafb24976acf94e101e670e4",
+  "checks": {
+    "apiIdentity": true,
+    "apiStateless": true,
+    "capabilityCeiling": true,
+    "buildIdentity": true,
+    "linkStaged": true,
+    "linkPreview": true,
+    "pdfUndo": true,
+    "downloadExists": true,
+    "verificationPass": true,
+    "renderPass": true,
+    "structuralPass": true,
+    "sourceHashPreserved": true,
+    "outputHashChanged": true,
+    "pageCountPreserved": true,
+    "targetTextPreserved": true,
+    "linkUriPresent": true,
+    "linkBboxOverlapsTarget": true,
+    "controlPagePreserved": true,
+    "noPageErrors": true,
+    "noConsoleErrors": true
+  },
+  "promotedCapabilities": [
+    "bounded URI link insertion over detected native PDF content",
+    "visible staged link overlay",
+    "client-staged Undo",
+    "verified PDF export",
+    "inherited bounded native PDF text replacement",
+    "inherited true redaction"
+  ],
+  "heldCapabilities": [
+    "OCR transport",
+    "forms transport",
+    "source-font-perfect replacement",
+    "paragraph reflow",
+    "durable server workspace",
+    "production promotion"
+  ],
+  "productionWinner": "G6C / 1f62ec546be0cb4b5fd008ee65cc07f92fa3082d",
+  "claim": "G6J proves a URI link can be staged over an existing G5I-detected native PDF text box through the deployed Publisher Studio UI, undone, exported, reparsed, and confirmed to overlap the authorized target while preserving visible text and the untouched control page."
+}
