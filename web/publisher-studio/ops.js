@@ -166,6 +166,7 @@ function refreshResume(){
 function activate(doc,pdfUrl=null,{focus=true}={}){
   if(S.pdfUrl&&S.pdfUrl!==pdfUrl){try{URL.revokeObjectURL(S.pdfUrl);}catch(e){}}
   S.pdfUrl=pdfUrl;S.doc=migrate(doc);S.active=true;S.sel=null;S.block=S.doc.flow[0]?.id||null;S.undo=[];S.redo=[];S.baseline=null;closeBackstage();
+  q('.tab[data-tab="home"]')?.click();
   setMode('page');renderAll();
   if(focus&&S.doc.kind!=='pdf')setTimeout(()=>focusSemantic(S.block),40);
   toast(S.doc.kind==='pdf'?'PDF opened. Page source remains authoritative.':'Fresh document ready — start typing.');
