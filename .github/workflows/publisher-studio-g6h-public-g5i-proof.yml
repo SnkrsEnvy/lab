@@ -1,8 +1,8 @@
-name: Publisher Studio G6J PDF Links Proof
+name: Publisher Studio G6K PDF Page Reorder Proof
 on:
   push:
     branches:
-      - 'publisher-studio-pdf-links-g6j-v011'
+      - 'publisher-studio-pdf-page-reorder-g6k-v012'
     paths:
       - 'web/api/publisher_studio_g5i.py'
       - 'web/requirements.txt'
@@ -15,16 +15,16 @@ on:
       - 'web/requirements.txt'
       - 'web/vercel.json'
       - 'web/publisher-studio/**'
-      - '.github/workflows/publisher-studio-g6j-pdf-links-proof.yml'
+      - '.github/workflows/publisher-studio-g6h-public-g5i-proof.yml'
 
 jobs:
-  pdf-links-proof:
+  pdf-page-reorder-proof:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
-      TARGET_URL: https://lab-git-publisher-studio-pdf-links-g6j-v011-world-builders.vercel.app/publisher-studio/
-      API_URL: https://lab-git-publisher-studio-pdf-links-g6j-v011-world-builders.vercel.app/api/publisher-studio-g5i
-      EXPECTED_BUILD: PS-PUBLIC-DEMO-G6J-v011
+      TARGET_URL: https://lab-akjir8ftq-world-builders.vercel.app/publisher-studio/
+      API_URL: https://lab-akjir8ftq-world-builders.vercel.app/api/publisher-studio-g5i
+      EXPECTED_BUILD: PS-PUBLIC-DEMO-G6K-v012
       EXPECTED_SOURCE_SHA: da37ed6b61739777d399c7292dbe5f88661f34ade3abae245aaf287d826e3c92
     steps:
       - uses: actions/checkout@v4
@@ -33,13 +33,14 @@ jobs:
           python-version: '3.12'
       - name: Install browser and PDF proof runtime
         run: |
-          python -m pip install --disable-pip-version-check playwright==1.55.0 pymupdf==1.26.7 requests
+          python -m pip install --disable-pip-version-check playwright==1.55.0 pymupdf==1.26.7 requests pillow
           python -m playwright install --with-deps chromium
-      - name: Run public G5I browser proof
+      - name: Run public G5I page reorder proof
         run: |
           python - <<'PY'
-          import hashlib, json, os, pathlib, time
+          import hashlib, io, json, os, pathlib
           import fitz, requests
+          from PIL import Image, ImageChops
           from playwright.sync_api import sync_playwright, expect
 
           target=os.environ['TARGET_URL']
@@ -47,9 +48,9 @@ jobs:
           expected_build=os.environ['EXPECTED_BUILD']
           expected_source=os.environ['EXPECTED_SOURCE_SHA']
           fixture=pathlib.Path('web/publisher-studio/proof/publisher-studio-demo-g5i.pdf')
-          out=pathlib.Path('publisher-studio-g6j-proof'); out.mkdir(exist_ok=True)
-          target_text='Select this sentence in Page Mode and stage a bounded replacement.'
-          control_text='A one-page edit should leave this control page render-identical.'
+          out=pathlib.Path('publisher-studio-g6k-proof'); out.mkdir(exist_ok=True)
+          page1_text='Publisher Studio Proof Sheet'
+          page2_text='Second Page - Untouched Control'
           receipt={'target':target,'api':api,'expected_build':expected_build,'checks':{},'console_errors':[],'page_errors':[]}
 
           def mark(name,value=True,detail=None):
@@ -61,11 +62,19 @@ jobs:
           mark('fixture_source_hash',hashlib.sha256(source_bytes).hexdigest()==expected_source)
 
           cap=requests.get(api,timeout=60)
-          mark('api_http_200',cap.status_code==200,cap.text[:500])
+          mark('api_http_200',cap.status_code==200,cap.text[:600])
           caps=cap.json()
           mark('api_identity',caps.get('version')=='0.35.0-g5i' and caps.get('gate')=='G5I Distributed Page Delta Lifecycle + Conflict-Safe Undo')
           mark('api_stateless',caps.get('stateless') is True and caps.get('transport')=='g6h-stateless-same-origin-v001')
-          mark('capability_ceiling',caps.get('capabilities')=={'replaceText':True,'redact':True,'links':True,'undo':True,'exportPdf':True,'ocr':False,'forms':False})
+          mark('capability_ceiling',caps.get('capabilities')=={'replaceText':True,'redact':True,'links':True,'pageReorder':True,'undo':True,'exportPdf':True,'ocr':False,'forms':False})
+
+          def render(raw,idx):
+              d=fitz.open(stream=raw,filetype='pdf')
+              try:
+                  pix=d[idx].get_pixmap(matrix=fitz.Matrix(2,2),alpha=False)
+                  return Image.open(io.BytesIO(pix.tobytes('png'))).convert('RGB')
+              finally:
+                  d.close()
 
           with sync_playwright() as p:
               browser=p.chromium.launch()
@@ -84,51 +93,42 @@ jobs:
               page.locator('#pdfFileInput').set_input_files(str(fixture))
               expect(page.locator('#pdfEngineStatus')).to_contain_text('CONNECTED',timeout=90000)
               expect(page.locator('#pageCountStatus')).to_contain_text('2 pages')
-              mark('source_hash_in_ui_state',page.evaluate("window.PublisherStudioPdfBridge.status().source != null"))
+              thumbs=page.locator('#opsThumbs .thumb')
+              expect(thumbs).to_have_count(2)
+              mark('initial_order',thumbs.nth(0).locator('small').inner_text()=='PDF page 1' and thumbs.nth(1).locator('small').inner_text()=='PDF page 2')
 
-              link_uri='https://example.com/publisher-studio-g6j-proof'
-              page.get_by_role('button',name='PDF',exact=True).click()
-              expect(page.locator('#pdfReplaceTextBtn')).to_be_enabled()
-              expect(page.locator('#pdfRedactBtn')).to_be_enabled()
-              expect(page.locator('#pdfLinksBtn')).to_be_enabled()
-              mark('ocr_disabled',page.locator('#pdfOcrBtn').is_disabled())
-              mark('forms_disabled',page.locator('#pdfFormsBtn').is_disabled())
-
-              page.locator('#pdfLinksBtn').click()
-              choice=page.locator('.pdf-block-choice').filter(has_text=target_text).first
-              expect(choice).to_be_visible()
-              page.once('dialog',lambda dialog: dialog.accept(link_uri))
-              choice.click()
-              expect(page.locator('.pdf-link-overlay')).to_have_count(1)
-              mark('link_staged',page.locator('.pdf-link-overlay').count()==1)
-              mark('link_preview',link_uri in page.locator('.pdf-link-overlay').inner_text())
+              page.get_by_role('button',name='Layout',exact=True).click()
+              page.locator('#movePageDownBtn').click()
+              expect(thumbs.nth(0).locator('small')).to_have_text('PDF page 2')
+              expect(thumbs.nth(1).locator('small')).to_have_text('PDF page 1')
+              mark('reorder_staged',True)
+              mark('staged_operation',page.evaluate("window.PublisherStudioPdfBridge && window.PublisherStudioPdfBridge.status().source != null"))
 
               page.get_by_role('button',name='Home',exact=True).click()
               page.locator('#undo').click()
-              expect(page.locator('.pdf-link-overlay')).to_have_count(0)
-              mark('pdf_undo',page.locator('.pdf-link-overlay').count()==0)
+              expect(thumbs.nth(0).locator('small')).to_have_text('PDF page 1')
+              expect(thumbs.nth(1).locator('small')).to_have_text('PDF page 2')
+              mark('pdf_undo_restores_order',True)
 
-              page.get_by_role('button',name='PDF',exact=True).click()
-              page.locator('#pdfLinksBtn').click()
-              choice=page.locator('.pdf-block-choice').filter(has_text=target_text).first
-              page.once('dialog',lambda dialog: dialog.accept(link_uri))
-              choice.click()
-              expect(page.locator('.pdf-link-overlay')).to_have_count(1)
+              page.get_by_role('button',name='Layout',exact=True).click()
+              page.locator('#movePageDownBtn').click()
+              expect(thumbs.nth(0).locator('small')).to_have_text('PDF page 2')
+              expect(thumbs.nth(1).locator('small')).to_have_text('PDF page 1')
 
-              page.get_by_role('button',name='Export',exact=True).first.click()
               export_response={}
               def capture_export(resp):
                   if resp.url.endswith('/api/publisher-studio-g5i') and resp.request.method=='POST' and resp.headers.get('content-type','').startswith('application/pdf'):
                       export_response['status']=resp.status
                       export_response['headers']=resp.all_headers()
               page.on('response',capture_export)
+
+              page.get_by_role('button',name='Export',exact=True).first.click()
               with page.expect_download(timeout=90000) as download_info:
                   page.locator('#printPdfBtn').click()
-              download=download_info.value
-              edited=out/'public-g6j-linked.pdf'
-              download.save_as(str(edited))
+              edited=out/'public-g6k-reordered.pdf'
+              download_info.value.save_as(str(edited))
               page.wait_for_timeout(500)
-              page.screenshot(path=str(out/'g6j-pdf-links-proof.png'),full_page=True)
+              page.screenshot(path=str(out/'g6k-pdf-page-reorder-proof.png'),full_page=True)
 
               mark('download_exists',edited.is_file() and edited.stat().st_size>0)
               edited_bytes=edited.read_bytes()
@@ -142,26 +142,28 @@ jobs:
               mark('remote_source_hash',h.get('x-publisher-source-sha256')==expected_source)
               mark('remote_output_hash',h.get('x-publisher-output-sha256')==edited_sha)
 
-              doc=fitz.open(edited)
+              src=fitz.open(stream=source_bytes,filetype='pdf')
+              outdoc=fitz.open(stream=edited_bytes,filetype='pdf')
               try:
-                  all_text='\n'.join(pg.get_text('text') for pg in doc)
-                  page2=doc[1].get_text('text') if doc.page_count>1 else ''
-                  links=[lnk for lnk in doc[0].get_links() if lnk.get('uri')==link_uri]
-                  target_hits=doc[0].search_for(target_text)
-                  target_rect=target_hits[0] if target_hits else None
-                  overlap=False
-                  if target_rect:
-                      for lnk in links:
-                          lr=fitz.Rect(lnk.get('from')) if lnk.get('from') is not None else fitz.Rect()
-                          if not (lr & fitz.Rect(target_rect)).is_empty:
-                              overlap=True; break
-                  mark('page_count_preserved',doc.page_count==2)
-                  mark('target_text_preserved',target_text in all_text)
-                  mark('link_uri_present',len(links)>=1)
-                  mark('link_bbox_overlaps_target',overlap)
-                  mark('control_page_preserved',control_text in page2)
+                  src_text=[src[i].get_text('text') for i in range(src.page_count)]
+                  out_text=[outdoc[i].get_text('text') for i in range(outdoc.page_count)]
+                  mark('page_count_preserved',outdoc.page_count==2)
+                  mark('lineage_text_2_1',page2_text in out_text[0] and page1_text in out_text[1])
+                  mark('page1_content_preserved',src_text[0]==out_text[1])
+                  mark('page2_content_preserved',src_text[1]==out_text[0])
               finally:
-                  doc.close()
+                  src.close(); outdoc.close()
+
+              a0,b0=render(source_bytes,1),render(edited_bytes,0)
+              a1,b1=render(source_bytes,0),render(edited_bytes,1)
+              def ratio(a,b):
+                  if a.size!=b.size:return 1.0
+                  hist=ImageChops.difference(a,b).convert('L').histogram()
+                  total=max(1,a.size[0]*a.size[1])
+                  return (total-hist[0])/total
+              r0,r1=ratio(a0,b0),ratio(a1,b1)
+              mark('raster_lineage_page1_from_source2',r0<0.00005,r0)
+              mark('raster_lineage_page2_from_source1',r1<0.00005,r1)
 
               mark('no_page_errors',len(receipt['page_errors'])==0,receipt['page_errors'])
               mark('no_console_errors',len(receipt['console_errors'])==0,receipt['console_errors'])
@@ -169,13 +171,13 @@ jobs:
 
           receipt['status']='PASS'
           (out/'receipt.json').write_text(json.dumps(receipt,indent=2),encoding='utf-8')
-          print('PUBLISHER_STUDIO_G6J_PDF_LINKS_PROOF_PASS')
+          print('PUBLISHER_STUDIO_G6K_PDF_PAGE_REORDER_PROOF_PASS')
           print(json.dumps(receipt,indent=2))
           PY
       - name: Upload public proof evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: publisher-studio-g6j-pdf-links-proof
-          path: publisher-studio-g6j-proof/
+          name: publisher-studio-g6k-pdf-page-reorder-proof
+          path: publisher-studio-g6k-proof/
           if-no-files-found: warn
