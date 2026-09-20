@@ -15,15 +15,15 @@ on:
       - 'web/requirements.txt'
       - 'web/vercel.json'
       - 'web/publisher-studio/**'
-      - '.github/workflows/publisher-studio-g6i-pdf-links-proof.yml'
+      - '.github/workflows/publisher-studio-g6j-pdf-links-proof.yml'
 
 jobs:
   pdf-links-proof:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     env:
-      TARGET_URL: https://lab-git-lab-git-publisher-studio-pdf-links-g6j-v011-world-builders.vercel.app/publisher-studio/
-      API_URL: https://lab-git-lab-git-publisher-studio-pdf-links-g6j-v011-world-builders.vercel.app/api/publisher-studio-g5i
+      TARGET_URL: https://lab-git-publisher-studio-pdf-links-g6j-v011-world-builders.vercel.app/publisher-studio/
+      API_URL: https://lab-git-publisher-studio-pdf-links-g6j-v011-world-builders.vercel.app/api/publisher-studio-g5i
       EXPECTED_BUILD: PS-PUBLIC-DEMO-G6J-v011
       EXPECTED_SOURCE_SHA: da37ed6b61739777d399c7292dbe5f88661f34ade3abae245aaf287d826e3c92
     steps:
@@ -128,7 +128,7 @@ jobs:
               edited=out/'public-g6j-linked.pdf'
               download.save_as(str(edited))
               page.wait_for_timeout(500)
-              page.screenshot(path=str(out/'g6i-pdf-links-proof.png'),full_page=True)
+              page.screenshot(path=str(out/'g6j-pdf-links-proof.png'),full_page=True)
 
               mark('download_exists',edited.is_file() and edited.stat().st_size>0)
               edited_bytes=edited.read_bytes()
@@ -176,6 +176,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: publisher-studio-g6i-pdf-links-proof
+          name: publisher-studio-g6j-pdf-links-proof
           path: publisher-studio-g6j-proof/
           if-no-files-found: warn
