@@ -8,7 +8,8 @@ import uuid
 from typing import Any
 
 import fitz
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+import httpx
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import JSONResponse, Response
 from PIL import Image, ImageChops, ImageDraw
 
@@ -303,7 +304,7 @@ def build_receipt(source_raw: bytes, output_raw: bytes, operations: list[dict[st
 @app.get("/")
 @app.get("/api/publisher_studio_g5i")
 @app.get("/api/publisher-studio-g5i")
-def capabilities(selftest: bool = False) -> JSONResponse:
+async def capabilities(request: Request, selftest: str | None = None) -> JSONResponse:
     if selftest:
         raw = base64.b64decode(SELFTEST_PDF_B64)
         inspected = inspect_pdf(raw)
@@ -331,6 +332,49 @@ def capabilities(selftest: bool = False) -> JSONResponse:
             }
         finally:
             doc.close()
+        roundtrip = None
+        if str(selftest).lower() in {"roundtrip", "full", "post"}:
+            public_url = str(request.base_url).rstrip("/") + "/api/publisher-studio-g5i"
+            async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as client:
+                remote = await client.post(
+                    public_url,
+                    files={"file": ("publisher-studio-demo.pdf", raw, "application/pdf")},
+                    data={"mode": "export", "operations": json.dumps([op]), "preset": "screen"},
+                    headers={"x-publisher-selftest": "g6h-roundtrip"},
+                )
+            remote_bytes = remote.content
+            remote_doc = fitz.open(stream=remote_bytes, filetype="pdf") if remote.status_code == 200 else None
+            try:
+                remote_text = "\n".join(page.get_text("text") for page in remote_doc) if remote_doc else ""
+                remote_page2 = remote_doc[1].get_text("text") if remote_doc and remote_doc.page_count > 1 else ""
+                remote_assertions = {
+                    "http200": remote.status_code == 200,
+                    "contentTypePdf": remote.headers.get("content-type", "").startswith("application/pdf"),
+                    "verificationHeader": remote.headers.get("x-publisher-verification-pass") == "true",
+                    "renderHeader": remote.headers.get("x-publisher-render-pass") == "true",
+                    "structuralHeader": remote.headers.get("x-publisher-structural-pass") == "true",
+                    "sourceHashHeader": remote.headers.get("x-publisher-source-sha256") == SELFTEST_SOURCE_SHA256,
+                    "outputHashHeader": remote.headers.get("x-publisher-output-sha256") == sha256_bytes(remote_bytes),
+                    "outputHashChanged": sha256_bytes(remote_bytes) != SELFTEST_SOURCE_SHA256,
+                    "pageCountPreserved": bool(remote_doc and remote_doc.page_count == 2),
+                    "redactedTextAbsent": SELFTEST_TARGET not in remote_text,
+                    "controlPagePreserved": SELFTEST_CONTROL in remote_page2,
+                }
+            finally:
+                if remote_doc:
+                    remote_doc.close()
+            roundtrip = {
+                "status": "PASS" if all(remote_assertions.values()) else "FAIL",
+                "url": public_url,
+                "httpStatus": remote.status_code,
+                "outputSha256": sha256_bytes(remote_bytes),
+                "outputBytes": len(remote_bytes),
+                "assertions": remote_assertions,
+                "transportHeader": remote.headers.get("x-publisher-transport"),
+                "proofSha256Header": remote.headers.get("x-publisher-proof-sha256"),
+            }
+            assertions["publicMultipartRoundtrip"] = roundtrip["status"] == "PASS"
+
         return JSONResponse({
             "status": "PASS" if all(assertions.values()) else "FAIL",
             "version": APP_VERSION,
@@ -340,8 +384,9 @@ def capabilities(selftest: bool = False) -> JSONResponse:
             "outputSha256": sha256_bytes(output),
             "outputBytes": len(output),
             "assertions": assertions,
+            "roundtrip": roundtrip,
             "proofSha256": sha256_bytes(json.dumps(proof, sort_keys=True, separators=(",", ":")).encode("utf-8")),
-            "claim": "Public Vercel function self-test executes the authentic frozen G5I sample through the same stateless redaction and verification code path used by browser export.",
+            "claim": "Public Vercel function self-test executes the authentic frozen G5I sample through the same stateless redaction and verification code path used by browser export; roundtrip mode also posts multipart PDF bytes back through the public Vercel endpoint.",
         }, headers={"Cache-Control": "no-store"})
     return JSONResponse({
         "version": APP_VERSION,
