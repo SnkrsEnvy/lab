@@ -1,0 +1,78 @@
+{
+  "profile": "publisher-studio-g5i-v015-critical-identity-v001",
+  "product": "Publisher Studio",
+  "suite": "Golden Goose Publishing Suite",
+  "version": "0.35.0-g5i",
+  "gate": "G5I Distributed Page Delta Lifecycle + Conflict-Safe Undo",
+  "format": "publisher-studio-release-manifest-v1",
+  "payloadCount": 220,
+  "expectedPackageName": "Publisher_Studio_G5I_v015.zip",
+  "knownZipSha256": null,
+  "knownZipSha256Status": "UNKNOWN",
+  "criticalFiles": {
+    "app.py": {
+      "bytes": 258436,
+      "sha256": "01669d9438c9ea7c4140b1fb3c6edc534a6ecc5848d52282a344e64ccf98c459"
+    },
+    "flow_engine.py": {
+      "bytes": 74926,
+      "sha256": "db0126cd99020f0e182f907277ac4955ef94a02feb9d831078278fb7dc69e609"
+    },
+    "semantic_patch_engine.py": {
+      "bytes": 13840,
+      "sha256": "3e83df1dbbe9df0f41f37f08ba2ddd5f68659915d15d93d4289cba8510abffe8"
+    },
+    "provider_client.py": {
+      "bytes": 4169,
+      "sha256": "2056a99d1d7b2ed4836028f43e8e8c22776bfd1a41992ec6cc5bfeb4778e5f97"
+    },
+    "provider_core.py": {
+      "bytes": 17772,
+      "sha256": "c03228bceade8248e246926f5162f6c1b8ab7d2bed980896f8a5a49f7818eb2f"
+    },
+    "provider_reference_service.py": {
+      "bytes": 5014,
+      "sha256": "c8ed67938f224a0560a9c6f5f2fcaf3506952430a9d4d8c40ecb08bb5c49a9b8"
+    },
+    "requirements.txt": {
+      "bytes": 167,
+      "sha256": "0cc72ef07ea6a275b5b28fd8e4ae0bfa1db96f871dbe6f5fce027a17305272d5"
+    },
+    "docs/ARCHITECTURE.md": {
+      "bytes": 10681,
+      "sha256": "55e30d830fa1e12894a4dac3b4a8ae80d620787fdd4b67ef6864f4646345126f"
+    },
+    "static/app.js": {
+      "bytes": 135569,
+      "sha256": "2364a9778bcc413986e4ee9c11451a3a16ab0e457a6eeed0979c7c3bb304a8f3"
+    },
+    "static/index.html": {
+      "bytes": 37152,
+      "sha256": "3ec404af31158f40cc6051c12d20990b4ac74110607636c0e2d39f27b43b69ac"
+    },
+    "static/styles.css": {
+      "bytes": 31316,
+      "sha256": "48e6fb8a655c6701353c77273b23f48e65ddac45ad2e8e5fff70ca736fdefe10"
+    },
+    "tests/smoke_gate5i.py": {
+      "bytes": 7265,
+      "sha256": "61384ad59e4722834226a7852baed73a0096f6b442bcccb162510851e606fa36"
+    },
+    "BUILD_RECEIPT_G5I.json": {
+      "bytes": 5776,
+      "sha256": "9c37ab33f0f81bbc8da923dbe08536bb87bc1cc5c62b1bb6fb713f24412f6ee1"
+    },
+    "G5I_REGRESSION_SUMMARY.json": {
+      "bytes": 3354,
+      "sha256": "71bf0ae8cb6efa579a0d1ea7924baa23205076dadf85b1be773ca801b884584b"
+    },
+    "G5I_RELEASE_FRESH_LAUNCH_PROOF.json": {
+      "bytes": 1328,
+      "sha256": "c4159340e390ed417b360264640f511dc0a23fc234e880d4406819465aef3db1"
+    },
+    "sample/publisher-studio-demo.pdf": {
+      "bytes": 2741,
+      "sha256": "da37ed6b61739777d399c7292dbe5f88661f34ade3abae245aaf287d826e3c92"
+    }
+  }
+}
