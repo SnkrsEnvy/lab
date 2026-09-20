@@ -46,3 +46,24 @@ Native PDF tools enable only when the current PDF source is connected and that e
 Contract proof demonstrates that the public UI can route bounded commands through an adapter without silently mutating the frozen source.
 
 It does not prove that G5I is connected, that any native PDF command succeeded in the frozen engine, or that exported bytes are correct until a real adapter and engine proof exist.
+
+
+## G6G real adapter
+
+A concrete adapter now exists at `g5i-http-adapter.js`.
+
+It is pinned to frozen G5I `0.35.0-g5i` and refuses unexpected version/gate responses. It maps the browser bridge to the real frozen endpoints:
+
+- `GET /api/capabilities`
+- `POST /api/document/upload`
+- `GET /api/document/{doc_id}/page/{page}/text`
+- `GET /api/document/{doc_id}/page/{page}/objects`
+- `GET /api/document/{doc_id}/preflight`
+- `POST /api/document/{doc_id}/export`
+- `GET /api/document/{doc_id}/export/{export_id}/download`
+
+PDF mutations remain staged deltas in the adapter until export. Adapter Undo removes the newest staged delta. Export sends the surviving operations to G5I's existing proof-bearing export pipeline.
+
+The adapter auto-registers only when `PUBLISHER_STUDIO_G5I_BASE_URL` or the deployment meta value `publisher-studio-g5i-base-url` is explicitly configured. Otherwise the public UI remains HOLD.
+
+Local end-to-end proof is recorded in `G5I_REAL_ADAPTER_PROOF_v001.json`. Public backend deployment remains a separate gate.

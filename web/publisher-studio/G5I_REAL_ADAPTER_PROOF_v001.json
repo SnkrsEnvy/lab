@@ -1,0 +1,53 @@
+{
+  "proof": "Publisher Studio G6G real G5I HTTP adapter proof",
+  "date": "2026-09-20",
+  "frozenPackage": "Publisher_Studio_G5I_v015.zip",
+  "packageSha256": "83011825c60c0b11014b426acbd2d85dcbe4d907516a3c8914e9c041db82c945",
+  "packageBytes": 1949779,
+  "manifestSha256": "fab0c322fca93e076c9d1b6aa5c5467ea904ba39ea404a2214e76b4a80266fbb",
+  "manifestPayloadCount": 220,
+  "criticalIdentity": "PASS",
+  "frozenEngine": {
+    "version": "0.35.0-g5i",
+    "gate": "G5I Distributed Page Delta Lifecycle + Conflict-Safe Undo",
+    "health": "PASS",
+    "mutationPrototype": "PyMuPDF / MuPDF"
+  },
+  "adapter": {
+    "contract": "publisher-studio-g5i-http-adapter-v1",
+    "capabilities": [
+      "redact",
+      "ocr",
+      "forms",
+      "links",
+      "undo",
+      "exportPdf"
+    ],
+    "sequence": [
+      "capabilities",
+      "upload",
+      "inspectText",
+      "stage redact",
+      "undo",
+      "restage redact",
+      "export",
+      "download",
+      "reparse"
+    ]
+  },
+  "sourceProof": {
+    "sample": "sample/publisher-studio-demo.pdf",
+    "sourceSha256": "da37ed6b61739777d399c7292dbe5f88661f34ade3abae245aaf287d826e3c92",
+    "sourceState": "FROZEN"
+  },
+  "exportProof": {
+    "verificationPass": true,
+    "structuralPass": true,
+    "renderPass": true,
+    "outputSha256": "06c9fca3299d94046fdb0f078e0a4659b52a3be883d66bfaa2252dc76406deee",
+    "outputBytes": 2144,
+    "sourceEqualsOutput": false,
+    "redactedTextAbsentAfterReparse": true
+  },
+  "claim": "The G6G JavaScript adapter successfully spoke the authentic frozen G5I HTTP API and produced a G5I-verified changed PDF after staged-redaction undo/restage. This proves the adapter boundary locally. It does not prove a public G5I backend deployment."
+}
