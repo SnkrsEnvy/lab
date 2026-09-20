@@ -105,6 +105,7 @@ jobs:
               receipt.setdefault('detail',{})['thumbs_after_first_move']=[thumbs.nth(i).locator('small').inner_text() for i in range(thumbs.count())]
               receipt['detail']['toast_after_first_move']=page.locator('#toast').inner_text()
               receipt['detail']['modal_open_after_first_move']=page.locator('#modalBg').get_attribute('class')
+              print('G6K_FIRST_MOVE_DIAGNOSTIC',json.dumps(receipt.get('detail',{}),sort_keys=True),flush=True)
               expect(thumbs.nth(0).locator('small')).to_have_text('PDF page 2')
               expect(thumbs.nth(1).locator('small')).to_have_text('PDF page 1')
               mark('reorder_staged',True)
