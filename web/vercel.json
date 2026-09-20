@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/publisher_studio_g5i.py": {
+      "maxDuration": 60
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/publisher-studio-g5i",
+      "destination": "/api/publisher_studio_g5i"
+    }
+  ]
+}

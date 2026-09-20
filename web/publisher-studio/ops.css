@@ -78,3 +78,48 @@
   body>.print-deck .print-block{margin:0 0 8pt;white-space:pre-wrap}
   body>.print-deck .print-object{position:absolute}
 }
+
+
+/* G6D — deeper native authoring */
+.style-select{min-width:122px;background:#343c31;color:#f4f6f1;border:1px solid #465043;border-radius:8px;padding:5px 8px;font-size:10px;height:34px}
+.style-select option{background:white;color:#1d231e}
+.page-semantic-block.heading1 .semantic-content,.ops-block.heading1 .semantic-content{font-family:var(--serif);font-size:30px;line-height:1.08;font-weight:700}
+.page-semantic-block.heading2 .semantic-content,.ops-block.heading2 .semantic-content{font-family:var(--serif);font-size:22px;line-height:1.15;font-weight:700}
+.page-semantic-block.quote,.ops-block.quote{border-left:3px solid var(--gold);padding-left:16px}
+.page-semantic-block.quote .semantic-content,.ops-block.quote .semantic-content{font-family:var(--serif);font-style:italic;color:#315946}
+.page-semantic-block.bullet,.page-semantic-block.number,.ops-block.bullet,.ops-block.number{padding-left:28px}
+.block-marker{position:absolute;left:8px;top:3px;font-family:var(--serif);font-size:13px;color:#505850;line-height:1.5;user-select:none}
+.rich-inline{display:inline}
+.semantic-table-wrap{margin:8px 0;border:1px solid transparent;border-radius:7px;padding:5px;position:relative}
+.semantic-table-wrap.selected{border-color:#9fb4a5;background:rgba(230,239,232,.45)}
+.semantic-table{width:100%;border-collapse:collapse;table-layout:fixed;background:#fff}
+.semantic-table td{border:1px solid #bfc2bb;min-height:27px;padding:6px 7px;font:11px/1.35 var(--ui);vertical-align:top;outline:none;word-break:break-word}
+.semantic-table td:focus{box-shadow:inset 0 0 0 2px rgba(46,101,214,.23);background:#fbfcff}
+.table-tag{position:absolute;right:6px;top:-10px;font:7px var(--ui);letter-spacing:.08em;color:#8b7646;background:#f7f4ec;padding:1px 4px}
+.find-grid{display:grid;grid-template-columns:1fr;gap:10px}
+.find-grid label{font-size:9px;color:#60675e;display:grid;gap:5px}
+.find-grid input{width:100%;border:1px solid #cbc8bf;background:white;border-radius:8px;padding:9px 10px;font-size:11px}
+.find-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.find-actions button{border-color:#c9c6bd;background:white;color:#313731}
+.find-actions button.primary{background:#315f4b;color:white;border-color:#477a64}
+.find-count{font-size:9px;color:#737a71;margin-top:9px}
+.page-break-line{height:0;border-top:1px dashed #ae9150;margin:10px 0;position:relative}
+.page-break-line:after{content:"PAGE BREAK";position:absolute;right:0;top:-8px;background:#f7f4ec;color:#8d7440;font:7px var(--ui);letter-spacing:.09em;padding-left:5px}
+.rename-hit{cursor:text}
+.rename-hit:hover{text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px}
+
+.pdf-redaction-overlay{position:absolute;z-index:12;background:rgba(0,0,0,.76);border:1px solid #000;box-shadow:0 0 0 2px rgba(255,255,255,.7) inset;pointer-events:none}
+.pdf-tool-note{font-size:11px;line-height:1.55;color:#5b625a;margin:0 0 12px}
+.pdf-block-list{display:grid;gap:7px;max-height:48vh;overflow:auto;padding-right:4px}
+.pdf-block-choice{display:block;width:100%;text-align:left;background:#fff;border:1px solid #d8d4c9;border-radius:8px;padding:10px 12px;color:#20251f}
+.pdf-block-choice:hover{border-color:#315f4b;background:#f3f6f3}
+.pdf-block-choice strong,.pdf-block-choice small{display:block}
+.pdf-block-choice strong{font:600 11px/1.4 var(--ui)}
+.pdf-block-choice small{margin-top:4px;font-size:8px;color:#7b8178}
+
+.pdf-replacement-overlay{position:absolute;z-index:13;border:1.5px solid #2e65d6;background:rgba(255,255,255,.9);box-shadow:0 0 0 2px rgba(46,101,214,.12);pointer-events:none;overflow:hidden}
+.pdf-replacement-overlay span{display:block;padding:2px 3px;font:500 9px/1.05 Arial,sans-serif;color:#173b82;white-space:pre-wrap;overflow:hidden}
+
+.pdf-link-overlay{position:absolute;z-index:14;border:2px solid rgba(38,91,180,.78);background:rgba(55,115,220,.10);box-shadow:0 0 0 1px rgba(255,255,255,.85) inset;pointer-events:none;overflow:hidden}
+.pdf-link-overlay:after{content:"";position:absolute;left:0;right:0;bottom:0;border-bottom:2px solid rgba(38,91,180,.9)}
+.pdf-link-overlay span{position:absolute;right:2px;top:2px;max-width:92%;padding:2px 4px;border-radius:3px;background:rgba(26,65,132,.92);color:white;font:600 6px/1.25 var(--ui);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

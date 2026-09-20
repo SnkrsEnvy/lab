@@ -1,0 +1,292 @@
+name: Publisher Studio G6D Browser Proof
+on:
+  pull_request:
+    paths:
+      - 'web/publisher-studio/**'
+      - 'web/api/publisher_studio_g5i.py'
+      - 'web/requirements.txt'
+      - 'web/vercel.json'
+      - '.github/workflows/publisher-studio-g6d-browser-proof.yml'
+
+jobs:
+  browser-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TARGET_URL: https://lab-git-publisher-studio-authoring-g6d-v005-world-builders.vercel.app/publisher-studio/
+      EXPECTED_BUILD: PS-PUBLIC-DEMO-G6D-v005
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install browser proof runtime
+        run: |
+          python -m pip install --disable-pip-version-check playwright==1.55.0
+          python -m playwright install --with-deps chromium
+      - name: Run G6D interaction proof
+        run: |
+          python - <<'PY'
+          import json, os, pathlib, re
+          from playwright.sync_api import sync_playwright, expect
+
+          target = os.environ['TARGET_URL']
+          expected_build = os.environ['EXPECTED_BUILD']
+          out = pathlib.Path('publisher-studio-proof')
+          out.mkdir(exist_ok=True)
+          receipt = {
+              'target': target,
+              'expected_build': expected_build,
+              'checks': {},
+              'console_errors': [],
+              'page_errors': [],
+          }
+
+          def mark(name, value=True):
+              receipt['checks'][name] = bool(value)
+              if not value:
+                  raise AssertionError(name)
+
+          with sync_playwright() as p:
+              browser = p.chromium.launch()
+              page = browser.new_page(viewport={'width': 1440, 'height': 1000})
+              page.on('console', lambda msg: receipt['console_errors'].append(msg.text) if msg.type == 'error' else None)
+              page.on('pageerror', lambda exc: receipt['page_errors'].append(str(exc)))
+              response = page.goto(target, wait_until='networkidle', timeout=90000)
+              mark('http_200', response is not None and response.status == 200)
+              mark('build_identity', page.locator('meta[name="publisher-studio-build"]').get_attribute('content') == expected_build)
+              mark('meaningful_ui', page.locator('body').inner_text().strip() != '')
+
+              page.locator('#fileTab').click()
+              page.locator('#newDocumentBtn').click()
+              expect(page.locator('#pageCanvas')).to_be_visible()
+              editor = page.locator('.page-semantic-block .semantic-content').first
+              expect(editor).to_be_visible()
+              editor.fill('Alpha Bravo Charlie')
+              editor.press('Tab')
+              mark('native_typing', 'Alpha Bravo Charlie' in page.locator('#pageCanvas').inner_text())
+
+              editor.click()
+              page.evaluate("""
+                () => {
+                  const el = document.querySelector('.page-semantic-block .semantic-content');
+                  const text = el.firstChild;
+                  const s = text.textContent.indexOf('Bravo');
+                  const r = document.createRange();
+                  r.setStart(text, s); r.setEnd(text, s + 5);
+                  const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+                }
+              """)
+              page.locator('#boldBtn').click()
+              html = editor.inner_html().lower()
+              mark('range_bold', ('<b>bravo</b>' in html) or ('<strong>bravo</strong>' in html))
+
+              page.locator('#styleSelect').select_option('heading1')
+              block = page.locator('.page-semantic-block').first
+              mark('heading_style', 'heading1' in (block.get_attribute('class') or ''))
+
+              page.get_by_role('button', name='Insert').click()
+              page.locator('#addParagraphBtn').click()
+              para = page.locator('.page-semantic-block .semantic-content').last
+              para.fill('Needle text for replacement')
+              para.press('Tab')
+
+              page.get_by_role('button', name='Insert').click()
+              page.locator('#addTableBtn').click()
+              table = page.locator('#pageCanvas .semantic-table').last
+              expect(table).to_be_visible()
+              cell = table.locator('td').first
+              cell.fill('Cell truth')
+              cell.press('Tab')
+              mark('table_editing', 'Cell truth' in table.inner_text())
+
+              page.get_by_role('button', name='Home').click()
+              page.locator('#findReplaceBtn').click()
+              page.locator('#findInput').fill('Needle')
+              page.locator('#replaceInput').fill('Golden')
+              page.locator('#replaceAllAction').click()
+              page.locator('#modalClose').click()
+              mark('find_replace', 'Golden text for replacement' in page.locator('#pageCanvas').inner_text())
+
+              golden = page.locator('.page-semantic-block .semantic-content').filter(has_text='Golden').first
+              golden.click()
+              page.get_by_role('button', name='Layout').click()
+              page.locator('#pageBreakBtn').click()
+              mark('page_break', page.locator('#opsThumbs .thumb').count() == 2)
+
+              page.locator('#flowMode').click()
+              expect(page.locator('#flowCanvas')).to_have_class(re.compile(r'.*active.*'))
+              flow_text = page.locator('#flowCanvas').inner_text()
+              mark('flow_preserves_text', 'Golden text for replacement' in flow_text)
+              mark('flow_preserves_table', 'Cell truth' in flow_text)
+
+              page.locator('#pageMode').click()
+              page.locator('#opsThumbs .thumb').first.click()
+              mark('page_flow_roundtrip', 'Golden text for replacement' in page.locator('#pageCanvas').inner_text())
+
+              mark('no_page_errors', len(receipt['page_errors']) == 0)
+              mark('no_console_errors', len(receipt['console_errors']) == 0)
+
+              page.screenshot(path=str(out/'g6d-browser-proof.png'), full_page=True)
+              browser.close()
+
+          receipt['status'] = 'PASS'
+          (out/'receipt.json').write_text(json.dumps(receipt, indent=2), encoding='utf-8')
+          print('PUBLISHER_STUDIO_G6D_BROWSER_PROOF_PASS')
+          print(json.dumps(receipt, indent=2))
+          PY
+      - name: Upload proof evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: publisher-studio-g6d-browser-proof
+          path: publisher-studio-proof/
+          if-no-files-found: warn
+
+
+  public-g5i-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      TARGET_URL: https://lab-git-publisher-studio-public-g5i-g6h-v009-world-builders.vercel.app/publisher-studio/
+      API_URL: https://lab-git-publisher-studio-public-g5i-g6h-v009-world-builders.vercel.app/api/publisher-studio-g5i
+      EXPECTED_BUILD: PS-PUBLIC-DEMO-G6H-v009
+      EXPECTED_SOURCE_SHA: da37ed6b61739777d399c7292dbe5f88661f34ade3abae245aaf287d826e3c92
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install public proof runtime
+        run: |
+          python -m pip install --disable-pip-version-check playwright==1.55.0 pymupdf==1.26.7 requests
+          python -m playwright install --with-deps chromium
+      - name: Run public G5I interaction proof
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, pathlib
+          import fitz, requests
+          from playwright.sync_api import sync_playwright, expect
+
+          target=os.environ['TARGET_URL']
+          api=os.environ['API_URL']
+          expected_build=os.environ['EXPECTED_BUILD']
+          expected_source=os.environ['EXPECTED_SOURCE_SHA']
+          fixture=pathlib.Path('web/publisher-studio/proof/publisher-studio-demo-g5i.pdf')
+          out=pathlib.Path('publisher-studio-g6h-proof'); out.mkdir(exist_ok=True)
+          target_text='Select this sentence in Page Mode and stage a bounded replacement.'
+          control_text='A one-page edit should leave this control page render-identical.'
+          receipt={'target':target,'api':api,'expected_build':expected_build,'checks':{},'console_errors':[],'page_errors':[]}
+
+          def mark(name,value=True,detail=None):
+              receipt['checks'][name]=bool(value)
+              if detail is not None: receipt.setdefault('detail',{})[name]=detail
+              if not value: raise AssertionError(name)
+
+          source_bytes=fixture.read_bytes()
+          mark('fixture_source_hash',hashlib.sha256(source_bytes).hexdigest()==expected_source)
+
+          cap=requests.get(api,timeout=60)
+          mark('api_http_200',cap.status_code==200,cap.text[:500])
+          caps=cap.json()
+          mark('api_identity',caps.get('version')=='0.35.0-g5i' and caps.get('gate')=='G5I Distributed Page Delta Lifecycle + Conflict-Safe Undo')
+          mark('api_stateless',caps.get('stateless') is True and caps.get('transport')=='g6h-stateless-same-origin-v001')
+          mark('capability_ceiling',caps.get('capabilities')=={'redact':True,'links':False,'undo':True,'exportPdf':True,'ocr':False,'forms':False})
+
+          with sync_playwright() as p:
+              browser=p.chromium.launch()
+              page=browser.new_page(viewport={'width':1440,'height':1000},accept_downloads=True)
+              page.on('console',lambda msg: receipt['console_errors'].append(msg.text) if msg.type=='error' else None)
+              page.on('pageerror',lambda exc: receipt['page_errors'].append(str(exc)))
+
+              response=page.goto(target,wait_until='networkidle',timeout=90000)
+              mark('page_http_200',response is not None and response.status==200)
+              mark('build_identity',page.locator('meta[name="publisher-studio-build"]').get_attribute('content')==expected_build)
+              mark('meaningful_ui',page.locator('body').inner_text().strip()!='')
+              expect(page.locator('#pdfEngineStatus')).to_contain_text('READY',timeout=90000)
+
+              page.locator('#fileTab').click()
+              page.locator('.file-nav[data-file-view="open"]').click()
+              page.locator('#pdfFileInput').set_input_files(str(fixture))
+              expect(page.locator('#pdfEngineStatus')).to_contain_text('CONNECTED',timeout=90000)
+              expect(page.locator('#pageCountStatus')).to_contain_text('2 pages')
+
+              page.get_by_role('button',name='PDF',exact=True).click()
+              expect(page.locator('#pdfRedactBtn')).to_be_enabled()
+              mark('ocr_disabled',page.locator('#pdfOcrBtn').is_disabled())
+              mark('forms_disabled',page.locator('#pdfFormsBtn').is_disabled())
+              mark('links_disabled',page.locator('#pdfLinksBtn').is_disabled())
+
+              page.locator('#pdfRedactBtn').click()
+              choice=page.locator('.pdf-block-choice').filter(has_text=target_text).first
+              expect(choice).to_be_visible()
+              page.once('dialog',lambda dialog: dialog.accept())
+              choice.click()
+              expect(page.locator('.pdf-redaction-overlay')).to_have_count(1)
+              mark('redaction_staged',page.locator('.pdf-redaction-overlay').count()==1)
+
+              page.get_by_role('button',name='Home',exact=True).click()
+              page.locator('#undo').click()
+              expect(page.locator('.pdf-redaction-overlay')).to_have_count(0)
+              mark('pdf_undo',page.locator('.pdf-redaction-overlay').count()==0)
+
+              page.get_by_role('button',name='PDF',exact=True).click()
+              page.locator('#pdfRedactBtn').click()
+              choice=page.locator('.pdf-block-choice').filter(has_text=target_text).first
+              page.once('dialog',lambda dialog: dialog.accept())
+              choice.click()
+              expect(page.locator('.pdf-redaction-overlay')).to_have_count(1)
+
+              export_response={}
+              def capture_export(resp):
+                  if resp.url.endswith('/api/publisher-studio-g5i') and resp.request.method=='POST' and resp.headers.get('content-type','').startswith('application/pdf'):
+                      export_response['status']=resp.status
+                      export_response['headers']=resp.all_headers()
+              page.on('response',capture_export)
+              page.get_by_role('button',name='Export',exact=True).first.click()
+              with page.expect_download(timeout=90000) as download_info:
+                  page.locator('#printPdfBtn').click()
+              download=download_info.value
+              edited=out/'public-g6h-edited.pdf'
+              download.save_as(str(edited))
+              page.wait_for_timeout(500)
+              page.screenshot(path=str(out/'g6h-public-g5i-proof.png'),full_page=True)
+
+              mark('download_exists',edited.is_file() and edited.stat().st_size>0)
+              edited_bytes=edited.read_bytes()
+              edited_sha=hashlib.sha256(edited_bytes).hexdigest()
+              mark('output_hash_changed',edited_sha!=expected_source,edited_sha)
+              mark('remote_export_response',export_response.get('status')==200,export_response)
+              h=export_response.get('headers',{})
+              mark('remote_verification_pass',h.get('x-publisher-verification-pass')=='true')
+              mark('remote_render_pass',h.get('x-publisher-render-pass')=='true')
+              mark('remote_structural_pass',h.get('x-publisher-structural-pass')=='true')
+              mark('remote_source_hash',h.get('x-publisher-source-sha256')==expected_source)
+              mark('remote_output_hash',h.get('x-publisher-output-sha256')==edited_sha)
+
+              doc=fitz.open(edited)
+              try:
+                  all_text='\n'.join(pg.get_text('text') for pg in doc)
+                  page2=doc[1].get_text('text') if doc.page_count>1 else ''
+                  mark('page_count_preserved',doc.page_count==2)
+                  mark('redacted_text_absent',target_text not in all_text)
+                  mark('control_page_preserved',control_text in page2)
+              finally:
+                  doc.close()
+
+              mark('no_page_errors',len(receipt['page_errors'])==0,receipt['page_errors'])
+              mark('no_console_errors',len(receipt['console_errors'])==0,receipt['console_errors'])
+              browser.close()
+
+          receipt['status']='PASS'
+          (out/'receipt.json').write_text(json.dumps(receipt,indent=2),encoding='utf-8')
+          print('PUBLISHER_STUDIO_G6H_PUBLIC_G5I_PROOF_PASS')
+          print(json.dumps(receipt,indent=2))
+          PY
+      - name: Upload public G5I proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: publisher-studio-g6h-public-g5i-proof
+          path: publisher-studio-g6h-proof/
+          if-no-files-found: warn

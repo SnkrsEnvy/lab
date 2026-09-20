@@ -1,0 +1,72 @@
+{
+  "gate": "G6K Isolated PDF Page Reorder",
+  "status": "PASS_PUBLIC_RUNTIME_BOUNDED",
+  "date": "2026-09-20",
+  "branch": "publisher-studio-pdf-page-reorder-g6k-v012",
+  "build": "PS-PUBLIC-DEMO-G6K-v012-r2",
+  "workflowRun": 35544078407,
+  "artifactId": 10616405284,
+  "artifactSha256": "fd0187af8e4a3d5ec89e7979843927ae68c5f8d4b924cda2ab6ed17db38ccda6",
+  "sourceSha256": "da37ed6b61739777d399c7292dbe5f88661f34ade3abae245aaf287d826e3c92",
+  "outputSha256": "85e3af93824dfff884d5e66958417a19c7cdaae0eeed037967078dcdc9787ddb",
+  "proofSha256": "71fd82345013403c134a4b71922ffcd76f9e7a1e896fd9cd716c00bf3badb08c",
+  "pageLineage": [
+    2,
+    1
+  ],
+  "rasterDifferenceRatios": [
+    0,
+    0
+  ],
+  "checks": {
+    "apiIdentity": true,
+    "apiStateless": true,
+    "capabilityCeiling": true,
+    "buildIdentity": true,
+    "initialOrder": true,
+    "pageReorderCapabilityReady": true,
+    "reorderStaged": true,
+    "pdfUndoRestoresOrder": true,
+    "downloadExists": true,
+    "verificationPass": true,
+    "renderPass": true,
+    "structuralPass": true,
+    "sourceHashPreserved": true,
+    "outputHashChanged": true,
+    "pageCountPreserved": true,
+    "lineageText21": true,
+    "page1ContentPreserved": true,
+    "page2ContentPreserved": true,
+    "rasterLineagePage1FromSource2": true,
+    "rasterLineagePage2FromSource1": true,
+    "noPageErrors": true,
+    "noConsoleErrors": true
+  },
+  "causalCorrection": {
+    "defect": "pageList was assigned without declaration under strict mode in the public move-page UI path",
+    "correction": "explicit const declaration geometry plus awaited/error-visible command wrapper",
+    "engineChanged": false,
+    "bridgeSemanticsChanged": false
+  },
+  "promotedCapabilities": [
+    "isolated PDF page reorder using complete 1-based source-page sequence",
+    "visible Page up/down staging",
+    "client-staged Undo restoring prior page order",
+    "page-lineage render verification",
+    "verified PDF export",
+    "inherited bounded text replacement",
+    "inherited true redaction",
+    "inherited bounded URI links"
+  ],
+  "heldCapabilities": [
+    "PDF page insert/delete",
+    "OCR transport",
+    "forms transport",
+    "source-font-perfect replacement",
+    "paragraph reflow",
+    "durable server workspace",
+    "production promotion"
+  ],
+  "productionWinner": "G6C / 1f62ec546be0cb4b5fd008ee65cc07f92fa3082d",
+  "claim": "G6K proves existing PDF page order can be changed through the deployed Publisher Studio UI as an isolated G5I sequence transaction, undone before export, restaged, exported, reparsed, and raster-matched to the original source-page lineage."
+}

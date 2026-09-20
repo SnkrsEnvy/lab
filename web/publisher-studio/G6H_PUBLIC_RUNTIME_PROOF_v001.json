@@ -1,0 +1,62 @@
+{
+  "gate": "G6H Public Stateless G5I Redaction Transport",
+  "status": "PASS_PUBLIC_RUNTIME_BOUNDED",
+  "date": "2026-09-20",
+  "branch": "publisher-studio-public-g5i-g6h-v009",
+  "build": "PS-PUBLIC-DEMO-G6H-v009",
+  "browserProof": {
+    "workflowRun": 35540456774,
+    "artifactId": 10614935578,
+    "artifactSha256": "ce42232e0b9857429797b15d0d772901786e24cb0acc912abca96d0409b9f2ef",
+    "sourceSha256": "da37ed6b61739777d399c7292dbe5f88661f34ade3abae245aaf287d826e3c92",
+    "outputSha256": "c254d670dac2ff0ae2d8d879e96ed179d39a373e0f95a99892c7c2f92915ab92",
+    "proofSha256": "330863e8611cb664d794207b0b1f4e58fc2e2d332bdf08318bd2e04eb7667774",
+    "checks": {
+      "apiIdentity": true,
+      "apiStateless": true,
+      "capabilityCeiling": true,
+      "buildIdentity": true,
+      "redactionStaged": true,
+      "pdfUndo": true,
+      "downloadExists": true,
+      "verificationPass": true,
+      "renderPass": true,
+      "structuralPass": true,
+      "sourceHashPreserved": true,
+      "outputHashChanged": true,
+      "pageCountPreserved": true,
+      "redactedTextAbsent": true,
+      "controlPagePreserved": true,
+      "noPageErrors": true,
+      "noConsoleErrors": true
+    }
+  },
+  "latestTransportProof": {
+    "deploymentId": "dpl_HVh35UXW93N9K26kn9CppuUYe2kb",
+    "commit": "bb38a78801e48f821e841df2400e46fe5f57d9f1",
+    "transport": "g6h-stateless-same-origin-v001",
+    "publicMultipartRoundtrip": true,
+    "sourceSha256": "da37ed6b61739777d399c7292dbe5f88661f34ade3abae245aaf287d826e3c92",
+    "outputSha256": "8979edc73a15f848509e46251986ce8d5c3668c76dc9f904e79c1769b962fe71",
+    "proofSha256Header": "0df266bfbf6bac6e7d69b8156213f6bb063a2747c0bf88f85ea44045def60eb0",
+    "assertions": "all PASS",
+    "runtimeLog": "POST /api/publisher-studio-g5i 200 on exact preview deployment"
+  },
+  "promotedCapabilities": [
+    "native PDF text inspection",
+    "bounded true redaction",
+    "client-staged Undo",
+    "verified PDF export"
+  ],
+  "heldCapabilities": [
+    "OCR transport",
+    "forms transport",
+    "links transport",
+    "durable server workspace",
+    "distributed collaboration",
+    "independent Poppler witness",
+    "production promotion"
+  ],
+  "productionWinner": "G6C / 1f62ec546be0cb4b5fd008ee65cc07f92fa3082d",
+  "claim": "G6H proves the bounded public redaction workflow from deployed browser through same-origin stateless G5I transport to a verified changed PDF. It does not promote held capabilities or production."
+}

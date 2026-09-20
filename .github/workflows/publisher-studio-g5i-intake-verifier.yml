@@ -1,0 +1,89 @@
+name: Publisher Studio G5I Intake Verifier Proof
+on:
+  pull_request:
+    paths:
+      - 'tools/publisher-studio/verify_g5i_release.py'
+      - 'tools/publisher-studio/G5I_AUTHORITY_PROFILE_v001.json'
+      - 'tools/publisher-studio/G5I_RELEASE_INTAKE.md'
+      - '.github/workflows/publisher-studio-g5i-intake-verifier.yml'
+
+jobs:
+  verifier-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax check
+        run: python -m py_compile tools/publisher-studio/verify_g5i_release.py
+      - name: Prove PASS and tamper rejection with synthetic authority
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, json, pathlib, zipfile
+          root=pathlib.Path('/tmp/g5i-intake-fixture')
+          pkg=root/'Publisher_Studio'
+          pkg.mkdir(parents=True,exist_ok=True)
+          payloads={
+              'engine.py':b'engine-authority\n',
+              'docs/ARCHITECTURE.md':b'authority law\n',
+              'tests/smoke.py':b'assert True\n',
+          }
+          for rel,data in payloads.items():
+              p=pkg/rel
+              p.parent.mkdir(parents=True,exist_ok=True)
+              p.write_bytes(data)
+          files=[{'path':rel,'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()} for rel,data in payloads.items()]
+          manifest={
+              'product':'Publisher Studio Test',
+              'suite':'Golden Goose Publishing Suite',
+              'version':'test',
+              'gate':'test-gate',
+              'format':'publisher-studio-release-manifest-v1',
+              'payloadCount':len(files),
+              'exclusions':['manifest self-reference'],
+              'files':files,
+          }
+          (pkg/'RELEASE_MANIFEST.json').write_text(json.dumps(manifest,indent=2))
+          (root/'AUTHORITY.json').write_text(json.dumps(manifest,indent=2))
+          profile={
+              'product':'Publisher Studio Test',
+              'suite':'Golden Goose Publishing Suite',
+              'version':'test',
+              'gate':'test-gate',
+              'format':'publisher-studio-release-manifest-v1',
+              'payloadCount':len(files),
+              'criticalFiles':{
+                  'engine.py':{'bytes':len(payloads['engine.py']),'sha256':hashlib.sha256(payloads['engine.py']).hexdigest()}
+              },
+          }
+          (root/'PROFILE.json').write_text(json.dumps(profile,indent=2))
+          with zipfile.ZipFile(root/'candidate.zip','w',zipfile.ZIP_DEFLATED) as z:
+              for p in pkg.rglob('*'):
+                  if p.is_file():
+                      z.write(p,p.relative_to(root).as_posix())
+          PY
+          python tools/publisher-studio/verify_g5i_release.py             /tmp/g5i-intake-fixture/candidate.zip             --profile /tmp/g5i-intake-fixture/PROFILE.json             --authority-manifest /tmp/g5i-intake-fixture/AUTHORITY.json             --receipt /tmp/pass.json
+          grep -q '"status": "PASS"' /tmp/pass.json
+
+          python - <<'PY'
+          import pathlib, zipfile
+          src=pathlib.Path('/tmp/g5i-intake-fixture/candidate.zip')
+          dst=pathlib.Path('/tmp/g5i-intake-fixture/tampered.zip')
+          with zipfile.ZipFile(src,'r') as zin, zipfile.ZipFile(dst,'w',zipfile.ZIP_DEFLATED) as zout:
+              for item in zin.infolist():
+                  data=zin.read(item.filename)
+                  if item.filename.endswith('/engine.py'):
+                      data=b'tampered\n'
+                  zout.writestr(item,data)
+          PY
+          set +e
+          python tools/publisher-studio/verify_g5i_release.py             /tmp/g5i-intake-fixture/tampered.zip             --profile /tmp/g5i-intake-fixture/PROFILE.json             --authority-manifest /tmp/g5i-intake-fixture/AUTHORITY.json             --receipt /tmp/fail.json
+          code=$?
+          set -e
+          test "$code" -eq 1
+          grep -q '"status": "FAIL"' /tmp/fail.json
+          grep -q 'critical_identity_mismatch' /tmp/fail.json
+          echo G5I_INTAKE_VERIFIER_PROOF_PASS
