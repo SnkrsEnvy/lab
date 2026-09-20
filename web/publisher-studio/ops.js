@@ -1,14 +1,14 @@
 
 (()=>{
 'use strict';
-const BUILD='PS-PUBLIC-DEMO-G6D-v005';
+const BUILD='PS-PUBLIC-DEMO-G6E-v006';
 const SCHEMA='psdemo-2';
 const q=(s,r=document)=>r.querySelector(s), qa=(s,r=document)=>[...r.querySelectorAll(s)];
 const clone=v=>JSON.parse(JSON.stringify(v));
 const uid=(p='id')=>p+'_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8);
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const toast=msg=>{const t=q('#toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(window.__opsToast);window.__opsToast=setTimeout(()=>t.classList.remove('show'),2300);};
-const S={active:false,mode:'page',doc:null,sel:null,block:null,undo:[],redo:[],baseline:null,pdfUrl:null,count:1,drag:null,focusAfter:null};
+const S={active:false,mode:'page',doc:null,sel:null,block:null,undo:[],redo:[],baseline:null,pdfUrl:null,pdfFile:null,count:1,drag:null,focusAfter:null};
 
 function blockType(type='paragraph'){
   if(type==='heading')return 'heading2';
@@ -383,6 +383,41 @@ function inspector(){
 }
 function need(label){if(S.active)return true;toast(label+': use File → New → Document or File → Open → PDF.');openBackstage('new');return false;}
 
+function pdfBridge(){return window.PublisherStudioPdfBridge||null;}
+function pdfBridgeState(){return pdfBridge()?.status?.()||{status:'HOLD',reason:'bridge_script_unavailable',capabilities:{},source:null};}
+function pdfBridgeHold(tool='PDF editing'){
+  const st=pdfBridgeState();
+  modal('PDF engine connection · HOLD','<div class="proof-grid"><div class="proof-item"><strong class="hold">HOLD · '+esc(tool)+'</strong><small>No native PDF mutation was attempted.</small></div><div class="proof-item"><strong>Public bridge contract</strong><small>'+esc(window.PublisherStudioPdfBridge?.CONTRACT||'unavailable')+'</small></div><div class="proof-item"><strong>Adapter state</strong><small>'+esc(st.status)+' · '+esc(st.reason||'not connected')+'</small></div><div class="proof-item"><strong class="pass">Source authority preserved</strong><small>The local PDF remains authoritative until a registered adapter returns engine evidence.</small></div></div>');
+}
+function updatePdfBridgeUi(){
+  const st=pdfBridgeState(),pill=q('#pdfEngineStatus');
+  if(pill){const connected=st.status==='CONNECTED';pill.textContent='PDF engine · '+(connected?'CONNECTED':st.status||'HOLD');pill.classList.toggle('gold',connected);pill.title=st.reason||st.adapterId||'';}
+  qa('.pdf-engine-tool').forEach(btn=>{
+    const tool=btn.dataset.pdfTool;
+    const allowed=!!S.active&&S.doc?.kind==='pdf'&&pdfBridge()?.readyFor?.(tool)&&st.source!=null;
+    btn.disabled=!allowed;btn.classList.toggle('disabled-tool',!allowed);btn.title=allowed?'Connected PDF engine capability':'Requires a connected G5I-compatible PDF adapter';
+  });
+}
+async function connectPdfSource(file){
+  S.pdfFile=file;const b=pdfBridge();
+  if(!b){updatePdfBridgeUi();return {status:'HOLD',reason:'bridge_script_unavailable'};}
+  try{
+    const result=await b.openSource(file,{documentName:S.doc?.name||file.name,sourceAuthority:'LOCAL_PDF_SOURCE'});
+    updatePdfBridgeUi();toast('PDF engine adapter connected to this source.');return result;
+  }catch(error){updatePdfBridgeUi();toast('PDF source opened locally; engine adapter remains on HOLD.');return {status:'HOLD',reason:String(error)};}
+}
+async function runPdfTool(tool){
+  if(!need('PDF '+tool))return;
+  if(S.doc.kind!=='pdf'){toast('Open a PDF source before using native PDF tools.');return;}
+  const b=pdfBridge(),st=pdfBridgeState();
+  if(!b?.readyFor?.(tool)||st.source==null){pdfBridgeHold(tool);return;}
+  try{
+    const result=await b.invoke(tool,{document:{name:S.doc.name,revision:S.doc.revision},pageIndex:Math.max(0,S.doc.pages.indexOf(curPage()))});
+    record('PDF engine · '+tool);renderHistory();status();authority();toast('PDF engine '+tool+' command completed.');
+    window.dispatchEvent(new CustomEvent('publisherstudio:pdfcommand',{detail:{tool,result}}));
+  }catch(error){modal('PDF engine command failed','<div class="proof-item"><strong class="hold">'+esc(tool.toUpperCase())+' · FAIL</strong><small>'+esc(error?.message||error)+'</small></div>');}
+}
+
 function addTextFrame(){
   if(!need('Insert'))return;setMode('page');mutate('Insert text frame',()=>{const p=curPage(),o={id:uid('obj'),type:'text',x:14,y:15,w:52,h:10,z:Math.max(10,...p.objects.map(x=>x.z||10))+1,text:'Type here',style:textStyle(),opacity:100};p.objects.push(o);S.sel=o.id;S.block=null;});setTimeout(()=>q('.page-object.selected .object-content')?.focus(),25);
 }
@@ -534,7 +569,7 @@ q('#imageBtn')?.addEventListener('click',()=>{if(need('Insert image'))imageInput
 imageInput.addEventListener('change',()=>{const f=imageInput.files?.[0];if(!f)return;const r=new FileReader();r.onload=()=>mutate('Insert image',()=>{const p=curPage(),o={id:uid('obj'),type:'image',x:18,y:18,w:40,h:28,z:Math.max(10,...p.objects.map(x=>x.z||10))+1,src:r.result,alt:f.name,opacity:100};p.objects.push(o);S.sel=o.id;S.block=null;});r.readAsDataURL(f);imageInput.value='';});
 
 q('#openPdfBtn')?.addEventListener('click',()=>q('#pdfFileInput').click());
-q('#pdfFileInput')?.addEventListener('change',()=>{const f=q('#pdfFileInput').files?.[0];if(!f)return;const url=URL.createObjectURL(f);activate(pdfDoc(f,url),url,{focus:false});q('#pdfFileInput').value='';});
+q('#pdfFileInput')?.addEventListener('change',async()=>{const f=q('#pdfFileInput').files?.[0];if(!f)return;const url=URL.createObjectURL(f);activate(pdfDoc(f,url),url,{focus:false});await connectPdfSource(f);q('#pdfFileInput').value='';});
 q('#openProjectBtn')?.addEventListener('click',()=>q('#projectFileInput').click());
 q('#projectFileInput')?.addEventListener('change',async()=>{const f=q('#projectFileInput').files?.[0];if(!f)return;try{const d=migrate(JSON.parse(await f.text()));activate(d,null,{focus:false});if(d.kind==='pdf')toast('Project opened without source PDF bytes; reconnect the PDF source to continue.');}catch(e){toast('Could not open that project file.');}q('#projectFileInput').value='';});
 
@@ -565,8 +600,21 @@ function buildPrintDeck(){
   q('#opsPrintDeck')?.remove();const deck=document.createElement('div');deck.id='opsPrintDeck';deck.className='print-deck';
   S.doc.pages.forEach(p=>{const pg=document.createElement('section');pg.className='print-page';const sem=document.createElement('div');sem.className='print-semantic';p.flowBlockIds.map(id=>S.doc.flow.find(b=>b.id===id)).filter(Boolean).forEach(b=>{const wrap=document.createElement('div');wrap.innerHTML=blockHtml(b);const el=wrap.firstElementChild;el.classList.add('print-block');sem.appendChild(el);});pg.appendChild(sem);p.objects.forEach(o=>{const wrap=document.createElement('div');wrap.className='print-object';Object.assign(wrap.style,{left:o.x+'%',top:o.y+'%',width:o.w+'%',height:o.h+'%',opacity:(o.opacity??100)/100});if(o.type==='image'){const im=document.createElement('img');im.src=o.src;im.alt=o.alt||'';Object.assign(im.style,{width:'100%',height:'100%',objectFit:'contain'});wrap.appendChild(im);}else{wrap.textContent=o.text||'';applyTextStyle(wrap,o.style||textStyle());}pg.appendChild(wrap);});deck.appendChild(pg);});document.body.appendChild(deck);return deck;
 }
-function printPdf(){
-  if(!need('Print / PDF'))return;if(S.doc.kind==='pdf'){toast('Native PDF rewrite/export is pending the connected PDF engine.');return;}
+async function printPdf(){
+  if(!need('Print / PDF'))return;
+  if(S.doc.kind==='pdf'){
+    const b=pdfBridge(),st=pdfBridgeState();
+    if(!b?.readyFor?.('exportPdf')||st.source==null){pdfBridgeHold('Export PDF');return;}
+    try{
+      const result=await b.exportPdf({document:{name:S.doc.name,revision:S.doc.revision}});
+      const blob=result instanceof Blob?result:result?.blob;
+      if(!(blob instanceof Blob))throw new Error('Adapter exportPdf() did not return a Blob.');
+      const name=result?.filename||S.doc.name.replace(/\.pdf$/i,'')+'-edited.pdf';
+      const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000);
+      toast('Edited PDF exported by the connected engine adapter.');
+    }catch(error){modal('PDF export failed','<div class="proof-item"><strong class="hold">EXPORT · FAIL</strong><small>'+esc(error?.message||error)+'</small></div>');}
+    return;
+  }
   const deck=buildPrintDeck(),cleanup=()=>deck.remove();window.addEventListener('afterprint',cleanup,{once:true});window.print();setTimeout(()=>{if(document.body.contains(deck))cleanup();},5000);
 }
 q('#saveLocalBtn')?.addEventListener('click',saveLocal);q('#downloadProjectBtn')?.addEventListener('click',project);q('#downloadProjectBtn2')?.addEventListener('click',project);q('#downloadHtmlBtn')?.addEventListener('click',exportHtml);q('#fileDownloadHtml')?.addEventListener('click',exportHtml);q('#printPdfBtn')?.addEventListener('click',printPdf);q('#filePrintPdf')?.addEventListener('click',printPdf);
@@ -578,14 +626,14 @@ capture('#preflightBtn',()=>{
   const all=S.doc.pages.flatMap(p=>p.objects),bad=all.filter(o=>o.x<0||o.y<0||o.x+o.w>100||o.y+o.h>100),emptyBlocks=S.doc.flow.filter(b=>b.type==='table'?b.cells.flat().every(x=>!String(x).trim()):!String(b.text||'').trim()),orphan=S.doc.flow.filter(b=>!blockPage(b.id));
   modal('Document Preflight','<div class="proof-grid"><div class="proof-item"><strong class="pass">PASS · Document state</strong><small>'+S.doc.pages.length+' page(s), r'+S.doc.revision+'</small></div><div class="proof-item"><strong class="'+(bad.length?'hold':'pass')+'">'+(bad.length?'CHECK':'PASS')+' · Page bounds</strong><small>'+bad.length+' out-of-bounds positioned object(s)</small></div><div class="proof-item"><strong class="'+(orphan.length?'hold':'pass')+'">'+(orphan.length?'CHECK':'PASS')+' · Semantic mapping</strong><small>'+orphan.length+' orphan semantic block(s)</small></div><div class="proof-item"><strong class="'+(emptyBlocks.length?'hold':'pass')+'">'+(emptyBlocks.length?'CHECK':'PASS')+' · Empty paragraphs</strong><small>'+emptyBlocks.length+' empty semantic block(s)</small></div><div class="proof-item"><strong class="'+(S.doc.kind==='pdf'?'hold':'pass')+'">'+(S.doc.kind==='pdf'?'BOUNDARY':'PASS')+' · Source authority</strong><small>'+esc(S.doc.source.claim)+'</small></div><div class="proof-item"><strong class="hold">UNKNOWN · PDF/X certification</strong><small>Not inferred by this public slice</small></div></div>');
 });
-capture('#proofBtn',()=>modal('Proof State','<div class="proof-grid"><div class="proof-item"><strong class="pass">G5I kernel · controlled PASS</strong><small>Engineering reference remains frozen</small></div><div class="proof-item"><strong class="pass">G6D native authoring · deepened</strong><small>Shared Page/Flow state + range formatting + styles + tables + find/replace + page breaks</small></div><div class="proof-item"><strong class="pass">Save / reopen path</strong><small>Browser save + portable project snapshot</small></div><div class="proof-item"><strong class="hold">PDF public shell</strong><small>Source view + bounded overlays; native PDF-object engine connection remains next</small></div></div>'));
+capture('#proofBtn',()=>modal('Proof State','<div class="proof-grid"><div class="proof-item"><strong class="pass">G5I kernel · controlled PASS</strong><small>Engineering reference remains frozen</small></div><div class="proof-item"><strong class="pass">G6D native authoring · deepened</strong><small>Shared Page/Flow state + range formatting + styles + tables + find/replace + page breaks</small></div><div class="proof-item"><strong class="pass">Save / reopen path</strong><small>Browser save + portable project snapshot</small></div><div class="proof-item"><strong class="hold">G6E PDF bridge · CONTRACT READY</strong><small>Public adapter seam is wired; real G5I engine bytes/adapter remain unconnected.</small></div></div>'));
 capture('#historyBtn',()=>{renderHistory();q('#historyPanel').classList.toggle('open');});
 q('#addComment')?.addEventListener('click',e=>{if(!S.active)return;e.preventDefault();e.stopImmediatePropagation();const text=prompt('Review note');if(!text)return;mutate('Add review comment',()=>S.doc.comments.push({author:'You',text,revision:S.doc.revision+1}));},true);
 
 function disablePending(){
   const ids=['#trackBtn'];ids.forEach(id=>{const b=q(id);if(b){b.disabled=true;b.classList.add('disabled-tool');b.title='Pending deeper kernel connection';}});
   qa('.tab-tools[data-for="review"] .rbtn').forEach(b=>{if((b.textContent||'').trim()==='Compare'){b.disabled=true;b.classList.add('disabled-tool');b.title='Pending deeper kernel connection';}});
-  qa('.tab-tools[data-for="pdf"] .rbtn').forEach(b=>{if(b.id!=='preflightBtn'){b.disabled=true;b.classList.add('disabled-tool');b.title='Pending G5I PDF engine connection';}});
+  updatePdfBridgeUi();
 }
 document.addEventListener('keydown',e=>{
   const meta=e.ctrlKey||e.metaKey;
@@ -601,5 +649,6 @@ document.addEventListener('keydown',e=>{
   else if(meta&&e.key.toLowerCase()==='u'){e.preventDefault();toggleInline('underline','underline');}
   else if((e.key==='Delete'||e.key==='Backspace')&&S.active&&document.activeElement?.contentEditable!=='true'&&(S.sel||S.block)){e.preventDefault();removeSelected();}
 });
-disablePending();refreshResume();q('#buildMarker')&&(q('#buildMarker').textContent=BUILD);
+window.addEventListener('publisherstudio:pdfbridgechange',updatePdfBridgeUi);qa('.pdf-engine-tool').forEach(b=>capture('#'+b.id,()=>runPdfTool(b.dataset.pdfTool)));
+disablePending();refreshResume();updatePdfBridgeUi();q('#buildMarker')&&(q('#buildMarker').textContent=BUILD);
 })();
