@@ -523,6 +523,7 @@ function z(dir){if(!need('Arrange'))return;const o=curObj();if(!o){toast('Select
 
 function capture(id,handler){const el=q(id);if(!el)return;el.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();handler(e);},true);}
 capture('#undo',undo);capture('#redo',redo);capture('#duplicateBtn',duplicate);capture('#deleteBtn',removeSelected);capture('#addTextFrame',addTextFrame);capture('#addPageBtn',addPage);capture('#addHeadingBtn',()=>addBlock('heading2'));capture('#addParagraphBtn',()=>addBlock('paragraph'));capture('#bringFrontBtn',()=>z(1));capture('#sendBackBtn',()=>z(-1));
+qa('.format-btn').forEach(b=>b.addEventListener('mousedown',e=>e.preventDefault()));
 capture('#boldBtn',()=>toggleInline('bold','bold'));capture('#italicBtn',()=>toggleInline('italic','italic'));capture('#underlineBtn',()=>toggleInline('underline','underline'));capture('#findReplaceBtn',openFindReplace);capture('#addTableBtn',addTable);capture('#pageBreakBtn',()=>insertPageBreakAt(curBlock()));q('#styleSelect')?.addEventListener('change',e=>applyParagraphStyle(e.target.value));
 q('#fontFamily')?.addEventListener('change',e=>format('fontFamily',e.target.value));q('#fontSize')?.addEventListener('change',e=>format('fontSize',Math.max(6,Math.min(144,Number(e.target.value)||12))));
 q('#opacityRange')?.addEventListener('input',e=>q('#opacityLabel').textContent=e.target.value+'%');q('#opacityRange')?.addEventListener('change',e=>format('opacity',e.target.value));qa('.alignBtn').forEach(b=>b.addEventListener('click',()=>format('align',b.dataset.align)));
