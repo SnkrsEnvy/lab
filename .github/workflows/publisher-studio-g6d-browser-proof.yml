@@ -90,7 +90,7 @@ jobs:
 
               page.get_by_role('button', name='Insert').click()
               page.locator('#addTableBtn').click()
-              table = page.locator('.semantic-table').last
+              table = page.locator('#pageCanvas .semantic-table').last
               expect(table).to_be_visible()
               cell = table.locator('td').first
               cell.fill('Cell truth')
