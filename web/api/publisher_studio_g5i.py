@@ -296,6 +296,8 @@ def build_receipt(source_raw: bytes, output_raw: bytes, operations: list[dict[st
 
 
 @app.get("/")
+@app.get("/api/publisher_studio_g5i")
+@app.get("/api/publisher-studio-g5i")
 def capabilities() -> JSONResponse:
     return JSONResponse({
         "version": APP_VERSION,
@@ -311,6 +313,8 @@ def capabilities() -> JSONResponse:
 
 
 @app.post("/")
+@app.post("/api/publisher_studio_g5i")
+@app.post("/api/publisher-studio-g5i")
 async def operate(
     file: UploadFile = File(...),
     mode: str = Form("inspect"),
