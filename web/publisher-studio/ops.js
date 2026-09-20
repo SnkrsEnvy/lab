@@ -1,7 +1,7 @@
 
 (()=>{
 'use strict';
-const BUILD='PS-PUBLIC-DEMO-G6K-v012';
+const BUILD='PS-PUBLIC-DEMO-G6K-v012-r1';
 const SCHEMA='psdemo-2';
 const q=(s,r=document)=>r.querySelector(s), qa=(s,r=document)=>[...r.querySelectorAll(s)];
 const clone=v=>JSON.parse(JSON.stringify(v));
@@ -667,7 +667,14 @@ function format(key,val){
 }
 function z(dir){if(!need('Arrange'))return;const o=curObj();if(!o){toast('Select a positioned Page Mode object first.');return;}mutate(dir>0?'Bring object forward':'Send object backward',()=>o.z=Math.max(1,(o.z||10)+dir));}
 
-function capture(id,handler){const el=q(id);if(!el)return;el.addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();handler(e);},true);}
+function capture(id,handler){
+  const el=q(id);if(!el)return;
+  el.addEventListener('click',async e=>{
+    e.preventDefault();e.stopImmediatePropagation();
+    try{await handler(e);}
+    catch(error){console.error('Publisher Studio command failed',id,error);toast('Command failed · '+(error?.message||error));}
+  },true);
+}
 capture('#undo',undo);capture('#redo',redo);capture('#duplicateBtn',duplicate);capture('#deleteBtn',removeSelected);capture('#addTextFrame',addTextFrame);capture('#addPageBtn',addPage);capture('#addHeadingBtn',()=>addBlock('heading2'));capture('#addParagraphBtn',()=>addBlock('paragraph'));capture('#bringFrontBtn',()=>z(1));capture('#sendBackBtn',()=>z(-1));
 qa('.format-btn').forEach(b=>b.addEventListener('mousedown',e=>e.preventDefault()));
 capture('#boldBtn',()=>toggleInline('bold','bold'));capture('#italicBtn',()=>toggleInline('italic','italic'));capture('#underlineBtn',()=>toggleInline('underline','underline'));capture('#findReplaceBtn',openFindReplace);capture('#addTableBtn',addTable);capture('#pageBreakBtn',()=>insertPageBreakAt(curBlock()));q('#styleSelect')?.addEventListener('change',e=>applyParagraphStyle(e.target.value));
