@@ -292,6 +292,21 @@ function addPage(){
   if(!need('New page'))return;if(S.doc.kind==='pdf'){toast('Native PDF page insertion is pending the connected PDF engine.');return;}
   mutate('Insert page',()=>{const b=mkBlock('paragraph',''),p=mkPage(S.doc.pages.length+1,[b.id]);S.doc.flow.push(b);S.doc.pages.push(p);S.doc.currentPageId=p.id;S.block=b.id;S.sel=null;});setMode('page');setTimeout(()=>focusSemantic(S.block),30);
 }
+function deleteCurrentPage(){
+  if(!need('Delete page'))return;if(S.doc.kind==='pdf'){toast('Native PDF page deletion is pending the connected PDF engine.');return;}
+  if(S.doc.pages.length===1){toast('A native document keeps at least one page.');return;}
+  const p=curPage();if(!p)return;
+  mutate('Delete page',()=>{
+    const idx=S.doc.pages.indexOf(p),owned=new Set(p.flowBlockIds||[]);
+    S.doc.pages.splice(idx,1);S.doc.flow=S.doc.flow.filter(b=>!owned.has(b.id));
+    const next=S.doc.pages[Math.min(idx,S.doc.pages.length-1)];S.doc.currentPageId=next.id;S.block=next.flowBlockIds[0]||null;S.sel=null;
+  });
+}
+function movePage(dir){
+  if(!need('Move page'))return;if(S.doc.kind==='pdf'){toast('Native PDF page reorder is pending the connected PDF engine.');return;}
+  const p=curPage(),i=S.doc.pages.indexOf(p),j=i+dir;if(!p||j<0||j>=S.doc.pages.length){toast('Page is already at that edge.');return;}
+  mutate(dir<0?'Move page earlier':'Move page later',()=>{const [x]=S.doc.pages.splice(i,1);S.doc.pages.splice(j,0,x);S.doc.pages.forEach((pg,k)=>pg.label='Page '+(k+1));});
+}
 function addBlock(type){
   if(!need('Insert semantic block'))return;if(S.doc.kind==='pdf'){toast('PDF source cannot silently become Flow truth.');return;}
   const p=blockPage(S.block)||curPage();const after=S.block&&p.flowBlockIds.includes(S.block)?p.flowBlockIds.indexOf(S.block):p.flowBlockIds.length-1;
@@ -322,14 +337,14 @@ capture('#undo',undo);capture('#redo',redo);capture('#duplicateBtn',duplicate);c
 capture('#boldBtn',()=>{const t=target();format('bold',!t?.value?.style?.bold);});capture('#italicBtn',()=>{const t=target();format('italic',!t?.value?.style?.italic);});capture('#underlineBtn',()=>{const t=target();format('underline',!t?.value?.style?.underline);});
 q('#fontFamily')?.addEventListener('change',e=>format('fontFamily',e.target.value));q('#fontSize')?.addEventListener('change',e=>format('fontSize',Math.max(6,Math.min(144,Number(e.target.value)||12))));
 q('#opacityRange')?.addEventListener('input',e=>q('#opacityLabel').textContent=e.target.value+'%');q('#opacityRange')?.addEventListener('change',e=>format('opacity',e.target.value));qa('.alignBtn').forEach(b=>b.addEventListener('click',()=>format('align',b.dataset.align)));
-capture('#guideBtn',()=>mutate('Toggle page guides',()=>S.doc.guides=!S.doc.guides));capture('#snapBtn',()=>mutate('Toggle snap',()=>S.doc.snapPt=S.doc.snapPt?0:8));capture('#marginBtn',()=>mutate('Change margin guide',()=>S.doc.marginPct=S.doc.marginPct===9.4?5.9:9.4));
+capture('#guideBtn',()=>mutate('Toggle page guides',()=>S.doc.guides=!S.doc.guides));capture('#snapBtn',()=>mutate('Toggle snap',()=>S.doc.snapPt=S.doc.snapPt?0:8));capture('#marginBtn',()=>mutate('Change margin guide',()=>S.doc.marginPct=S.doc.marginPct===9.4?5.9:9.4));capture('#deletePageBtn',deleteCurrentPage);capture('#movePageUpBtn',()=>movePage(-1));capture('#movePageDownBtn',()=>movePage(1));
 
 const imageInput=document.createElement('input');imageInput.type='file';imageInput.accept='image/*';imageInput.hidden=true;document.body.appendChild(imageInput);
 q('#imageBtn')?.addEventListener('click',()=>{if(need('Insert image'))imageInput.click();});
 imageInput.addEventListener('change',()=>{const f=imageInput.files?.[0];if(!f)return;const r=new FileReader();r.onload=()=>mutate('Insert image',()=>{const p=curPage(),o={id:uid('obj'),type:'image',x:18,y:18,w:40,h:28,z:Math.max(10,...p.objects.map(x=>x.z||10))+1,src:r.result,alt:f.name,opacity:100};p.objects.push(o);S.sel=o.id;S.block=null;});r.readAsDataURL(f);imageInput.value='';});
 
 q('#openPdfBtn')?.addEventListener('click',()=>q('#pdfFileInput').click());
-q('#pdfFileInput')?.addEventListener('change',()=>{const f=q('#pdfFileInput').files?.[0];if(!f)return;activate(pdfDoc(f,URL.createObjectURL(f)),URL.createObjectURL(f),{focus:false});q('#pdfFileInput').value='';});
+q('#pdfFileInput')?.addEventListener('change',()=>{const f=q('#pdfFileInput').files?.[0];if(!f)return;const url=URL.createObjectURL(f);activate(pdfDoc(f,url),url,{focus:false});q('#pdfFileInput').value='';});
 q('#openProjectBtn')?.addEventListener('click',()=>q('#projectFileInput').click());
 q('#projectFileInput')?.addEventListener('change',async()=>{const f=q('#projectFileInput').files?.[0];if(!f)return;try{const d=migrate(JSON.parse(await f.text()));activate(d,null,{focus:false});if(d.kind==='pdf')toast('Project opened without source PDF bytes; reconnect the PDF source to continue.');}catch(e){toast('Could not open that project file.');}q('#projectFileInput').value='';});
 
