@@ -1,4 +1,4 @@
-name: Publisher Studio G6P PDF Image Delete Proof
+name: Publisher Studio G6P Production Smoke
 on:
   push:
     branches:
@@ -22,8 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 14
     env:
-      TARGET_URL: https://lab-6mhhu0eyi-world-builders.vercel.app/publisher-studio/
-      API_URL: https://lab-6mhhu0eyi-world-builders.vercel.app/api/publisher-studio-g5i
+      TARGET_URL: https://lab-world-builders.vercel.app/publisher-studio/
+      API_URL: https://lab-world-builders.vercel.app/api/publisher-studio-g5i
       EXPECTED_BUILD: PS-PUBLIC-DEMO-G6P-v017
     steps:
       - uses: actions/checkout@v4
@@ -175,7 +175,7 @@ jobs:
           receipt['detail']['source_bbox']=src_bbox
           receipt['status']='PASS'
           (out/'receipt.json').write_text(json.dumps(receipt,indent=2),encoding='utf-8')
-          print('PUBLISHER_STUDIO_G6P_PDF_IMAGE_DELETE_PROOF_PASS')
+          print('PUBLISHER_STUDIO_G6P_PRODUCTION_SMOKE_PASS')
           print(json.dumps(receipt,indent=2))
           PY
       - name: Upload public proof evidence
