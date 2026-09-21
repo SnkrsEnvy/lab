@@ -1,4 +1,4 @@
-name: Publisher Studio G6R PDF Image Insert Proof
+name: Publisher Studio G6R Production Smoke
 on:
   push:
     branches:
@@ -22,8 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 14
     env:
-      TARGET_URL: https://lab-8qex80t10-world-builders.vercel.app/publisher-studio/
-      API_URL: https://lab-8qex80t10-world-builders.vercel.app/api/publisher-studio-g5i
+      TARGET_URL: https://lab-world-builders.vercel.app/publisher-studio/
+      API_URL: https://lab-world-builders.vercel.app/api/publisher-studio-g5i
       EXPECTED_BUILD: PS-PUBLIC-DEMO-G6R-v019
     steps:
       - uses: actions/checkout@v4
@@ -182,13 +182,13 @@ jobs:
           receipt['detail']['target_bbox']=target_bbox
           receipt['status']='PASS'
           (out/'receipt.json').write_text(json.dumps(receipt,indent=2),encoding='utf-8')
-          print('PUBLISHER_STUDIO_G6R_PDF_IMAGE_INSERT_PROOF_PASS')
+          print('PUBLISHER_STUDIO_G6R_PRODUCTION_SMOKE_PASS')
           print(json.dumps(receipt,indent=2))
           PY
       - name: Upload public proof evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: publisher-studio-g6r-pdf-image-insert-proof
+          name: publisher-studio-g6r-production-smoke
           path: publisher-studio-g6r-proof/
           if-no-files-found: warn
