@@ -380,7 +380,8 @@ def apply_operations(source_raw: bytes, operations: list[dict[str, Any]]) -> tup
                     graphics=fitz.PDF_REDACT_LINE_ART_NONE,
                     text=fitz.PDF_REDACT_TEXT_NONE,
                 )
-                inserted_xref = page.insert_image(target, stream=image_bytes, keep_proportion=False, overlay=True, rotate=rotate_degrees)
+                pdf_rotate = 270 if op_type == "rotate_image" else 0
+                inserted_xref = page.insert_image(target, stream=image_bytes, keep_proportion=False, overlay=True, rotate=pdf_rotate)
                 results.append({
                     "id": op_id, "type": op_type, "page": page_num, "status": "APPLIED",
                     "xref": xref, "insertedXref": int(inserted_xref), "digest": digest_hex,

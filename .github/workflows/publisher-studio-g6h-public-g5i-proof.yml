@@ -24,7 +24,7 @@ jobs:
     env:
       TARGET_URL: https://lab-jqnpvfyif-world-builders.vercel.app/publisher-studio/
       API_URL: https://lab-jqnpvfyif-world-builders.vercel.app/api/publisher-studio-g5i
-      EXPECTED_BUILD: PS-PUBLIC-DEMO-G6O-v016
+      EXPECTED_BUILD: PS-PUBLIC-DEMO-G6O-v016-r1
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -172,19 +172,17 @@ jobs:
               r=outside_ratio(src_render,out_render,[src_bbox,dst_bbox])
               mark('outside_authorized_rectangles_stable',r<0.00005,r)
 
-              # Orientation witness: rendered source image crop rotated clockwise must match output target crop.
-              sx=src_render.size[0]/612.0; sy=src_render.size[1]/792.0
-              def crop_box(rect):
-                  return (round(rect[0]*sx),round(rect[1]*sy),round(rect[2]*sx),round(rect[3]*sy))
-              source_crop=src_render.crop(crop_box(src_bbox))
-              expected_rot=source_crop.transpose(Image.Transpose.ROTATE_270)
-              target_crop=out_render.crop(crop_box(dst_bbox))
-              if expected_rot.size!=target_crop.size:
-                  expected_rot=expected_rot.resize(target_crop.size)
-              od=ImageChops.difference(expected_rot,target_crop).convert('L')
-              oh=od.histogram(); ot=max(1,target_crop.size[0]*target_crop.size[1])
-              orientation_ratio=(ot-oh[0])/ot
-              mark('clockwise_orientation_rendered',orientation_ratio<0.01,orientation_ratio)
+              # Orientation witness: reparse the placed image matrix from the exported PDF.
+              checkdoc=fitz.open(stream=edited_bytes,filetype='pdf')
+              try:
+                  infos=checkdoc[0].get_image_info(hashes=True,xrefs=True)
+                  hit=next(x for x in infos if x.get('digest') and x['digest'].hex()==source_digest and all(abs(float(a)-float(b))<0.6 for a,b in zip(x['bbox'],dst_bbox)))
+                  a,b,c,d,e,f=[float(v) for v in hit['transform']]
+                  expected=[0.0,dst_bbox[3]-dst_bbox[1],-(dst_bbox[2]-dst_bbox[0]),0.0,dst_bbox[2],dst_bbox[1]]
+                  actual=[a,b,c,d,e,f]
+                  mark('clockwise_orientation_matrix',all(abs(x-y)<0.6 for x,y in zip(actual,expected)),{'actual':actual,'expected':expected})
+              finally:
+                  checkdoc.close()
               page.screenshot(path=str(out/'g6m-pdf-image-rotate-proof.png'),full_page=True)
               mark('no_page_errors',len(receipt['page_errors'])==0,receipt['page_errors'])
               mark('no_console_errors',len(receipt['console_errors'])==0,receipt['console_errors'])
