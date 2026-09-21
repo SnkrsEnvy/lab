@@ -72,7 +72,8 @@ jobs:
           src=fitz.open(stream=source_bytes,filetype='pdf')
           try:
               infos=src[0].get_image_info(hashes=True,xrefs=True)
-              mark('fixture_one_image',len(infos)==1,infos)
+              serial_infos=[{'bbox':[float(v) for v in x['bbox']],'xref':int(x.get('xref') or 0),'digest':x['digest'].hex() if x.get('digest') else ''} for x in infos]
+              mark('fixture_one_image',len(infos)==1,serial_infos)
               source_digest=infos[0]['digest'].hex()
               mark('fixture_bbox_exact',all(abs(float(a)-float(b))<0.05 for a,b in zip(infos[0]['bbox'],src_bbox)),list(infos[0]['bbox']))
           finally: src.close()
