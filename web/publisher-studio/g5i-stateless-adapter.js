@@ -8,7 +8,7 @@ function uid(prefix='source'){return prefix+'_'+Date.now().toString(36)+'_'+Math
 function clone(v){return JSON.parse(JSON.stringify(v));}
 function ensureOk(response,label){if(response.ok)return response;const err=new Error(label+' failed: HTTP '+response.status);err.status=response.status;return response.text().then(t=>{err.detail=t;throw err;});}
 function filenameFromDisposition(value,fallback){const m=String(value||'').match(/filename="?([^";]+)"?/i);return m?.[1]||fallback;}
-function normalizeCaps(body){const caps=body?.capabilities||{};return {replaceText:caps.replaceText===true,redact:caps.redact===true,ocr:caps.ocr===true,forms:caps.forms===true,links:caps.links===true,moveImage:caps.moveImage===true,resizeImage:caps.resizeImage===true,rotateImage:caps.rotateImage===true,deleteImage:caps.deleteImage===true,pageReorder:caps.pageReorder===true,pageInsert:caps.pageInsert===true,pageDelete:caps.pageDelete===true,undo:caps.undo===true,exportPdf:caps.exportPdf===true};}
+function normalizeCaps(body){const caps=body?.capabilities||{};return {replaceText:caps.replaceText===true,redact:caps.redact===true,ocr:caps.ocr===true,forms:caps.forms===true,links:caps.links===true,moveImage:caps.moveImage===true,resizeImage:caps.resizeImage===true,rotateImage:caps.rotateImage===true,deleteImage:caps.deleteImage===true,replaceImage:caps.replaceImage===true,pageReorder:caps.pageReorder===true,pageInsert:caps.pageInsert===true,pageDelete:caps.pageDelete===true,undo:caps.undo===true,exportPdf:caps.exportPdf===true};}
 function operationFor(tool,payload={}){
   if(payload.operation&&typeof payload.operation==='object')return clone(payload.operation);
   if(tool==='pageReorder'){
@@ -46,6 +46,17 @@ function operationFor(tool,payload={}){
     if(!base.bbox||base.bbox.length!==4)throw new Error('Link creation requires bbox.');
     const uri=String(payload.uri||'').trim();if(!uri)throw new Error('Link creation requires URI.');
     return {...base,type:'add_link',uri};
+  }
+  if(tool==='replaceImage'){
+    if(!base.bbox||base.bbox.length!==4)throw new Error('Image replacement requires a source bbox.');
+    const xref=Number(payload.xref),digest=String(payload.digest||'').trim();
+    const replacementBase64=String(payload.replacementBase64||''),replacementMime=String(payload.replacementMime||'').toLowerCase();
+    const replacementName=String(payload.replacementName||'replacement-image');
+    const replacementBytes=Number(payload.replacementBytes||0);
+    if(!Number.isInteger(xref)||xref<1||!digest)throw new Error('Image replacement requires one inspected source image occurrence.');
+    if(!['image/png','image/jpeg'].includes(replacementMime))throw new Error('Replacement image must be PNG or JPEG.');
+    if(!replacementBase64||replacementBytes<1||replacementBytes>750000||replacementBase64.length>1100000)throw new Error('Replacement image exceeds the bounded G6Q payload.');
+    return {...base,type:'replace_image',xref,digest,replacementBase64,replacementMime,replacementName,replacementBytes};
   }
   if(tool==='deleteImage'){
     if(!base.bbox||base.bbox.length!==4)throw new Error('Image deletion requires a source bbox.');
