@@ -119,9 +119,10 @@ jobs:
               bridge=page.evaluate("window.PublisherStudioPdfBridge.status()")
               mark('insert_image_capability_ready',bridge.get('capabilities',{}).get('insertImage') is True,bridge)
 
+              dialog_answers=iter(['100','150','180','100','150','180'])
+              page.on('dialog',lambda dialog: dialog.accept(next(dialog_answers)))
+
               def stage_insert():
-                  answers=iter(['100','150','180'])
-                  page.on('dialog',lambda dialog: dialog.accept(next(answers)))
                   page.get_by_role('button',name='PDF',exact=True).click()
                   expect(page.locator('#pdfInsertImageBtn')).to_be_enabled()
                   with page.expect_file_chooser(timeout=10000) as fc:
