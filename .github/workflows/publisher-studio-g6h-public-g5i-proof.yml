@@ -1,8 +1,8 @@
-name: Publisher Studio G6N PDF Image Resize Proof
+name: Publisher Studio G6O PDF Image Rotation Proof
 on:
   push:
     branches:
-      - 'publisher-studio-pdf-image-resize-g6n-v015'
+      - 'publisher-studio-pdf-image-rotate-g6o-v016'
     paths:
       - 'web/api/publisher_studio_g5i.py'
       - 'web/requirements.txt'
@@ -18,13 +18,13 @@ on:
       - '.github/workflows/publisher-studio-g6h-public-g5i-proof.yml'
 
 jobs:
-  pdf-image-resize-proof:
+  pdf-image-rotate-proof:
     runs-on: ubuntu-latest
     timeout-minutes: 14
     env:
-      TARGET_URL: https://lab-9z4320ma7-world-builders.vercel.app/publisher-studio/
-      API_URL: https://lab-9z4320ma7-world-builders.vercel.app/api/publisher-studio-g5i
-      EXPECTED_BUILD: PS-PUBLIC-DEMO-G6N-v015
+      TARGET_URL: https://lab-cbz47vtbq-world-builders.vercel.app/publisher-studio/
+      API_URL: https://lab-cbz47vtbq-world-builders.vercel.app/api/publisher-studio-g5i
+      EXPECTED_BUILD: PS-PUBLIC-DEMO-G6O-v016-r1
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -34,7 +34,7 @@ jobs:
         run: |
           python -m pip install --disable-pip-version-check playwright==1.55.0 pymupdf==1.26.7 requests pillow
           python -m playwright install --with-deps chromium
-      - name: Run public G6N image resize proof
+      - name: Run public G6O image rotation proof
         run: |
           python - <<'PY'
           import hashlib, io, json, os, pathlib
@@ -43,12 +43,12 @@ jobs:
           from playwright.sync_api import sync_playwright, expect
 
           target=os.environ['TARGET_URL']; api=os.environ['API_URL']; expected_build=os.environ['EXPECTED_BUILD']
-          out=pathlib.Path('publisher-studio-g6n-proof'); out.mkdir(exist_ok=True)
-          fixture=out/'g6n-image-fixture.pdf'
+          out=pathlib.Path('publisher-studio-g6o-proof'); out.mkdir(exist_ok=True)
+          fixture=out/'g6o-image-fixture.pdf'
           src_bbox=[100.0,150.0,220.0,230.0]
-          scale_pct=150.0
-          scale=scale_pct/100.0
-          dst_bbox=[src_bbox[0],src_bbox[1],src_bbox[0]+(src_bbox[2]-src_bbox[0])*scale,src_bbox[1]+(src_bbox[3]-src_bbox[1])*scale]
+          cx=(src_bbox[0]+src_bbox[2])/2.0; cy=(src_bbox[1]+src_bbox[3])/2.0
+          w=src_bbox[2]-src_bbox[0]; h=src_bbox[3]-src_bbox[1]
+          dst_bbox=[cx-h/2.0,cy-w/2.0,cx+h/2.0,cy+w/2.0]
           receipt={'target':target,'api':api,'expected_build':expected_build,'checks':{},'console_errors':[],'page_errors':[]}
 
           def mark(name,value=True,detail=None):
@@ -64,7 +64,7 @@ jobs:
           dr.rectangle((44,24,76,56),fill=(120,35,90))
           buf=io.BytesIO(); im.save(buf,format='PNG')
           doc=fitz.open(); pg=doc.new_page(width=612,height=792)
-          pg.insert_text((72,72),'G6N image resize control text',fontsize=14,fontname='helv')
+          pg.insert_text((72,72),'G6O image rotation control text',fontsize=14,fontname='helv')
           pg.insert_image(fitz.Rect(*src_bbox),stream=buf.getvalue(),keep_proportion=False)
           doc.save(str(fixture),garbage=4,deflate=True,clean=True); doc.close()
           source_bytes=fixture.read_bytes(); source_sha=hashlib.sha256(source_bytes).hexdigest()
@@ -82,7 +82,7 @@ jobs:
           cap=requests.get(api,timeout=60); mark('api_http_200',cap.status_code==200,cap.text[:800])
           caps=cap.json()
           mark('api_identity',caps.get('version')=='0.35.0-g5i' and caps.get('gate')=='G5I Distributed Page Delta Lifecycle + Conflict-Safe Undo')
-          expected_caps={'replaceText':True,'redact':True,'links':True,'moveImage':True,'resizeImage':True,'pageReorder':True,'pageInsert':True,'pageDelete':True,'undo':True,'exportPdf':True,'ocr':False,'forms':False}
+          expected_caps={'replaceText':True,'redact':True,'links':True,'moveImage':True,'resizeImage':True,'rotateImage':True,'pageReorder':True,'pageInsert':True,'pageDelete':True,'undo':True,'exportPdf':True,'ocr':False,'forms':False}
           mark('capability_ceiling',caps.get('capabilities')==expected_caps)
 
           def render(raw):
@@ -115,27 +115,25 @@ jobs:
               page.locator('#pdfFileInput').set_input_files(str(fixture))
               expect(page.locator('#pdfEngineStatus')).to_contain_text('CONNECTED',timeout=90000)
               bridge=page.evaluate("window.PublisherStudioPdfBridge.status()")
-              mark('resize_image_capability_ready',bridge.get('capabilities',{}).get('resizeImage') is True,bridge)
+              mark('rotate_image_capability_ready',bridge.get('capabilities',{}).get('rotateImage') is True,bridge)
 
-              answers=iter([str(scale_pct),str(scale_pct)])
-              page.on('dialog',lambda dialog: dialog.accept(next(answers)))
               page.get_by_role('button',name='PDF',exact=True).click()
-              expect(page.locator('#pdfResizeImageBtn')).to_be_enabled()
-              page.locator('#pdfResizeImageBtn').click()
+              expect(page.locator('#pdfRotateImageBtn')).to_be_enabled()
+              page.locator('#pdfRotateImageBtn').click()
               choice=page.locator('.pdf-block-choice[data-image]:not([disabled])')
               expect(choice).to_have_count(1)
               choice.click()
               page.wait_for_timeout(450)
               expect(page.locator('#opsLayer [title="Staged image destination"]')).to_have_count(1)
-              mark('resize_staged',True,page.locator('#toast').inner_text())
+              mark('rotate_staged',True,page.locator('#toast').inner_text())
 
               page.get_by_role('button',name='Home',exact=True).click()
               page.locator('#undo').click(); page.wait_for_timeout(250)
               expect(page.locator('#opsLayer [title="Staged image destination"]')).to_have_count(0)
-              mark('resize_undo_clears_stage',True)
+              mark('rotate_undo_clears_stage',True)
 
               page.get_by_role('button',name='PDF',exact=True).click()
-              page.locator('#pdfResizeImageBtn').click(); page.locator('.pdf-block-choice[data-image]:not([disabled])').click()
+              page.locator('#pdfRotateImageBtn').click(); page.locator('.pdf-block-choice[data-image]:not([disabled])').click()
               page.wait_for_timeout(350)
               expect(page.locator('#opsLayer [title="Staged image destination"]')).to_have_count(1)
 
@@ -147,7 +145,7 @@ jobs:
               page.get_by_role('button',name='Export',exact=True).first.click()
               with page.expect_download(timeout=90000) as di:
                   page.locator('#printPdfBtn').click()
-              edited=out/'public-g6n-image-resized.pdf'; di.value.save_as(str(edited))
+              edited=out/'public-g6o-image-rotated.pdf'; di.value.save_as(str(edited))
               edited_bytes=edited.read_bytes(); edited_sha=hashlib.sha256(edited_bytes).hexdigest()
               h=export_response.get('headers',{})
               mark('export_http_200',export_response.get('status')==200,export_response)
@@ -167,13 +165,25 @@ jobs:
                   old_hits=[x for x in digest_hits if all(abs(float(a)-float(b))<0.6 for a,b in zip(x['bbox'],src_bbox))]
                   mark('same_raster_at_target',len(target_hits)==1,[list(x['bbox']) for x in target_hits])
                   mark('same_raster_absent_at_source',len(old_hits)==0,[list(x['bbox']) for x in old_hits])
-                  mark('control_text_preserved','G6N image resize control text' in outdoc[0].get_text('text'))
+                  mark('control_text_preserved','G6O image rotation control text' in outdoc[0].get_text('text'))
               finally: outdoc.close()
 
               src_render=render(source_bytes); out_render=render(edited_bytes)
               r=outside_ratio(src_render,out_render,[src_bbox,dst_bbox])
               mark('outside_authorized_rectangles_stable',r<0.00005,r)
-              page.screenshot(path=str(out/'g6m-pdf-image-resize-proof.png'),full_page=True)
+
+              # Orientation witness: reparse the placed image matrix from the exported PDF.
+              checkdoc=fitz.open(stream=edited_bytes,filetype='pdf')
+              try:
+                  infos=checkdoc[0].get_image_info(hashes=True,xrefs=True)
+                  hit=next(x for x in infos if x.get('digest') and x['digest'].hex()==source_digest and all(abs(float(a)-float(b))<0.6 for a,b in zip(x['bbox'],dst_bbox)))
+                  a,b,c,d,e,f=[float(v) for v in hit['transform']]
+                  expected=[0.0,dst_bbox[3]-dst_bbox[1],-(dst_bbox[2]-dst_bbox[0]),0.0,dst_bbox[2],dst_bbox[1]]
+                  actual=[a,b,c,d,e,f]
+                  mark('clockwise_orientation_matrix',all(abs(x-y)<0.6 for x,y in zip(actual,expected)),{'actual':actual,'expected':expected})
+              finally:
+                  checkdoc.close()
+              page.screenshot(path=str(out/'g6m-pdf-image-rotate-proof.png'),full_page=True)
               mark('no_page_errors',len(receipt['page_errors'])==0,receipt['page_errors'])
               mark('no_console_errors',len(receipt['console_errors'])==0,receipt['console_errors'])
               browser.close()
@@ -184,13 +194,13 @@ jobs:
           receipt['detail']['target_bbox']=dst_bbox
           receipt['status']='PASS'
           (out/'receipt.json').write_text(json.dumps(receipt,indent=2),encoding='utf-8')
-          print('PUBLISHER_STUDIO_G6N_PDF_IMAGE_RESIZE_PROOF_PASS')
+          print('PUBLISHER_STUDIO_G6O_PDF_IMAGE_ROTATION_PROOF_PASS')
           print(json.dumps(receipt,indent=2))
           PY
       - name: Upload public proof evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: publisher-studio-g6m-pdf-image-resize-proof
-          path: publisher-studio-g6n-proof/
+          name: publisher-studio-g6m-pdf-image-rotate-proof
+          path: publisher-studio-g6o-proof/
           if-no-files-found: warn
