@@ -1,0 +1,67 @@
+{
+  "gate": "G6O PDF Image Rotation",
+  "status": "PASS_PUBLIC_RUNTIME_BOUNDED",
+  "build": "PS-PUBLIC-DEMO-G6O-v016-r1",
+  "branch": "publisher-studio-pdf-image-rotate-g6o-v016",
+  "implementationCommit": "801559e8dbb7a8426d385c19c456b3d0d18b67b1",
+  "proofBindingCommit": "7efbfacbe56c2c9f8b3f251ebf13d608a0ab638c",
+  "workflowRun": 35572077437,
+  "artifactId": 10625729748,
+  "artifactSha256": "8896783232820d62086f439717c7a009926f17d57c49248c1219e61a30c9f586",
+  "sourceSha256": "ed7c4e4a49fa5cef2c0b546d6d31d370f90f72749538b71d7baac9f24fb310e3",
+  "outputSha256": "f00515cda4c33c79cd29c0c17fd97735c2683451ff73f06b587f8894f6389dee",
+  "proofSha256": "9285a374c1701adbe7b3b28507cc13aa2e844c11abd2552f65040cca8590d109",
+  "sourceRasterDigest": "5b6a49c5f42ae1d219670ca36793a825",
+  "sourceBbox": [
+    100,
+    150,
+    220,
+    230
+  ],
+  "targetBbox": [
+    120,
+    130,
+    200,
+    250
+  ],
+  "clockwisePlacementMatrix": [
+    0,
+    120,
+    -80,
+    0,
+    200,
+    130
+  ],
+  "checks": {
+    "rotateCapabilityReady": true,
+    "rotateStaged": true,
+    "undoClearedStage": true,
+    "verifiedExport": true,
+    "renderPass": true,
+    "structuralPass": true,
+    "sameRasterDigestAtTarget": true,
+    "sameRasterAbsentAtSource": true,
+    "clockwiseOrientationMatrix": true,
+    "outsideAuthorizedRectanglesDifference": 0,
+    "noPageErrors": true,
+    "noConsoleErrors": true
+  },
+  "causalCorrection": {
+    "firstAttempt": "PyMuPDF rotate=90 emitted the counter-clockwise placement matrix",
+    "correction": "Map the user-facing 90-degree clockwise operation to PyMuPDF rotate=270 and verify the reparsed PDF image matrix",
+    "mutationScope": "transport parameter only; G6N production remained frozen"
+  },
+  "authorityBoundary": {
+    "frozenG5IIdentity": "0.35.0-g5i / G5I Distributed Page Delta Lifecycle + Conflict-Safe Undo",
+    "authenticG5ISourcePackagePresent": false,
+    "claim": "G6O extends the public stateless transport with center-preserving 90-degree clockwise rotation of one unique unmasked axis-aligned raster occurrence. It does not claim recovered frozen G5I source-code parity."
+  },
+  "held": [
+    "arbitrary-angle rotation",
+    "shear",
+    "masked/translucent raster transforms",
+    "reused XObject transforms",
+    "vector transforms",
+    "recovered frozen G5I source-code parity"
+  ]
+}
