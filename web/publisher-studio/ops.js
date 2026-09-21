@@ -1,7 +1,7 @@
 
 (()=>{
 'use strict';
-const BUILD='PS-PUBLIC-DEMO-G6K-v012-r2';
+const BUILD='PS-PUBLIC-DEMO-G6L-v013';
 const SCHEMA='psdemo-2';
 const q=(s,r=document)=>r.querySelector(s), qa=(s,r=document)=>[...r.querySelectorAll(s)];
 const clone=v=>JSON.parse(JSON.stringify(v));
@@ -127,6 +127,14 @@ function applyPdfPageOrder(order){
   if(next.length!==order.length||next.length!==S.doc.pages.length)return false;
   S.doc.pages=next;return true;
 }
+function restorePdfSourcePages(preferredPage=1){
+  if(S.doc?.kind!=='pdf'||!S.pdfInspection)return false;
+  const pages=(S.pdfInspection.pages||[]).map((meta,i)=>({id:uid('page'),label:'PDF page '+(i+1),kind:'pdf-source',flowBlockIds:[],objects:[],sourceUrl:S.pdfUrl,pdfPage:i+1}));
+  if(!pages.length)return false;
+  S.doc.pages=pages;
+  const pick=pages.find(pg=>Number(pg.pdfPage)===Number(preferredPage))||pages[Math.min(Math.max(Number(preferredPage||1)-1,0),pages.length-1)]||pages[0];
+  S.doc.currentPageId=pick.id;S.sel=null;S.block=null;return true;
+}
 function curObj(){const p=curPage();return p?.objects.find(o=>o.id===S.sel)||null;}
 function curBlock(){return S.doc?.flow.find(b=>b.id===S.block)||null;}
 function blockPage(blockId){return S.doc?.pages.find(p=>(p.flowBlockIds||[]).includes(blockId))||null;}
@@ -157,6 +165,7 @@ async function undo(){
       const result=await b.undo();
       if(result?.status==='UNDONE'){
         if(result?.operation?.type==='reorder_pages'&&Array.isArray(result.operation.previousPageList))applyPdfPageOrder(result.operation.previousPageList);
+        else if(['insert_page','delete_page'].includes(result?.operation?.type))restorePdfSourcePages(result.operation.previousCurrentPage||1);
         S.pdfStaged.pop();record('Undo PDF engine delta');renderAll();toast('PDF delta undone.');
       }
       else toast('No staged PDF delta to undo.');
@@ -511,21 +520,51 @@ async function runPdfTool(tool){
   if(S.doc.kind!=='pdf'){toast('Open a PDF source before using native PDF tools.');return;}
   const b=pdfBridge(),st=pdfBridgeState();
   if(!b?.readyFor?.(tool)||st.source==null){pdfBridgeHold(tool);return;}
+  if(curPage()?.kind!=='pdf-source'){modal('PDF tool boundary','<div class="proof-item"><strong class="hold">NO SOURCE OBJECTS ON INSERTED PAGE</strong><small>Use page-lifecycle controls here, or export/reopen before applying native PDF content tools.</small></div>');return;}
   if(tool==='replaceText'){openPdfTextReplacementPicker();return;}
   if(tool==='redact'){openPdfRedactionPicker();return;}
   if(tool==='links'){openPdfLinkPicker();return;}
-  modal('PDF tool boundary','<div class="proof-item"><strong class="hold">'+esc(tool.toUpperCase())+' · NOT PROMOTED</strong><small>The current public transport checkpoint proves bounded Edit Text, true redaction, URI link insertion, and isolated page reorder only. This tool remains disabled until its interaction and verification path is independently proven.</small></div>');
+  modal('PDF tool boundary','<div class="proof-item"><strong class="hold">'+esc(tool.toUpperCase())+' · NOT PROMOTED</strong><small>The current public transport checkpoint proves bounded Edit Text, true redaction, URI link insertion, page reorder, blank-page insertion, and source-page deletion. This tool remains disabled until its interaction and verification path is independently proven.</small></div>');
 }
 
 function addTextFrame(){
   if(!need('Insert'))return;setMode('page');mutate('Insert text frame',()=>{const p=curPage(),o={id:uid('obj'),type:'text',x:14,y:15,w:52,h:10,z:Math.max(10,...p.objects.map(x=>x.z||10))+1,text:'Type here',style:textStyle(),opacity:100};p.objects.push(o);S.sel=o.id;S.block=null;});setTimeout(()=>q('.page-object.selected .object-content')?.focus(),25);
 }
-function addPage(){
-  if(!need('New page'))return;if(S.doc.kind==='pdf'){toast('Native PDF page insertion is pending the connected PDF engine.');return;}
+async function addPage(){
+  if(!need('New page'))return;
+  if(S.doc.kind==='pdf'){
+    const b=pdfBridge(),st=pdfBridgeState(),p=curPage();
+    if(!b?.readyFor?.('pageInsert')||st.source==null){pdfBridgeHold('Insert PDF page');return;}
+    if(S.pdfStaged.length){modal('Page insertion is isolated','<div class="proof-item"><strong class="hold">PAGE-SEQUENCE TRANSACTION</strong><small>Undo or export the current staged PDF delta before inserting a page.</small></div>');return;}
+    const i=Math.max(0,S.doc.pages.indexOf(p)),pageNo=Number(p?.pdfPage||1),meta=S.pdfInspection?.pages?.find(x=>Number(x.page)===pageNo)||S.pdfInspection?.pages?.[0];
+    const width=Number(meta?.width||612),height=Number(meta?.height||792),insertAt=i+2;
+    try{
+      const result=await b.invoke('pageInsert',{insertAt,width,height,previousCurrentPage:pageNo});
+      const blank={id:uid('page'),label:'Inserted blank page',kind:'pdf-inserted',flowBlockIds:[],objects:[],sourceUrl:null,pdfPage:null,insertAt,width,height};
+      S.pdfStaged.push(result.operation);S.doc.pages.splice(i+1,0,blank);S.doc.currentPageId=blank.id;S.sel=null;S.block=null;record('Stage blank PDF page insertion');renderAll();toast('Blank PDF page staged at position '+insertAt+' · Undo restores source pages.');
+      window.dispatchEvent(new CustomEvent('publisherstudio:pdfcommand',{detail:{tool:'pageInsert',result}}));
+    }catch(error){modal('PDF page insertion failed','<div class="proof-item"><strong class="hold">PAGE INSERT · FAIL</strong><small>'+esc(error?.message||error)+'</small></div>');}
+    return;
+  }
   mutate('Insert page',()=>{const b=mkBlock('paragraph',''),p=mkPage(S.doc.pages.length+1,[b.id]);S.doc.flow.push(b);S.doc.pages.push(p);S.doc.currentPageId=p.id;S.block=b.id;S.sel=null;});setMode('page');setTimeout(()=>focusSemantic(S.block),30);
 }
-function deleteCurrentPage(){
-  if(!need('Delete page'))return;if(S.doc.kind==='pdf'){toast('Native PDF page deletion is pending the connected PDF engine.');return;}
+async function deleteCurrentPage(){
+  if(!need('Delete page'))return;
+  if(S.doc.kind==='pdf'){
+    if(S.doc.pages.length<=1){toast('A PDF must retain at least one page.');return;}
+    const b=pdfBridge(),st=pdfBridgeState(),p=curPage(),i=S.doc.pages.indexOf(p);
+    if(!b?.readyFor?.('pageDelete')||st.source==null){pdfBridgeHold('Delete PDF page');return;}
+    if(S.pdfStaged.length){modal('Page deletion is isolated','<div class="proof-item"><strong class="hold">PAGE-SEQUENCE TRANSACTION</strong><small>Undo or export the current staged PDF delta before deleting a page.</small></div>');return;}
+    if(p?.kind!=='pdf-source'||!Number(p.pdfPage)){toast('Only an existing source PDF page can be deleted in this checkpoint.');return;}
+    const pageNo=Number(p.pdfPage);
+    try{
+      const result=await b.invoke('pageDelete',{page:pageNo,previousCurrentPage:pageNo});
+      S.pdfStaged.push(result.operation);S.doc.pages.splice(i,1);
+      const next=S.doc.pages[Math.min(i,S.doc.pages.length-1)]||S.doc.pages[0];S.doc.currentPageId=next.id;S.sel=null;S.block=null;record('Stage PDF page deletion');renderAll();toast('PDF source page '+pageNo+' staged for deletion · Undo restores it.');
+      window.dispatchEvent(new CustomEvent('publisherstudio:pdfcommand',{detail:{tool:'pageDelete',result}}));
+    }catch(error){modal('PDF page deletion failed','<div class="proof-item"><strong class="hold">PAGE DELETE · FAIL</strong><small>'+esc(error?.message||error)+'</small></div>');}
+    return;
+  }
   if(S.doc.pages.length===1){toast('A native document keeps at least one page.');return;}
   const p=curPage();if(!p)return;
   mutate('Delete page',()=>{
@@ -750,7 +789,7 @@ capture('#preflightBtn',()=>{
   const all=S.doc.pages.flatMap(p=>p.objects),bad=all.filter(o=>o.x<0||o.y<0||o.x+o.w>100||o.y+o.h>100),emptyBlocks=S.doc.flow.filter(b=>b.type==='table'?b.cells.flat().every(x=>!String(x).trim()):!String(b.text||'').trim()),orphan=S.doc.flow.filter(b=>!blockPage(b.id));
   modal('Document Preflight','<div class="proof-grid"><div class="proof-item"><strong class="pass">PASS · Document state</strong><small>'+S.doc.pages.length+' page(s), r'+S.doc.revision+'</small></div><div class="proof-item"><strong class="'+(bad.length?'hold':'pass')+'">'+(bad.length?'CHECK':'PASS')+' · Page bounds</strong><small>'+bad.length+' out-of-bounds positioned object(s)</small></div><div class="proof-item"><strong class="'+(orphan.length?'hold':'pass')+'">'+(orphan.length?'CHECK':'PASS')+' · Semantic mapping</strong><small>'+orphan.length+' orphan semantic block(s)</small></div><div class="proof-item"><strong class="'+(emptyBlocks.length?'hold':'pass')+'">'+(emptyBlocks.length?'CHECK':'PASS')+' · Empty paragraphs</strong><small>'+emptyBlocks.length+' empty semantic block(s)</small></div><div class="proof-item"><strong class="'+(S.doc.kind==='pdf'?'hold':'pass')+'">'+(S.doc.kind==='pdf'?'BOUNDARY':'PASS')+' · Source authority</strong><small>'+esc(S.doc.source.claim)+'</small></div><div class="proof-item"><strong class="hold">UNKNOWN · PDF/X certification</strong><small>Not inferred by this public slice</small></div></div>');
 });
-capture('#proofBtn',()=>modal('Proof State','<div class="proof-grid"><div class="proof-item"><strong class="pass">G5I kernel · controlled PASS</strong><small>Engineering reference remains frozen</small></div><div class="proof-item"><strong class="pass">G6D native authoring · deepened</strong><small>Shared Page/Flow state + range formatting + styles + tables + find/replace + page breaks</small></div><div class="proof-item"><strong class="pass">Save / reopen path</strong><small>Browser save + portable project snapshot</small></div><div class="proof-item"><strong class="pass">G6I PDF Edit Text · CANDIDATE</strong><small>Bounded existing-PDF text replacement inherits G5I text-only removal, same-box insertion, staged Undo and verified export. Builtin Helvetica fallback only; source-font-perfect replacement and reflow remain outside this checkpoint.</small></div></div>'));
+capture('#proofBtn',()=>modal('Proof State','<div class="proof-grid"><div class="proof-item"><strong class="pass">G5I kernel · controlled PASS</strong><small>Engineering reference remains frozen</small></div><div class="proof-item"><strong class="pass">G6D native authoring · deepened</strong><small>Shared Page/Flow state + range formatting + styles + tables + find/replace + page breaks</small></div><div class="proof-item"><strong class="pass">Save / reopen path</strong><small>Browser save + portable project snapshot</small></div><div class="proof-item"><strong class="pass">G6L PDF Page Lifecycle · CANDIDATE</strong><small>Inherited bounded Edit Text, Redact, URI Links and Page Reorder plus isolated blank-page insertion and source-page deletion, staged Undo, and verified export. Recovered frozen G5I source-code parity is not claimed.</small></div></div>'));
 capture('#historyBtn',()=>{renderHistory();q('#historyPanel').classList.toggle('open');});
 q('#addComment')?.addEventListener('click',e=>{if(!S.active)return;e.preventDefault();e.stopImmediatePropagation();const text=prompt('Review note');if(!text)return;mutate('Add review comment',()=>S.doc.comments.push({author:'You',text,revision:S.doc.revision+1}));},true);
 

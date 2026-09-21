@@ -8,7 +8,7 @@ function uid(prefix='source'){return prefix+'_'+Date.now().toString(36)+'_'+Math
 function clone(v){return JSON.parse(JSON.stringify(v));}
 function ensureOk(response,label){if(response.ok)return response;const err=new Error(label+' failed: HTTP '+response.status);err.status=response.status;return response.text().then(t=>{err.detail=t;throw err;});}
 function filenameFromDisposition(value,fallback){const m=String(value||'').match(/filename="?([^";]+)"?/i);return m?.[1]||fallback;}
-function normalizeCaps(body){const caps=body?.capabilities||{};return {replaceText:caps.replaceText===true,redact:caps.redact===true,ocr:caps.ocr===true,forms:caps.forms===true,links:caps.links===true,pageReorder:caps.pageReorder===true,undo:caps.undo===true,exportPdf:caps.exportPdf===true};}
+function normalizeCaps(body){const caps=body?.capabilities||{};return {replaceText:caps.replaceText===true,redact:caps.redact===true,ocr:caps.ocr===true,forms:caps.forms===true,links:caps.links===true,pageReorder:caps.pageReorder===true,pageInsert:caps.pageInsert===true,pageDelete:caps.pageDelete===true,undo:caps.undo===true,exportPdf:caps.exportPdf===true};}
 function operationFor(tool,payload={}){
   if(payload.operation&&typeof payload.operation==='object')return clone(payload.operation);
   if(tool==='pageReorder'){
@@ -17,6 +17,17 @@ function operationFor(tool,payload={}){
     if(new Set(pageList).size!==pageList.length)throw new Error('Page reorder cannot duplicate source pages.');
     const previousPageList=Array.isArray(payload.previousPageList)?payload.previousPageList.map(Number):[];
     return {id:payload.id||uid(tool),type:'reorder_pages',page:1,bbox:[0,0,0,0],pageList,previousPageList};
+  }
+  if(tool==='pageInsert'){
+    const insertAt=Number(payload.insertAt),width=Number(payload.width),height=Number(payload.height),previousCurrentPage=Number(payload.previousCurrentPage||1);
+    if(!Number.isInteger(insertAt)||insertAt<1)throw new Error('Page insertion requires a valid 1-based output position.');
+    if(!Number.isFinite(width)||!Number.isFinite(height)||width<=0||height<=0)throw new Error('Page insertion requires valid page dimensions.');
+    return {id:payload.id||uid(tool),type:'insert_page',insertAt,width,height,previousCurrentPage};
+  }
+  if(tool==='pageDelete'){
+    const page=Number(payload.page),previousCurrentPage=Number(payload.previousCurrentPage||payload.page||1);
+    if(!Number.isInteger(page)||page<1)throw new Error('Page deletion requires a valid 1-based source page number.');
+    return {id:payload.id||uid(tool),type:'delete_page',page,previousCurrentPage};
   }
   const page=Number(payload.page ?? (Number(payload.pageIndex)+1));
   if(!Number.isInteger(page)||page<1)throw new Error('PDF operation requires a 1-based page number.');
@@ -60,8 +71,8 @@ function create(options={}){
   function requireSource(source){const rec=sources.get(source);if(!rec)throw new Error('Unknown stateless G5I source token.');return rec;}
   async function invoke({tool,source,payload={}}){
     const rec=requireSource(source);if(tool==='undo')return undo({source});
-    const operation=operationFor(tool,payload),isSequence=operation.type==='reorder_pages',hasSequence=rec.operations.some(op=>op.type==='reorder_pages');
-    if((isSequence&&rec.operations.length)||(hasSequence&&!isSequence))throw new Error('G5I page-sequence edits are isolated transactions. Undo or export the current PDF delta before reordering pages.');
+    const operation=operationFor(tool,payload),sequenceTypes=new Set(['reorder_pages','insert_page','delete_page']),isSequence=sequenceTypes.has(operation.type),hasSequence=rec.operations.some(op=>sequenceTypes.has(op.type));
+    if((isSequence&&rec.operations.length)||(hasSequence&&!isSequence))throw new Error('PDF page-sequence edits are isolated transactions. Undo or export the current staged PDF delta before another page-lifecycle operation.');
     rec.operations.push(operation);return {status:'STAGED',source,tool,operation:clone(operation),operationCount:rec.operations.length};
   }
   async function undo({source}){const rec=requireSource(source),operation=rec.operations.pop()||null;return {status:operation?'UNDONE':'NOOP',source,operation:clone(operation),operationCount:rec.operations.length};}

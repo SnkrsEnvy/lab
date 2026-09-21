@@ -156,22 +156,53 @@ def apply_operations(source_raw: bytes, operations: list[dict[str, Any]]) -> tup
     doc = validate_pdf(source_raw)
     results: list[dict[str, Any]] = []
     try:
-        sequence_ops = [op for op in operations if isinstance(op, dict) and op.get("type") == "reorder_pages"]
+        sequence_types = {"reorder_pages", "insert_page", "delete_page"}
+        sequence_ops = [op for op in operations if isinstance(op, dict) and op.get("type") in sequence_types]
         if sequence_ops:
             if len(sequence_ops) != 1 or len(operations) != 1:
-                raise HTTPException(409, "Page-sequence edits are isolated transactions in G1.4 so page identity stays unambiguous")
+                raise HTTPException(409, "Page-sequence edits are isolated transactions so page identity stays unambiguous")
             op = sequence_ops[0]
             op_id = str(op.get("id") or uuid.uuid4())
-            try:
-                order = [int(x) for x in (op.get("pageList") or [])]
-            except Exception:
-                raise HTTPException(400, "reorder_pages pageList must contain valid 1-based source page numbers")
-            if not order or any(x < 1 or x > doc.page_count for x in order):
-                raise HTTPException(400, "reorder_pages pageList must contain valid 1-based source page numbers")
-            if len(set(order)) != len(order):
-                raise HTTPException(409, "G1.4 reorder does not duplicate pages; each source page may appear once")
-            doc.select([x - 1 for x in order])
-            results.append({"id": op_id, "type": "reorder_pages", "pageList": order, "pageCount": doc.page_count})
+            op_type = str(op.get("type") or "")
+
+            if op_type == "reorder_pages":
+                try:
+                    order = [int(x) for x in (op.get("pageList") or [])]
+                except Exception:
+                    raise HTTPException(400, "reorder_pages pageList must contain valid 1-based source page numbers")
+                if not order or any(x < 1 or x > doc.page_count for x in order):
+                    raise HTTPException(400, "reorder_pages pageList must contain valid 1-based source page numbers")
+                if len(set(order)) != len(order):
+                    raise HTTPException(409, "Reorder does not duplicate pages; each source page may appear once")
+                doc.select([x - 1 for x in order])
+                results.append({"id": op_id, "type": op_type, "pageList": order, "pageCount": doc.page_count})
+
+            elif op_type == "insert_page":
+                try:
+                    insert_at = int(op.get("insertAt"))
+                    width = float(op.get("width"))
+                    height = float(op.get("height"))
+                except Exception:
+                    raise HTTPException(400, "insert_page requires insertAt, width, and height")
+                if insert_at < 1 or insert_at > doc.page_count + 1:
+                    raise HTTPException(400, "insert_page insertAt must be a valid 1-based output position")
+                if width <= 0 or height <= 0 or width > 20000 or height > 20000:
+                    raise HTTPException(400, "insert_page dimensions are invalid")
+                doc.new_page(pno=insert_at - 1, width=width, height=height)
+                results.append({"id": op_id, "type": op_type, "insertAt": insert_at, "width": width, "height": height, "pageCount": doc.page_count})
+
+            elif op_type == "delete_page":
+                try:
+                    page_num = int(op.get("page"))
+                except Exception:
+                    raise HTTPException(400, "delete_page requires a 1-based source page number")
+                if doc.page_count <= 1:
+                    raise HTTPException(409, "A PDF must retain at least one page")
+                if page_num < 1 or page_num > doc.page_count:
+                    raise HTTPException(400, "delete_page points to an invalid source page")
+                doc.delete_page(page_num - 1)
+                results.append({"id": op_id, "type": op_type, "page": page_num, "pageCount": doc.page_count})
+
             out = io.BytesIO()
             doc.save(out, garbage=4, deflate=True, clean=True)
             return out.getvalue(), results
@@ -254,13 +285,49 @@ def verify_render(source_raw: bytes, output_raw: bytes, operations: list[dict[st
     finally:
         src_doc.close(); out_doc.close()
 
-    sequence = next((op for op in operations if isinstance(op, dict) and op.get("type") == "reorder_pages"), None)
+    sequence_types = {"reorder_pages", "insert_page", "delete_page"}
+    sequence = next((op for op in operations if isinstance(op, dict) and op.get("type") in sequence_types), None)
     if sequence:
-        order = [int(x) for x in (sequence.get("pageList") or [])]
-        if out_count != len(order):
-            return {"pass": False, "reason": "Output page count does not match page lineage", "sourcePageCount": src_count, "outputPageCount": out_count, "pageLineage": order}
+        op_type = str(sequence.get("type") or "")
         rows = []; max_ratio = 0.0
-        for out_idx, src_page in enumerate(order, start=1):
+
+        if op_type == "reorder_pages":
+            lineage = [int(x) for x in (sequence.get("pageList") or [])]
+            if out_count != len(lineage):
+                return {"pass": False, "reason": "Output page count does not match page lineage", "sourcePageCount": src_count, "outputPageCount": out_count, "pageLineage": lineage}
+            pairs = list(enumerate(lineage, start=1))
+
+        elif op_type == "delete_page":
+            deleted = int(sequence.get("page") or 0)
+            lineage = [n for n in range(1, src_count + 1) if n != deleted]
+            if out_count != len(lineage):
+                return {"pass": False, "reason": "Deleted-page output count does not match retained lineage", "sourcePageCount": src_count, "outputPageCount": out_count, "pageLineage": lineage}
+            pairs = list(enumerate(lineage, start=1))
+
+        elif op_type == "insert_page":
+            insert_at = int(sequence.get("insertAt") or 0)
+            if out_count != src_count + 1 or insert_at < 1 or insert_at > out_count:
+                return {"pass": False, "reason": "Inserted-page output count or position is invalid", "sourcePageCount": src_count, "outputPageCount": out_count, "insertAt": insert_at}
+            lineage = []
+            pairs = []
+            src_page = 1
+            for out_idx in range(1, out_count + 1):
+                if out_idx == insert_at:
+                    lineage.append("blank")
+                    blank = render_doc_page(output_raw, out_idx - 1)
+                    expected = Image.new("RGB", blank.size, (255, 255, 255))
+                    diff = ImageChops.difference(expected, blank).convert("L")
+                    hist = diff.histogram(); total = max(1, blank.size[0] * blank.size[1])
+                    ratio = (total - hist[0]) / total; max_ratio = max(max_ratio, ratio)
+                    rows.append({"outputPage": out_idx, "sourcePage": None, "insertedBlank": True, "renderDifferenceRatio": ratio, "pass": ratio < OUTSIDE_TOLERANCE})
+                else:
+                    lineage.append(src_page)
+                    pairs.append((out_idx, src_page))
+                    src_page += 1
+        else:
+            return {"pass": False, "reason": "Unsupported page-sequence verification type"}
+
+        for out_idx, src_page in pairs:
             src = render_doc_page(source_raw, src_page - 1)
             out = render_doc_page(output_raw, out_idx - 1)
             if src.size != out.size:
@@ -269,7 +336,7 @@ def verify_render(source_raw: bytes, output_raw: bytes, operations: list[dict[st
             hist = diff.histogram(); total = max(1, src.size[0] * src.size[1])
             ratio = (total - hist[0]) / total; max_ratio = max(max_ratio, ratio)
             rows.append({"outputPage": out_idx, "sourcePage": src_page, "renderDifferenceRatio": ratio, "pass": ratio < OUTSIDE_TOLERANCE})
-        return {"pass": all(r["pass"] for r in rows), "sourcePageCount": src_count, "outputPageCount": out_count, "pageLineage": order, "maxOutsideAuthorizedEditRatio": max_ratio, "pages": rows, "claim": "Page-sequence export preserves each retained source page raster."}
+        return {"pass": all(r["pass"] for r in rows), "sourcePageCount": src_count, "outputPageCount": out_count, "pageLineage": lineage, "maxOutsideAuthorizedEditRatio": max_ratio, "pages": rows, "claim": "Page-lifecycle export preserves every retained source page raster and independently proves inserted blank-page raster."}
 
     if src_count != out_count:
         return {"pass": False, "reason": "Page count changed without a sequence operation", "pageCountEqual": False}
@@ -318,12 +385,46 @@ def verify_structure(source_raw: bytes, output_raw: bytes, operations: list[dict
     doc = fitz.open(stream=output_raw, filetype="pdf")
     try:
         checks = []
-        sequence = next((op for op in operations if isinstance(op, dict) and op.get("type") == "reorder_pages"), None)
+        sequence_types = {"reorder_pages", "insert_page", "delete_page"}
+        sequence = next((op for op in operations if isinstance(op, dict) and op.get("type") in sequence_types), None)
         if sequence:
-            order = [int(x) for x in (sequence.get("pageList") or [])]
-            passed = doc.page_count == len(order)
-            checks.append({"id": str(sequence.get("id") or "page-sequence"), "type": "page_sequence", "pass": passed, "evidence": {"expectedPageCount": len(order), "actualPageCount": doc.page_count, "lineage": order}})
-            return {"pass": all(x["pass"] for x in checks), "checks": checks, "claim": "Page-sequence structure and page count were reparsed from the exported PDF."}
+            op_type = str(sequence.get("type") or "")
+            evidence: dict[str, Any] = {"actualPageCount": doc.page_count}
+            passed = False
+            if op_type == "reorder_pages":
+                lineage = [int(x) for x in (sequence.get("pageList") or [])]
+                evidence.update({"expectedPageCount": len(lineage), "lineage": lineage})
+                passed = doc.page_count == len(lineage)
+            elif op_type == "delete_page":
+                src = fitz.open(stream=source_raw, filetype="pdf")
+                try:
+                    expected = src.page_count - 1
+                finally:
+                    src.close()
+                evidence.update({"expectedPageCount": expected, "deletedSourcePage": int(sequence.get("page") or 0)})
+                passed = doc.page_count == expected and expected >= 1
+            elif op_type == "insert_page":
+                src = fitz.open(stream=source_raw, filetype="pdf")
+                try:
+                    expected = src.page_count + 1
+                finally:
+                    src.close()
+                insert_at = int(sequence.get("insertAt") or 0)
+                width = float(sequence.get("width") or 0)
+                height = float(sequence.get("height") or 0)
+                if 1 <= insert_at <= doc.page_count:
+                    page = doc[insert_at - 1]
+                    empty_text = not page.get_text("text").strip()
+                    no_images = not bool(page.get_images(full=True))
+                    no_links = not bool(page.get_links())
+                    no_drawings = not bool(page.get_drawings())
+                    geometry = abs(float(page.rect.width) - width) < 0.01 and abs(float(page.rect.height) - height) < 0.01
+                else:
+                    empty_text = no_images = no_links = no_drawings = geometry = False
+                evidence.update({"expectedPageCount": expected, "insertAt": insert_at, "width": width, "height": height, "emptyText": empty_text, "noImages": no_images, "noLinks": no_links, "noDrawings": no_drawings, "geometryMatch": geometry})
+                passed = doc.page_count == expected and empty_text and no_images and no_links and no_drawings and geometry
+            checks.append({"id": str(sequence.get("id") or "page-sequence"), "type": op_type, "pass": passed, "evidence": evidence})
+            return {"pass": all(x["pass"] for x in checks), "checks": checks, "claim": "Page-lifecycle structure, geometry, and page count were reparsed from the exported PDF."}
         for op in operations:
             op_id = str(op.get("id") or "")
             op_type = str(op.get("type") or "")
@@ -392,7 +493,7 @@ def build_receipt(source_raw: bytes, output_raw: bytes, operations: list[dict[st
         "operationResults": operation_results,
         "preset": preset,
         "verification": verification,
-        "claim": "Stateless public transport executes frozen G5I bounded text-replacement/redaction/link/page-reorder mutation rules and render/structural proof thresholds in one invocation. Page reorder is isolated by transaction family; no page insert/delete, source-font-perfect replacement, or server persistence is implied.",
+        "claim": "Stateless public transport executes bounded text-replacement/redaction/link and isolated page-lifecycle mutations with render/structural proof in one invocation. G6L adds blank-page insertion and source-page deletion to the already-proven reorder path; this public transport extension is not claimed to be recovered frozen G5I source code.",
     }
 
 
@@ -489,10 +590,10 @@ async def capabilities(request: Request, selftest: str | None = None) -> JSONRes
         "transport": TRANSPORT,
         "stateless": True,
         "maxPdfBytes": MAX_PDF_BYTES,
-        "capabilities": {"replaceText": True, "redact": True, "links": True, "pageReorder": True, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
-        "editing": ["bounded native text replacement", "true redaction", "bounded URI link insertion", "isolated page reorder transaction", "staged client-side undo", "bounded export proof"],
+        "capabilities": {"replaceText": True, "redact": True, "links": True, "pageReorder": True, "pageInsert": True, "pageDelete": True, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
+        "editing": ["bounded native text replacement", "true redaction", "bounded URI link insertion", "isolated page reorder transaction", "isolated blank-page insertion", "isolated source-page deletion", "staged client-side undo", "bounded export proof"],
         "frozen": ["client source bytes", "source hash", "untouched regions"],
-        "limitOfClaim": "This transport checkpoint proves bounded native text replacement with builtin Helvetica fallback, true redaction, URI link insertion, and isolated page reorder. It does not claim page insert/delete, source-font-perfect replacement, text reflow, OCR/forms transport, durable server workspaces, distributed collaboration, or independent Poppler witness proof.",
+        "limitOfClaim": "This transport checkpoint proves bounded native text replacement with builtin Helvetica fallback, true redaction, URI link insertion, isolated page reorder, blank-page insertion, and source-page deletion. Page lifecycle is implemented in the public stateless transport layer; recovered frozen G5I source parity, source-font-perfect replacement, text reflow, OCR/forms transport, durable server workspaces, distributed collaboration, and independent Poppler witness proof are not claimed.",
     }, headers={"Cache-Control": "no-store"})
 
 
