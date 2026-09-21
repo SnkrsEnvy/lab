@@ -312,6 +312,48 @@ def apply_operations(source_raw: bytes, operations: list[dict[str, Any]]) -> tup
                 results.append({"id": op_id, "type": op_type, "page": page_num, "status": "APPLIED", "uri": uri, "bbox": rect_list(rect)})
                 continue
 
+            if op_type == "delete_image":
+                try:
+                    xref = int(op.get("xref") or 0)
+                except Exception:
+                    xref = 0
+                digest_hex = str(op.get("digest") or "").lower()
+                if xref <= 0 or not digest_hex:
+                    raise HTTPException(400, "delete_image requires source xref and digest")
+                infos = page.get_image_info(hashes=True, xrefs=True)
+                candidates = []
+                for info in infos:
+                    if int(info.get("xref") or 0) != xref:
+                        continue
+                    ibox = fitz.Rect(info.get("bbox"))
+                    dg = info.get("digest")
+                    dg_hex = dg.hex() if isinstance(dg, (bytes, bytearray)) else ""
+                    if dg_hex.lower() == digest_hex and all(abs(a-b) < 0.05 for a,b in zip(rect_list(ibox), rect_list(rect))):
+                        candidates.append(info)
+                if len(candidates) != 1:
+                    raise HTTPException(409, "G6P could not resolve one unique source image occurrence")
+                info = candidates[0]
+                transform = tuple(float(v) for v in info.get("transform") or (1, 0, 0, 1, 0, 0))
+                if len(transform) < 4 or abs(transform[1]) >= 0.0001 or abs(transform[2]) >= 0.0001:
+                    raise HTTPException(409, "G6P does not delete rotated or sheared raster occurrences")
+                page_images = [item for item in page.get_images(full=True) if int(item[0]) == xref]
+                if not page_images or any(int(item[1]) != 0 for item in page_images):
+                    raise HTTPException(409, "G6P does not delete masked/translucent raster images")
+                same_xref = [x for x in infos if int(x.get("xref") or 0) == xref]
+                if len(same_xref) != 1:
+                    raise HTTPException(409, "G6P does not delete reused image XObjects")
+                page.add_redact_annot(rect, fill=None, cross_out=False)
+                page.apply_redactions(
+                    images=fitz.PDF_REDACT_IMAGE_REMOVE,
+                    graphics=fitz.PDF_REDACT_LINE_ART_NONE,
+                    text=fitz.PDF_REDACT_TEXT_NONE,
+                )
+                results.append({
+                    "id": op_id, "type": op_type, "page": page_num, "status": "APPLIED",
+                    "xref": xref, "digest": digest_hex, "bbox": rect_list(rect),
+                })
+                continue
+
             if op_type in {"move_image", "resize_image", "rotate_image"}:
                 target = normalize_bbox(op.get("targetBbox"), page_rect=page.rect)
                 if op_type == "move_image" and (abs(target.width - rect.width) > 0.02 or abs(target.height - rect.height) > 0.02):
@@ -588,6 +630,23 @@ def verify_structure(source_raw: bytes, output_raw: bytes, operations: list[dict
                             hits.append(link)
                 passed = bool(hits)
                 evidence["matchingLinks"] = len(hits)
+            elif op_type == "delete_image":
+                digest_hex = str(op.get("digest") or "").lower()
+                visible_hits = []
+                source_hits = []
+                for info in page.get_image_info(hashes=True, xrefs=True):
+                    dg = info.get("digest")
+                    dg_hex = dg.hex() if isinstance(dg, (bytes, bytearray)) else ""
+                    if dg_hex.lower() != digest_hex:
+                        continue
+                    visible_hits.append(info)
+                    ibox = fitz.Rect(info.get("bbox"))
+                    if all(abs(a-b) < 0.6 for a,b in zip(rect_list(ibox), rect_list(rect))):
+                        source_hits.append(info)
+                passed = not visible_hits and not source_hits
+                evidence["visibleDigestMatches"] = len(visible_hits)
+                evidence["sourceDigestMatches"] = len(source_hits)
+                evidence["sourceBbox"] = rect_list(rect)
             elif op_type in {"move_image", "resize_image", "rotate_image"}:
                 target = fitz.Rect(*[float(v) for v in op.get("targetBbox")])
                 digest_hex = str(op.get("digest") or "").lower()
@@ -643,7 +702,7 @@ def build_receipt(source_raw: bytes, output_raw: bytes, operations: list[dict[st
         "operationResults": operation_results,
         "preset": preset,
         "verification": verification,
-        "claim": "Stateless public transport executes bounded text-replacement/redaction/link/raster-transform and isolated page-lifecycle mutations with render/structural proof in one invocation. G6O adds center-preserving 90-degree clockwise rotation of one unique unmasked axis-aligned raster occurrence while retaining G6M movement and G6N resize; this public transport extension is not claimed to be recovered frozen G5I source code.",
+        "claim": "Stateless public transport executes bounded text-replacement/redaction/link/raster-object and isolated page-lifecycle mutations with render/structural proof in one invocation. G6P adds deletion of one unique unmasked axis-aligned raster occurrence while retaining G6M movement, G6N resize, and G6O rotation; this public transport extension is not claimed to be recovered frozen G5I source code.",
     }
 
 
@@ -740,10 +799,10 @@ async def capabilities(request: Request, selftest: str | None = None) -> JSONRes
         "transport": TRANSPORT,
         "stateless": True,
         "maxPdfBytes": MAX_PDF_BYTES,
-        "capabilities": {"replaceText": True, "redact": True, "links": True, "moveImage": True, "resizeImage": True, "rotateImage": True, "pageReorder": True, "pageInsert": True, "pageDelete": True, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
-        "editing": ["bounded native text replacement", "true redaction", "bounded URI link insertion", "bounded axis-aligned raster image translation", "bounded aspect-ratio-preserving raster image resize", "bounded 90-degree clockwise raster image rotation", "isolated page reorder transaction", "isolated blank-page insertion", "isolated source-page deletion", "staged client-side undo", "bounded export proof"],
+        "capabilities": {"replaceText": True, "redact": True, "links": True, "moveImage": True, "resizeImage": True, "rotateImage": True, "deleteImage": True, "pageReorder": True, "pageInsert": True, "pageDelete": True, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
+        "editing": ["bounded native text replacement", "true redaction", "bounded URI link insertion", "bounded axis-aligned raster image translation", "bounded aspect-ratio-preserving raster image resize", "bounded 90-degree clockwise raster image rotation", "bounded unique raster image deletion", "isolated page reorder transaction", "isolated blank-page insertion", "isolated source-page deletion", "staged client-side undo", "bounded export proof"],
         "frozen": ["client source bytes", "source hash", "untouched regions"],
-        "limitOfClaim": "This transport checkpoint proves bounded native text replacement with builtin Helvetica fallback, true redaction, URI link insertion, isolated page lifecycle, translation-only movement, 25%-400% uniform aspect-ratio-preserving resize, and 90-degree clockwise center-preserving rotation of one unique unmasked axis-aligned raster image occurrence. Arbitrary-angle rotation, masked/translucent or reused-XObject transforms, non-uniform raster transforms, vector object transforms, recovered frozen G5I source parity, source-font-perfect replacement, text reflow, OCR/forms transport, durable server workspaces, distributed collaboration, and independent Poppler witness proof are not claimed.",
+        "limitOfClaim": "This transport checkpoint proves bounded native text replacement with builtin Helvetica fallback, true redaction, URI link insertion, isolated page lifecycle, translation-only movement, 25%-400% uniform aspect-ratio-preserving resize, 90-degree clockwise center-preserving rotation, and deletion of one unique unmasked axis-aligned raster image occurrence. Arbitrary-angle rotation, masked/translucent or reused-XObject raster operations, non-uniform raster transforms, vector object transforms/deletion, recovered frozen G5I source parity, source-font-perfect replacement, text reflow, OCR/forms transport, durable server workspaces, distributed collaboration, and independent Poppler witness proof are not claimed.",
     }, headers={"Cache-Control": "no-store"})
 
 

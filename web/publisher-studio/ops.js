@@ -1,7 +1,7 @@
 
 (()=>{
 'use strict';
-const BUILD='PS-PUBLIC-DEMO-G6O-v016-r1';
+const BUILD='PS-PUBLIC-DEMO-G6P-v017';
 const SCHEMA='psdemo-2';
 const q=(s,r=document)=>r.querySelector(s), qa=(s,r=document)=>[...r.querySelectorAll(s)];
 const clone=v=>JSON.parse(JSON.stringify(v));
@@ -340,6 +340,13 @@ function renderPage(){
         el.innerHTML='<span>↗ '+esc(op.uri||'LINK')+'</span>';
         layer.appendChild(el);
       });
+      S.pdfStaged.filter(op=>op.type==='delete_image'&&Number(op.page)===pageNo).forEach(op=>{
+        const source=(op.bbox||[]).map(Number);if(source.some(Number.isNaN))return;
+        const el=document.createElement('div');el.title='Staged image deletion';
+        Object.assign(el.style,{position:'absolute',left:(source[0]/meta.width*100)+'%',top:(source[1]/meta.height*100)+'%',width:((source[2]-source[0])/meta.width*100)+'%',height:((source[3]-source[1])/meta.height*100)+'%',border:'2px dashed #9c3b32',background:'rgba(156,59,50,.18)',pointerEvents:'none',zIndex:82});
+        el.innerHTML='<span style="position:absolute;left:3px;top:3px;background:#9c3b32;color:white;font-size:8px;padding:2px 4px">DELETE</span>';
+        layer.appendChild(el);
+      });
       S.pdfStaged.filter(op=>['move_image','resize_image','rotate_image'].includes(op.type)&&Number(op.page)===pageNo).forEach(op=>{
         const source=(op.bbox||[]).map(Number),target=(op.targetBbox||[]).map(Number);if([...source,...target].some(Number.isNaN))return;
         const old=document.createElement('div');old.title='Source image position · staged for removal';
@@ -578,6 +585,25 @@ function openPdfImageRotatePicker(){
   });
 }
 
+function openPdfImageDeletePicker(){
+  const pageNo=Number(curPage()?.pdfPage||1),meta=S.pdfInspection?.pages?.find(x=>Number(x.page)===pageNo),images=(meta?.images||[]);
+  if(!images.length){modal('Delete PDF image','<div class="proof-item"><strong class="hold">NO RASTER IMAGES</strong><small>G6P found no embedded raster image occurrences on this page.</small></div>');return;}
+  const rows=images.map(img=>{
+    const cls=img.movable?'pdf-block-choice':'pdf-block-choice disabled-tool';
+    const reason=img.movable?'Unique axis-aligned raster · '+img.bbox.map(v=>Number(v).toFixed(1)).join(', '):'HOLD · '+(img.holdReason||'outside G6P');
+    return '<button class="'+cls+'" data-image="'+esc(img.id)+'" '+(img.movable?'':'disabled')+'><strong>Raster '+esc(img.id)+'</strong><small>'+esc(reason)+'</small></button>';
+  }).join('');
+  modal('Delete existing PDF image','<p class="pdf-tool-note">Choose one inspected image. G6P removes only that unique opaque axis-aligned raster occurrence. Undo restores the staged state before export.</p><div class="pdf-block-list">'+rows+'</div>');
+  qa('.pdf-block-choice[data-image]').forEach(btn=>btn.onclick=async()=>{
+    const img=images.find(x=>x.id===btn.dataset.image);if(!img?.movable)return;
+    try{
+      const b=pdfBridge();const result=await b.invoke('deleteImage',{page:pageNo,bbox:img.bbox,xref:img.xref,digest:img.digest});
+      S.pdfStaged.push(result.operation);record('Stage bounded PDF image deletion');q('#modalBg').classList.remove('open');renderAll();toast('PDF image deletion staged · Undo restores it before export.');
+      window.dispatchEvent(new CustomEvent('publisherstudio:pdfcommand',{detail:{tool:'deleteImage',result}}));
+    }catch(error){modal('PDF image deletion failed','<div class="proof-item"><strong class="hold">DELETE IMAGE · FAIL</strong><small>'+esc(error?.message||error)+'</small></div>');}
+  });
+}
+
 function openPdfRedactionPicker(){
   const pageNo=Number(curPage()?.pdfPage||1),meta=S.pdfInspection?.pages?.find(x=>Number(x.page)===pageNo);
   if(!meta?.blocks?.length){modal('Redact PDF text','<div class="proof-item"><strong class="hold">NO TEXT BLOCKS</strong><small>G5I found no native text blocks on this page. OCR transport is not yet promoted.</small></div>');return;}
@@ -605,7 +631,8 @@ async function runPdfTool(tool){
   if(tool==='moveImage'){openPdfImageMovePicker();return;}
   if(tool==='resizeImage'){openPdfImageResizePicker();return;}
   if(tool==='rotateImage'){openPdfImageRotatePicker();return;}
-  modal('PDF tool boundary','<div class="proof-item"><strong class="hold">'+esc(tool.toUpperCase())+' · NOT PROMOTED</strong><small>The current public transport checkpoint proves bounded Edit Text, true redaction, URI link insertion, translation, aspect-ratio-preserving resize, and 90° clockwise rotation of one unique axis-aligned raster occurrence, and isolated page lifecycle. This tool remains disabled until its interaction and verification path is independently proven.</small></div>');
+  if(tool==='deleteImage'){openPdfImageDeletePicker();return;}
+  modal('PDF tool boundary','<div class="proof-item"><strong class="hold">'+esc(tool.toUpperCase())+' · NOT PROMOTED</strong><small>The current public transport checkpoint proves bounded Edit Text, true redaction, URI link insertion, translation, aspect-ratio-preserving resize, 90° clockwise rotation, and deletion of one unique axis-aligned raster occurrence, and isolated page lifecycle. This tool remains disabled until its interaction and verification path is independently proven.</small></div>');
 }
 
 function addTextFrame(){
@@ -870,7 +897,7 @@ capture('#preflightBtn',()=>{
   const all=S.doc.pages.flatMap(p=>p.objects),bad=all.filter(o=>o.x<0||o.y<0||o.x+o.w>100||o.y+o.h>100),emptyBlocks=S.doc.flow.filter(b=>b.type==='table'?b.cells.flat().every(x=>!String(x).trim()):!String(b.text||'').trim()),orphan=S.doc.flow.filter(b=>!blockPage(b.id));
   modal('Document Preflight','<div class="proof-grid"><div class="proof-item"><strong class="pass">PASS · Document state</strong><small>'+S.doc.pages.length+' page(s), r'+S.doc.revision+'</small></div><div class="proof-item"><strong class="'+(bad.length?'hold':'pass')+'">'+(bad.length?'CHECK':'PASS')+' · Page bounds</strong><small>'+bad.length+' out-of-bounds positioned object(s)</small></div><div class="proof-item"><strong class="'+(orphan.length?'hold':'pass')+'">'+(orphan.length?'CHECK':'PASS')+' · Semantic mapping</strong><small>'+orphan.length+' orphan semantic block(s)</small></div><div class="proof-item"><strong class="'+(emptyBlocks.length?'hold':'pass')+'">'+(emptyBlocks.length?'CHECK':'PASS')+' · Empty paragraphs</strong><small>'+emptyBlocks.length+' empty semantic block(s)</small></div><div class="proof-item"><strong class="'+(S.doc.kind==='pdf'?'hold':'pass')+'">'+(S.doc.kind==='pdf'?'BOUNDARY':'PASS')+' · Source authority</strong><small>'+esc(S.doc.source.claim)+'</small></div><div class="proof-item"><strong class="hold">UNKNOWN · PDF/X certification</strong><small>Not inferred by this public slice</small></div></div>');
 });
-capture('#proofBtn',()=>modal('Proof State','<div class="proof-grid"><div class="proof-item"><strong class="pass">G5I kernel · controlled PASS</strong><small>Engineering reference remains frozen</small></div><div class="proof-item"><strong class="pass">G6D native authoring · deepened</strong><small>Shared Page/Flow state + range formatting + styles + tables + find/replace + page breaks</small></div><div class="proof-item"><strong class="pass">Save / reopen path</strong><small>Browser save + portable project snapshot</small></div><div class="proof-item"><strong class="pass">G6O PDF Image Rotation · CANDIDATE</strong><small>Inherited bounded PDF editing/page lifecycle, raster movement and resize plus center-preserving 90° clockwise rotation of one unique unmasked axis-aligned raster occurrence. Arbitrary angles, shear, transparency masks, reused XObjects, non-uniform transforms and vectors remain held.</small></div></div>'));
+capture('#proofBtn',()=>modal('Proof State','<div class="proof-grid"><div class="proof-item"><strong class="pass">G5I kernel · controlled PASS</strong><small>Engineering reference remains frozen</small></div><div class="proof-item"><strong class="pass">G6D native authoring · deepened</strong><small>Shared Page/Flow state + range formatting + styles + tables + find/replace + page breaks</small></div><div class="proof-item"><strong class="pass">Save / reopen path</strong><small>Browser save + portable project snapshot</small></div><div class="proof-item"><strong class="pass">G6P PDF Image Delete · CANDIDATE</strong><small>Inherited bounded PDF editing/page lifecycle and raster transforms plus deletion of one unique unmasked axis-aligned raster occurrence. Transparency masks, reused XObjects, rotated/sheared source occurrences, vector deletion, and arbitrary-angle transforms remain held.</small></div></div>'));
 capture('#historyBtn',()=>{renderHistory();q('#historyPanel').classList.toggle('open');});
 q('#addComment')?.addEventListener('click',e=>{if(!S.active)return;e.preventDefault();e.stopImmediatePropagation();const text=prompt('Review note');if(!text)return;mutate('Add review comment',()=>S.doc.comments.push({author:'You',text,revision:S.doc.revision+1}));},true);
 
