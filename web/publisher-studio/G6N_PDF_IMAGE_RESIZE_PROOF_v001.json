@@ -1,0 +1,53 @@
+{
+  "gate": "G6N PDF Image Resize",
+  "status": "PASS_PUBLIC_RUNTIME_BOUNDED",
+  "build": "PS-PUBLIC-DEMO-G6N-v015",
+  "branch": "publisher-studio-pdf-image-resize-g6n-v015",
+  "implementationCommit": "917331074e7b0e90174a04278a8306d049500fbf",
+  "proofWorkflowCommit": "245c5385051d023d500fd7244f7c20f050187ab3",
+  "workflowRun": 35565075888,
+  "artifactId": 10623631564,
+  "artifactSha256": "d177246de9a5f9ed5e2c2fd9a6ef6adc3f21427d5f152ffa1449517a76460af6",
+  "sourceSha256": "328959a8daa2c9f816bfc147aed79337d8c5681e882f5756421d83b93192103e",
+  "outputSha256": "84fbd73ab59f55d4e15af12b4702241397fff5aaf3eeeaf052ec5ece49fcde69",
+  "sourceRasterDigest": "5b6a49c5f42ae1d219670ca36793a825",
+  "sourceBbox": [
+    100,
+    150,
+    220,
+    230
+  ],
+  "targetBbox": [
+    100,
+    150,
+    280,
+    270
+  ],
+  "uniformScale": 1.5,
+  "checks": {
+    "resizeCapabilityReady": true,
+    "resizeStaged": true,
+    "undoClearedStage": true,
+    "verifiedExport": true,
+    "structuralPass": true,
+    "renderPass": true,
+    "sameRasterDigestAtTarget": true,
+    "sameRasterAbsentAtSource": true,
+    "outsideAuthorizedRectanglesDifference": 0,
+    "noPageErrors": true,
+    "noConsoleErrors": true
+  },
+  "authorityBoundary": {
+    "frozenG5IIdentity": "0.35.0-g5i / G5I Distributed Page Delta Lifecycle + Conflict-Safe Undo",
+    "authenticG5ISourcePackagePresent": false,
+    "claim": "G6N extends the public stateless transport with uniform aspect-ratio-preserving resize of one unique unmasked axis-aligned raster occurrence. It does not claim recovered frozen G5I source-code parity."
+  },
+  "held": [
+    "rotation or shear",
+    "masked or translucent image transforms",
+    "reused XObject transforms",
+    "non-uniform scaling",
+    "vector object transforms",
+    "recovered frozen G5I source-code parity"
+  ]
+}
