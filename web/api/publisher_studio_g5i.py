@@ -575,9 +575,10 @@ def verify_structure(source_raw: bytes, output_raw: bytes, operations: list[dict
                     if dg_hex.lower() != digest_hex:
                         continue
                     ibox = fitz.Rect(info.get("bbox"))
-                    if rects_overlap(ibox, target, 0.5):
+                    ib = rect_list(ibox)
+                    if all(abs(float(a)-float(b)) < 0.6 for a,b in zip(ib, rect_list(target))):
                         target_hits.append(info)
-                    if rects_overlap(ibox, rect, 0.5):
+                    if all(abs(float(a)-float(b)) < 0.6 for a,b in zip(ib, rect_list(rect))):
                         source_hits.append(info)
                 passed = bool(target_hits) and not source_hits
                 evidence["targetDigestMatches"] = len(target_hits)
