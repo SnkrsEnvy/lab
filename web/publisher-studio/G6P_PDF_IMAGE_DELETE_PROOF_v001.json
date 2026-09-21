@@ -1,0 +1,48 @@
+{
+  "gate": "G6P PDF Image Delete",
+  "status": "PASS_PUBLIC_RUNTIME_BOUNDED",
+  "build": "PS-PUBLIC-DEMO-G6P-v017",
+  "branch": "publisher-studio-pdf-image-delete-g6p-v017",
+  "implementationCommit": "dec722a7e928492d6f6bb59eef5c1e254c387494",
+  "proofWorkflowCommit": "c76c8eec0d88042462e82b829079ca423bed1ee3",
+  "workflowRun": 35572680494,
+  "artifactId": 10626985634,
+  "artifactSha256": "065866822434b8b14473eac9acda00ff7239258645405a547b999f3be40a2b7c",
+  "sourceSha256": "057f8dbec71dcf77639e0a6cb30c484f256f30378674f938cf9253c958b9ff82",
+  "outputSha256": "27b8a8a922be993f1ba13bb568d3c7e9367617f3d2d469576a7393e13d048286",
+  "proofSha256": "b57cea199a072c3e9b8bdaeee213b5d1c96ca3b71ff6eae22fcd1bd2b0c9c7d1",
+  "sourceRasterDigest": "5b6a49c5f42ae1d219670ca36793a825",
+  "sourceBbox": [
+    100,
+    150,
+    220,
+    230
+  ],
+  "checks": {
+    "deleteCapabilityReady": true,
+    "deleteStaged": true,
+    "undoClearedStage": true,
+    "verifiedExport": true,
+    "renderPass": true,
+    "structuralPass": true,
+    "rasterDigestAbsent": true,
+    "controlTextPreserved": true,
+    "outsideAuthorizedRectangleDifference": 0,
+    "noPageErrors": true,
+    "noConsoleErrors": true,
+    "inheritedG6DBrowserRegression": "PASS",
+    "inheritedG6EBridgeRegression": "PASS"
+  },
+  "authorityBoundary": {
+    "frozenG5IIdentity": "0.35.0-g5i / G5I Distributed Page Delta Lifecycle + Conflict-Safe Undo",
+    "authenticG5ISourcePackagePresent": false,
+    "claim": "G6P extends the public stateless transport with deletion of one unique unmasked axis-aligned raster occurrence. It does not claim recovered frozen G5I source-code parity."
+  },
+  "held": [
+    "masked or translucent raster deletion",
+    "reused XObject deletion",
+    "rotated or sheared source-image deletion",
+    "vector object deletion",
+    "recovered frozen G5I source-code parity"
+  ]
+}
