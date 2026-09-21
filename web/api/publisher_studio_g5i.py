@@ -312,10 +312,19 @@ def apply_operations(source_raw: bytes, operations: list[dict[str, Any]]) -> tup
                 results.append({"id": op_id, "type": op_type, "page": page_num, "status": "APPLIED", "uri": uri, "bbox": rect_list(rect)})
                 continue
 
-            if op_type == "move_image":
+            if op_type in {"move_image", "resize_image"}:
                 target = normalize_bbox(op.get("targetBbox"), page_rect=page.rect)
-                if abs(target.width - rect.width) > 0.02 or abs(target.height - rect.height) > 0.02:
-                    raise HTTPException(409, "G6M moves raster images by translation only; resizing is not promoted")
+                if op_type == "move_image" and (abs(target.width - rect.width) > 0.02 or abs(target.height - rect.height) > 0.02):
+                    raise HTTPException(409, "G6M moves raster images by translation only")
+                if op_type == "resize_image":
+                    src_ratio = rect.width / rect.height
+                    dst_ratio = target.width / target.height
+                    if abs(src_ratio - dst_ratio) > 0.002:
+                        raise HTTPException(409, "G6N preserves raster aspect ratio")
+                    scale_x = target.width / rect.width
+                    scale_y = target.height / rect.height
+                    if abs(scale_x - scale_y) > 0.002 or scale_x < 0.25 or scale_x > 4.0:
+                        raise HTTPException(409, "G6N resize scale must stay uniform between 25% and 400%")
                 try:
                     xref = int(op.get("xref") or 0)
                 except Exception:
@@ -335,22 +344,22 @@ def apply_operations(source_raw: bytes, operations: list[dict[str, Any]]) -> tup
                     if dg_hex.lower() == digest_hex and all(abs(a-b) < 0.05 for a,b in zip(rect_list(ibox), rect_list(rect))):
                         candidates.append(info)
                 if len(candidates) != 1:
-                    raise HTTPException(409, "G6M could not resolve one unique source image occurrence")
+                    raise HTTPException(409, "G6N could not resolve one unique source image occurrence")
                 info = candidates[0]
                 transform = tuple(float(v) for v in info.get("transform") or (1, 0, 0, 1, 0, 0))
                 if len(transform) < 4 or abs(transform[1]) >= 0.0001 or abs(transform[2]) >= 0.0001:
-                    raise HTTPException(409, "G6M does not move rotated or sheared raster occurrences")
+                    raise HTTPException(409, "G6N does not transform rotated or sheared raster occurrences")
                 page_images = [item for item in page.get_images(full=True) if int(item[0]) == xref]
                 if not page_images or any(int(item[1]) != 0 for item in page_images):
-                    raise HTTPException(409, "G6M does not move masked/translucent raster images")
+                    raise HTTPException(409, "G6N does not transform masked/translucent raster images")
                 same_xref = [x for x in infos if int(x.get("xref") or 0) == xref]
                 if len(same_xref) != 1:
-                    raise HTTPException(409, "G6M does not move reused image XObjects")
+                    raise HTTPException(409, "G6N does not transform reused image XObjects")
 
                 extracted = doc.extract_image(xref)
                 image_bytes = extracted.get("image")
                 if not image_bytes:
-                    raise HTTPException(409, "G6M could not extract the source raster payload")
+                    raise HTTPException(409, "G6N could not extract the source raster payload")
                 page.add_redact_annot(rect, fill=None, cross_out=False)
                 page.apply_redactions(
                     images=fitz.PDF_REDACT_IMAGE_REMOVE,
@@ -462,7 +471,7 @@ def verify_render(source_raw: bytes, output_raw: bytes, operations: list[dict[st
             sx, sy = src.size[0] / pr.width, src.size[1] / pr.height
             for op in page_ops:
                 rects = [op.get("bbox")]
-                if str(op.get("type") or "") == "move_image":
+                if str(op.get("type") or "") in {"move_image", "resize_image"}:
                     rects.append(op.get("targetBbox"))
                 for raw_bbox in rects:
                     if not isinstance(raw_bbox, list) or len(raw_bbox) != 4:
@@ -564,7 +573,7 @@ def verify_structure(source_raw: bytes, output_raw: bytes, operations: list[dict
                             hits.append(link)
                 passed = bool(hits)
                 evidence["matchingLinks"] = len(hits)
-            elif op_type == "move_image":
+            elif op_type in {"move_image", "resize_image"}:
                 target = fitz.Rect(*[float(v) for v in op.get("targetBbox")])
                 digest_hex = str(op.get("digest") or "").lower()
                 target_hits = []
@@ -580,10 +589,12 @@ def verify_structure(source_raw: bytes, output_raw: bytes, operations: list[dict
                         target_hits.append(info)
                     if all(abs(float(a)-float(b)) < 0.6 for a,b in zip(ib, rect_list(rect))):
                         source_hits.append(info)
-                passed = bool(target_hits) and not source_hits
+                passed = bool(target_hits) and (not source_hits or all(abs(a-b) < 0.6 for a,b in zip(rect_list(rect), rect_list(target))))
                 evidence["targetDigestMatches"] = len(target_hits)
                 evidence["sourceDigestMatches"] = len(source_hits)
                 evidence["targetBbox"] = rect_list(target)
+                evidence["sourceBbox"] = rect_list(rect)
+                evidence["transformMode"] = op_type
             else:
                 passed = False; evidence["reason"] = "unsupported verification type"
             checks.append({"id": op_id, "type": op_type, "page": page_num, "pass": passed, "evidence": evidence})
@@ -615,7 +626,7 @@ def build_receipt(source_raw: bytes, output_raw: bytes, operations: list[dict[st
         "operationResults": operation_results,
         "preset": preset,
         "verification": verification,
-        "claim": "Stateless public transport executes bounded text-replacement/redaction/link/image-translation and isolated page-lifecycle mutations with render/structural proof in one invocation. G6M adds translation-only movement of one unique unmasked axis-aligned raster occurrence; this public transport extension is not claimed to be recovered frozen G5I source code.",
+        "claim": "Stateless public transport executes bounded text-replacement/redaction/link/raster-transform and isolated page-lifecycle mutations with render/structural proof in one invocation. G6N adds uniform aspect-ratio-preserving resize of one unique unmasked axis-aligned raster occurrence while retaining the G6M movement path; this public transport extension is not claimed to be recovered frozen G5I source code.",
     }
 
 
@@ -712,10 +723,10 @@ async def capabilities(request: Request, selftest: str | None = None) -> JSONRes
         "transport": TRANSPORT,
         "stateless": True,
         "maxPdfBytes": MAX_PDF_BYTES,
-        "capabilities": {"replaceText": True, "redact": True, "links": True, "moveImage": True, "pageReorder": True, "pageInsert": True, "pageDelete": True, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
-        "editing": ["bounded native text replacement", "true redaction", "bounded URI link insertion", "bounded axis-aligned raster image translation", "isolated page reorder transaction", "isolated blank-page insertion", "isolated source-page deletion", "staged client-side undo", "bounded export proof"],
+        "capabilities": {"replaceText": True, "redact": True, "links": True, "moveImage": True, "resizeImage": True, "pageReorder": True, "pageInsert": True, "pageDelete": True, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
+        "editing": ["bounded native text replacement", "true redaction", "bounded URI link insertion", "bounded axis-aligned raster image translation", "bounded aspect-ratio-preserving raster image resize", "isolated page reorder transaction", "isolated blank-page insertion", "isolated source-page deletion", "staged client-side undo", "bounded export proof"],
         "frozen": ["client source bytes", "source hash", "untouched regions"],
-        "limitOfClaim": "This transport checkpoint proves bounded native text replacement with builtin Helvetica fallback, true redaction, URI link insertion, isolated page lifecycle, and translation-only movement of one unique unmasked axis-aligned raster image occurrence. Rotated/sheared, masked/translucent, reused-XObject, resized, or vector object movement; recovered frozen G5I source parity; source-font-perfect replacement; text reflow; OCR/forms transport; durable server workspaces; distributed collaboration; and independent Poppler witness proof are not claimed.",
+        "limitOfClaim": "This transport checkpoint proves bounded native text replacement with builtin Helvetica fallback, true redaction, URI link insertion, isolated page lifecycle, translation-only movement, and 25%-400% uniform aspect-ratio-preserving resize of one unique unmasked axis-aligned raster image occurrence. Rotated/sheared, masked/translucent, reused-XObject, non-uniform raster transforms, or vector object transforms; recovered frozen G5I source parity; source-font-perfect replacement; text reflow; OCR/forms transport; durable server workspaces; distributed collaboration; and independent Poppler witness proof are not claimed.",
     }, headers={"Cache-Control": "no-store"})
 
 
