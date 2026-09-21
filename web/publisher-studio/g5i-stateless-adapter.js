@@ -8,7 +8,7 @@ function uid(prefix='source'){return prefix+'_'+Date.now().toString(36)+'_'+Math
 function clone(v){return JSON.parse(JSON.stringify(v));}
 function ensureOk(response,label){if(response.ok)return response;const err=new Error(label+' failed: HTTP '+response.status);err.status=response.status;return response.text().then(t=>{err.detail=t;throw err;});}
 function filenameFromDisposition(value,fallback){const m=String(value||'').match(/filename="?([^";]+)"?/i);return m?.[1]||fallback;}
-function normalizeCaps(body){const caps=body?.capabilities||{};return {replaceText:caps.replaceText===true,redact:caps.redact===true,ocr:caps.ocr===true,forms:caps.forms===true,links:caps.links===true,moveImage:caps.moveImage===true,resizeImage:caps.resizeImage===true,rotateImage:caps.rotateImage===true,deleteImage:caps.deleteImage===true,replaceImage:caps.replaceImage===true,insertImage:caps.insertImage===true,pageReorder:caps.pageReorder===true,pageInsert:caps.pageInsert===true,pageDelete:caps.pageDelete===true,undo:caps.undo===true,exportPdf:caps.exportPdf===true};}
+function normalizeCaps(body){const caps=body?.capabilities||{};return {replaceText:caps.replaceText===true,redact:caps.redact===true,ocr:caps.ocr===true,forms:caps.forms===true,links:caps.links===true,moveImage:caps.moveImage===true,resizeImage:caps.resizeImage===true,rotateImage:caps.rotateImage===true,deleteImage:caps.deleteImage===true,replaceImage:caps.replaceImage===true,insertImage:caps.insertImage===true,cropImage:caps.cropImage===true,pageReorder:caps.pageReorder===true,pageInsert:caps.pageInsert===true,pageDelete:caps.pageDelete===true,undo:caps.undo===true,exportPdf:caps.exportPdf===true};}
 function operationFor(tool,payload={}){
   if(payload.operation&&typeof payload.operation==='object')return clone(payload.operation);
   if(tool==='pageReorder'){
@@ -55,6 +55,17 @@ function operationFor(tool,payload={}){
     if(!['image/png','image/jpeg'].includes(imageMime))throw new Error('Inserted image must be PNG or JPEG.');
     if(!imageBase64||imageBytes<1||imageBytes>750000||imageBase64.length>1100000)throw new Error('Inserted image exceeds the bounded G6R payload.');
     return {...base,type:'insert_image',imageBase64,imageMime,imageName,imageBytes};
+  }
+  if(tool==='cropImage'){
+    if(!base.bbox||base.bbox.length!==4)throw new Error('Image crop requires a source bbox.');
+    const xref=Number(payload.xref),digest=String(payload.digest||'').trim();
+    const cropLeft=Number(payload.cropLeft),cropTop=Number(payload.cropTop),cropRight=Number(payload.cropRight),cropBottom=Number(payload.cropBottom);
+    const targetBbox=Array.isArray(payload.targetBbox)?payload.targetBbox.map(Number):null;
+    if(!Number.isInteger(xref)||xref<1||!digest)throw new Error('Image crop requires one inspected source image occurrence.');
+    if([cropLeft,cropTop,cropRight,cropBottom].some(v=>!Number.isFinite(v)||v<0||v>0.45))throw new Error('Crop edges must be between 0% and 45%.');
+    if(cropLeft+cropRight>=0.9||cropTop+cropBottom>=0.9||(cropLeft+cropTop+cropRight+cropBottom)<=0)throw new Error('Crop must remove some content and retain a meaningful center.');
+    if(!targetBbox||targetBbox.length!==4)throw new Error('Image crop requires the proportional target bbox.');
+    return {...base,type:'crop_image',xref,digest,cropLeft,cropTop,cropRight,cropBottom,targetBbox};
   }
   if(tool==='replaceImage'){
     if(!base.bbox||base.bbox.length!==4)throw new Error('Image replacement requires a source bbox.');

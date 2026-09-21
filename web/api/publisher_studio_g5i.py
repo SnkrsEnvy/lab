@@ -377,6 +377,104 @@ def apply_operations(source_raw: bytes, operations: list[dict[str, Any]]) -> tup
                 })
                 continue
 
+            if op_type == "crop_image":
+                try:
+                    xref = int(op.get("xref") or 0)
+                except Exception:
+                    xref = 0
+                digest_hex = str(op.get("digest") or "").lower()
+                try:
+                    left = float(op.get("cropLeft") or 0)
+                    top = float(op.get("cropTop") or 0)
+                    right = float(op.get("cropRight") or 0)
+                    bottom = float(op.get("cropBottom") or 0)
+                except Exception:
+                    raise HTTPException(400, "G6S crop percentages must be numeric")
+                crops = [left, top, right, bottom]
+                if any(v < 0 or v > 0.45 for v in crops):
+                    raise HTTPException(409, "G6S crop edges must stay between 0% and 45%")
+                if left + right >= 0.9 or top + bottom >= 0.9 or sum(crops) <= 0:
+                    raise HTTPException(409, "G6S crop must remove some content and retain a meaningful center")
+                if xref <= 0 or not digest_hex:
+                    raise HTTPException(400, "crop_image requires source xref and digest")
+
+                infos = page.get_image_info(hashes=True, xrefs=True)
+                candidates = []
+                for info in infos:
+                    if int(info.get("xref") or 0) != xref:
+                        continue
+                    ibox = fitz.Rect(info.get("bbox"))
+                    dg = info.get("digest")
+                    dg_hex = dg.hex() if isinstance(dg, (bytes, bytearray)) else ""
+                    if dg_hex.lower() == digest_hex and all(abs(a-b) < 0.05 for a,b in zip(rect_list(ibox), rect_list(rect))):
+                        candidates.append(info)
+                if len(candidates) != 1:
+                    raise HTTPException(409, "G6S could not resolve one unique source image occurrence")
+                info = candidates[0]
+                transform = tuple(float(v) for v in info.get("transform") or (1, 0, 0, 1, 0, 0))
+                if len(transform) < 4 or abs(transform[1]) >= 0.0001 or abs(transform[2]) >= 0.0001:
+                    raise HTTPException(409, "G6S does not crop rotated or sheared raster occurrences")
+                page_images = [item for item in page.get_images(full=True) if int(item[0]) == xref]
+                if not page_images or any(int(item[1]) != 0 for item in page_images):
+                    raise HTTPException(409, "G6S does not crop masked/translucent source images")
+                same_xref = [x for x in infos if int(x.get("xref") or 0) == xref]
+                if len(same_xref) != 1:
+                    raise HTTPException(409, "G6S does not crop reused image XObjects")
+                extracted = doc.extract_image(xref)
+                source_image_bytes = extracted.get("image")
+                if not source_image_bytes:
+                    raise HTTPException(409, "G6S could not extract the source raster payload")
+
+                with Image.open(io.BytesIO(source_image_bytes)) as source_im:
+                    source_im.load()
+                    rgba = source_im.convert("RGBA")
+                    if rgba.getchannel("A").getextrema()[0] < 255:
+                        raise HTTPException(409, "G6S does not crop translucent raster payloads")
+                    width, height = rgba.size
+                    px0 = int(round(width * left)); py0 = int(round(height * top))
+                    px1 = int(round(width * (1.0 - right))); py1 = int(round(height * (1.0 - bottom)))
+                    if px1 - px0 < 1 or py1 - py0 < 1:
+                        raise HTTPException(409, "G6S crop leaves no raster content")
+                    cropped = rgba.convert("RGB").crop((px0, py0, px1, py1))
+                    cropped_buf = io.BytesIO(); cropped.save(cropped_buf, format="PNG")
+                    cropped_bytes = cropped_buf.getvalue()
+
+                target = fitz.Rect(
+                    rect.x0 + rect.width * left,
+                    rect.y0 + rect.height * top,
+                    rect.x1 - rect.width * right,
+                    rect.y1 - rect.height * bottom,
+                )
+                requested_target = op.get("targetBbox")
+                if isinstance(requested_target, list) and len(requested_target) == 4:
+                    rt = normalize_bbox(requested_target, page_rect=page.rect)
+                    if any(abs(a-b) > 0.08 for a,b in zip(rect_list(rt), rect_list(target))):
+                        raise HTTPException(409, "G6S target bbox does not match the crop fractions")
+                cropped_identity = raster_pixel_identity(cropped_bytes)
+
+                page.add_redact_annot(rect, fill=None, cross_out=False)
+                page.apply_redactions(
+                    images=fitz.PDF_REDACT_IMAGE_REMOVE,
+                    graphics=fitz.PDF_REDACT_LINE_ART_NONE,
+                    text=fitz.PDF_REDACT_TEXT_NONE,
+                )
+                inserted_xref = page.insert_image(target, stream=cropped_bytes, keep_proportion=False, overlay=True)
+                op.update({
+                    "targetBbox": rect_list(target),
+                    "croppedPixelSha256": cropped_identity["pixelSha256"],
+                    "croppedWidth": cropped_identity["width"],
+                    "croppedHeight": cropped_identity["height"],
+                })
+                results.append({
+                    "id": op_id, "type": op_type, "page": page_num, "status": "APPLIED",
+                    "xref": xref, "insertedXref": int(inserted_xref), "digest": digest_hex,
+                    "bbox": rect_list(rect), "targetBbox": rect_list(target),
+                    "cropLeft": left, "cropTop": top, "cropRight": right, "cropBottom": bottom,
+                    "croppedPixelSha256": cropped_identity["pixelSha256"],
+                    "croppedWidth": cropped_identity["width"], "croppedHeight": cropped_identity["height"],
+                })
+                continue
+
             if op_type == "replace_image":
                 try:
                     xref = int(op.get("xref") or 0)
@@ -668,7 +766,7 @@ def verify_render(source_raw: bytes, output_raw: bytes, operations: list[dict[st
             sx, sy = src.size[0] / pr.width, src.size[1] / pr.height
             for op in page_ops:
                 rects = [op.get("bbox")]
-                if str(op.get("type") or "") in {"move_image", "resize_image", "rotate_image"}:
+                if str(op.get("type") or "") in {"move_image", "resize_image", "rotate_image", "crop_image"}:
                     rects.append(op.get("targetBbox"))
                 for raw_bbox in rects:
                     if not isinstance(raw_bbox, list) or len(raw_bbox) != 4:
@@ -791,6 +889,36 @@ def verify_structure(source_raw: bytes, output_raw: bytes, operations: list[dict
                 evidence["insertedPixelMatches"] = len(image_hits)
                 evidence["imagePixelSha256"] = image_pixel_sha
                 evidence["bbox"] = rect_list(rect)
+            elif op_type == "crop_image":
+                old_digest = str(op.get("digest") or "").lower()
+                cropped_pixel_sha = str(op.get("croppedPixelSha256") or "").lower()
+                target = fitz.Rect(*[float(v) for v in op.get("targetBbox")])
+                old_hits = []
+                crop_hits = []
+                for info in page.get_image_info(hashes=True, xrefs=True):
+                    dg = info.get("digest")
+                    dg_hex = dg.hex() if isinstance(dg, (bytes, bytearray)) else ""
+                    if dg_hex.lower() == old_digest:
+                        old_hits.append(info)
+                    ibox = fitz.Rect(info.get("bbox"))
+                    if not all(abs(a-b) < 0.6 for a,b in zip(rect_list(ibox), rect_list(target))):
+                        continue
+                    ix = int(info.get("xref") or 0)
+                    if ix <= 0:
+                        continue
+                    extracted = doc.extract_image(ix)
+                    image_bytes = extracted.get("image")
+                    if not image_bytes:
+                        continue
+                    identity = raster_pixel_identity(image_bytes)
+                    if identity["pixelSha256"].lower() == cropped_pixel_sha:
+                        crop_hits.append(info)
+                passed = not old_hits and len(crop_hits) == 1
+                evidence["oldDigestMatches"] = len(old_hits)
+                evidence["croppedPixelMatches"] = len(crop_hits)
+                evidence["croppedPixelSha256"] = cropped_pixel_sha
+                evidence["sourceBbox"] = rect_list(rect)
+                evidence["targetBbox"] = rect_list(target)
             elif op_type == "replace_image":
                 old_digest = str(op.get("digest") or "").lower()
                 replacement_pixel_sha = str(op.get("replacementPixelSha256") or "").lower()
@@ -891,7 +1019,7 @@ def build_receipt(source_raw: bytes, output_raw: bytes, operations: list[dict[st
         "operationResults": operation_results,
         "preset": preset,
         "verification": verification,
-        "claim": "Stateless public transport executes bounded text-replacement/redaction/link/raster-object and isolated page-lifecycle mutations with render/structural proof in one invocation. G6R adds bounded insertion of an opaque PNG/JPEG raster into an explicit on-page rectangle while retaining G6M-G6Q raster operations; this public transport extension is not claimed to be recovered frozen G5I source code.",
+        "claim": "Stateless public transport executes bounded text-replacement/redaction/link/raster-object and isolated page-lifecycle mutations with render/structural proof in one invocation. G6S adds bounded edge cropping that shrinks the PDF bbox proportionally so surviving raster pixels retain physical scale while retaining G6M-G6R raster operations; this public transport extension is not claimed to be recovered frozen G5I source code.",
     }
 
 
@@ -988,10 +1116,10 @@ async def capabilities(request: Request, selftest: str | None = None) -> JSONRes
         "transport": TRANSPORT,
         "stateless": True,
         "maxPdfBytes": MAX_PDF_BYTES,
-        "capabilities": {"replaceText": True, "redact": True, "links": True, "moveImage": True, "resizeImage": True, "rotateImage": True, "deleteImage": True, "replaceImage": True, "insertImage": True, "pageReorder": True, "pageInsert": True, "pageDelete": True, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
-        "editing": ["bounded native text replacement", "true redaction", "bounded URI link insertion", "bounded axis-aligned raster image translation", "bounded aspect-ratio-preserving raster image resize", "bounded 90-degree clockwise raster image rotation", "bounded unique raster image deletion", "bounded same-box raster image replacement", "bounded raster image insertion", "isolated page reorder transaction", "isolated blank-page insertion", "isolated source-page deletion", "staged client-side undo", "bounded export proof"],
+        "capabilities": {"replaceText": True, "redact": True, "links": True, "moveImage": True, "resizeImage": True, "rotateImage": True, "deleteImage": True, "replaceImage": True, "insertImage": True, "cropImage": True, "pageReorder": True, "pageInsert": True, "pageDelete": True, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
+        "editing": ["bounded native text replacement", "true redaction", "bounded URI link insertion", "bounded axis-aligned raster image translation", "bounded aspect-ratio-preserving raster image resize", "bounded 90-degree clockwise raster image rotation", "bounded unique raster image deletion", "bounded same-box raster image replacement", "bounded raster image insertion", "bounded physical-scale-preserving raster image crop", "isolated page reorder transaction", "isolated blank-page insertion", "isolated source-page deletion", "staged client-side undo", "bounded export proof"],
         "frozen": ["client source bytes", "source hash", "untouched regions"],
-        "limitOfClaim": "This transport checkpoint proves bounded native text replacement with builtin Helvetica fallback, true redaction, URI link insertion, isolated page lifecycle, translation-only movement, 25%-400% uniform aspect-ratio-preserving resize, 90-degree clockwise center-preserving rotation, deletion, same-box PNG/JPEG replacement, and insertion of bounded opaque PNG/JPEG raster images on existing PDF source pages. Raster payloads are capped at 750 KB. Arbitrary-angle rotation, masked/translucent or reused-XObject raster operations, vector object transforms/deletion/replacement/insertion, recovered frozen G5I source parity, source-font-perfect replacement, text reflow, OCR/forms transport, durable server workspaces, distributed collaboration, and independent Poppler witness proof are not claimed.",
+        "limitOfClaim": "This transport checkpoint proves bounded native text replacement with builtin Helvetica fallback, true redaction, URI link insertion, isolated page lifecycle, translation-only movement, 25%-400% uniform aspect-ratio-preserving resize, 90-degree clockwise center-preserving rotation, deletion, same-box PNG/JPEG replacement, insertion of bounded opaque PNG/JPEG raster images, and physical-scale-preserving edge crop of one unique opaque axis-aligned raster on existing PDF source pages. Raster payloads are capped at 750 KB. Arbitrary-angle rotation, masked/translucent or reused-XObject raster operations, vector object transforms/deletion/replacement/insertion, recovered frozen G5I source parity, source-font-perfect replacement, text reflow, OCR/forms transport, durable server workspaces, distributed collaboration, and independent Poppler witness proof are not claimed.",
     }, headers={"Cache-Control": "no-store"})
 
 
