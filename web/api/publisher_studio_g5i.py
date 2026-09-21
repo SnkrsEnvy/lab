@@ -312,7 +312,7 @@ def apply_operations(source_raw: bytes, operations: list[dict[str, Any]]) -> tup
                 results.append({"id": op_id, "type": op_type, "page": page_num, "status": "APPLIED", "uri": uri, "bbox": rect_list(rect)})
                 continue
 
-            if op_type in {"move_image", "resize_image"}:
+            if op_type in {"move_image", "resize_image", "rotate_image"}:
                 target = normalize_bbox(op.get("targetBbox"), page_rect=page.rect)
                 if op_type == "move_image" and (abs(target.width - rect.width) > 0.02 or abs(target.height - rect.height) > 0.02):
                     raise HTTPException(409, "G6M moves raster images by translation only")
@@ -325,6 +325,20 @@ def apply_operations(source_raw: bytes, operations: list[dict[str, Any]]) -> tup
                     scale_y = target.height / rect.height
                     if abs(scale_x - scale_y) > 0.002 or scale_x < 0.25 or scale_x > 4.0:
                         raise HTTPException(409, "G6N resize scale must stay uniform between 25% and 400%")
+                rotate_degrees = 0
+                if op_type == "rotate_image":
+                    try:
+                        rotate_degrees = int(op.get("degrees") or 0)
+                    except Exception:
+                        rotate_degrees = 0
+                    if rotate_degrees != 90:
+                        raise HTTPException(409, "G6O promotes 90-degree clockwise raster rotation only")
+                    if abs(target.width - rect.height) > 0.02 or abs(target.height - rect.width) > 0.02:
+                        raise HTTPException(409, "G6O rotation must swap the source width and height")
+                    src_cx = (rect.x0 + rect.x1) / 2.0; src_cy = (rect.y0 + rect.y1) / 2.0
+                    dst_cx = (target.x0 + target.x1) / 2.0; dst_cy = (target.y0 + target.y1) / 2.0
+                    if abs(src_cx - dst_cx) > 0.02 or abs(src_cy - dst_cy) > 0.02:
+                        raise HTTPException(409, "G6O rotation preserves the image center")
                 try:
                     xref = int(op.get("xref") or 0)
                 except Exception:
@@ -366,11 +380,11 @@ def apply_operations(source_raw: bytes, operations: list[dict[str, Any]]) -> tup
                     graphics=fitz.PDF_REDACT_LINE_ART_NONE,
                     text=fitz.PDF_REDACT_TEXT_NONE,
                 )
-                inserted_xref = page.insert_image(target, stream=image_bytes, keep_proportion=False, overlay=True)
+                inserted_xref = page.insert_image(target, stream=image_bytes, keep_proportion=False, overlay=True, rotate=rotate_degrees)
                 results.append({
                     "id": op_id, "type": op_type, "page": page_num, "status": "APPLIED",
                     "xref": xref, "insertedXref": int(inserted_xref), "digest": digest_hex,
-                    "bbox": rect_list(rect), "targetBbox": rect_list(target),
+                    "bbox": rect_list(rect), "targetBbox": rect_list(target), "degrees": rotate_degrees,
                 })
                 continue
 
@@ -471,7 +485,7 @@ def verify_render(source_raw: bytes, output_raw: bytes, operations: list[dict[st
             sx, sy = src.size[0] / pr.width, src.size[1] / pr.height
             for op in page_ops:
                 rects = [op.get("bbox")]
-                if str(op.get("type") or "") in {"move_image", "resize_image"}:
+                if str(op.get("type") or "") in {"move_image", "resize_image", "rotate_image"}:
                     rects.append(op.get("targetBbox"))
                 for raw_bbox in rects:
                     if not isinstance(raw_bbox, list) or len(raw_bbox) != 4:
@@ -573,7 +587,7 @@ def verify_structure(source_raw: bytes, output_raw: bytes, operations: list[dict
                             hits.append(link)
                 passed = bool(hits)
                 evidence["matchingLinks"] = len(hits)
-            elif op_type in {"move_image", "resize_image"}:
+            elif op_type in {"move_image", "resize_image", "rotate_image"}:
                 target = fitz.Rect(*[float(v) for v in op.get("targetBbox")])
                 digest_hex = str(op.get("digest") or "").lower()
                 target_hits = []
@@ -595,6 +609,8 @@ def verify_structure(source_raw: bytes, output_raw: bytes, operations: list[dict
                 evidence["targetBbox"] = rect_list(target)
                 evidence["sourceBbox"] = rect_list(rect)
                 evidence["transformMode"] = op_type
+                if op_type == "rotate_image":
+                    evidence["degrees"] = int(op.get("degrees") or 0)
             else:
                 passed = False; evidence["reason"] = "unsupported verification type"
             checks.append({"id": op_id, "type": op_type, "page": page_num, "pass": passed, "evidence": evidence})
@@ -626,7 +642,7 @@ def build_receipt(source_raw: bytes, output_raw: bytes, operations: list[dict[st
         "operationResults": operation_results,
         "preset": preset,
         "verification": verification,
-        "claim": "Stateless public transport executes bounded text-replacement/redaction/link/raster-transform and isolated page-lifecycle mutations with render/structural proof in one invocation. G6N adds uniform aspect-ratio-preserving resize of one unique unmasked axis-aligned raster occurrence while retaining the G6M movement path; this public transport extension is not claimed to be recovered frozen G5I source code.",
+        "claim": "Stateless public transport executes bounded text-replacement/redaction/link/raster-transform and isolated page-lifecycle mutations with render/structural proof in one invocation. G6O adds center-preserving 90-degree clockwise rotation of one unique unmasked axis-aligned raster occurrence while retaining G6M movement and G6N resize; this public transport extension is not claimed to be recovered frozen G5I source code.",
     }
 
 
@@ -723,10 +739,10 @@ async def capabilities(request: Request, selftest: str | None = None) -> JSONRes
         "transport": TRANSPORT,
         "stateless": True,
         "maxPdfBytes": MAX_PDF_BYTES,
-        "capabilities": {"replaceText": True, "redact": True, "links": True, "moveImage": True, "resizeImage": True, "pageReorder": True, "pageInsert": True, "pageDelete": True, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
-        "editing": ["bounded native text replacement", "true redaction", "bounded URI link insertion", "bounded axis-aligned raster image translation", "bounded aspect-ratio-preserving raster image resize", "isolated page reorder transaction", "isolated blank-page insertion", "isolated source-page deletion", "staged client-side undo", "bounded export proof"],
+        "capabilities": {"replaceText": True, "redact": True, "links": True, "moveImage": True, "resizeImage": True, "rotateImage": True, "pageReorder": True, "pageInsert": True, "pageDelete": True, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
+        "editing": ["bounded native text replacement", "true redaction", "bounded URI link insertion", "bounded axis-aligned raster image translation", "bounded aspect-ratio-preserving raster image resize", "bounded 90-degree clockwise raster image rotation", "isolated page reorder transaction", "isolated blank-page insertion", "isolated source-page deletion", "staged client-side undo", "bounded export proof"],
         "frozen": ["client source bytes", "source hash", "untouched regions"],
-        "limitOfClaim": "This transport checkpoint proves bounded native text replacement with builtin Helvetica fallback, true redaction, URI link insertion, isolated page lifecycle, translation-only movement, and 25%-400% uniform aspect-ratio-preserving resize of one unique unmasked axis-aligned raster image occurrence. Rotated/sheared, masked/translucent, reused-XObject, non-uniform raster transforms, or vector object transforms; recovered frozen G5I source parity; source-font-perfect replacement; text reflow; OCR/forms transport; durable server workspaces; distributed collaboration; and independent Poppler witness proof are not claimed.",
+        "limitOfClaim": "This transport checkpoint proves bounded native text replacement with builtin Helvetica fallback, true redaction, URI link insertion, isolated page lifecycle, translation-only movement, 25%-400% uniform aspect-ratio-preserving resize, and 90-degree clockwise center-preserving rotation of one unique unmasked axis-aligned raster image occurrence. Arbitrary-angle rotation, masked/translucent or reused-XObject transforms, non-uniform raster transforms, vector object transforms, recovered frozen G5I source parity, source-font-perfect replacement, text reflow, OCR/forms transport, durable server workspaces, distributed collaboration, and independent Poppler witness proof are not claimed.",
     }, headers={"Cache-Control": "no-store"})
 
 
