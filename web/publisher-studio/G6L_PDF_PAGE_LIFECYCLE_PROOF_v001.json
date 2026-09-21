@@ -1,0 +1,64 @@
+{
+  "gate": "G6L PDF Page Lifecycle",
+  "status": "PASS_PUBLIC_RUNTIME_BOUNDED",
+  "date": "2026-09-20",
+  "branch": "publisher-studio-pdf-page-lifecycle-g6l-v013",
+  "build": "PS-PUBLIC-DEMO-G6L-v013",
+  "implementationCommit": "7ebfe4354a2ac946ae2a1ac18c7db13dadc76002",
+  "proofWorkflowCommit": "743bba7028e9e80f889bc925b25c18d392fabc09",
+  "workflowRun": 35556453134,
+  "artifactId": 10620226367,
+  "artifactSha256": "ad11392f0781894a00aa67771f71b64d6d32538c173457fd87eeee4811988865",
+  "sourceSha256": "da37ed6b61739777d399c7292dbe5f88661f34ade3abae245aaf287d826e3c92",
+  "insertOutputSha256": "955b11609e73add26ae5437e10211fc3b8350195f8575594bdfef2a6a85bd9fb",
+  "deleteOutputSha256": "527a2fae19168c7ed9b329c17f7273c8b795706d6acaa230f54801a3b5ea5013",
+  "checks": {
+    "apiIdentity": true,
+    "apiStateless": true,
+    "capabilityCeiling": true,
+    "pageInsertReady": true,
+    "insertStaged": true,
+    "insertUndoRestoredSourcePages": true,
+    "insertExportVerified": true,
+    "insertPageCountThree": true,
+    "insertedPageBlank": true,
+    "insertSourcePage1RasterDifference": 0,
+    "insertSourcePage2RasterDifference": 0,
+    "pageDeleteReady": true,
+    "deleteStaged": true,
+    "deleteUndoRestoredSourcePages": true,
+    "deleteExportVerified": true,
+    "deletePageCountOne": true,
+    "deleteRetainedSourcePageRasterDifference": 0,
+    "noPageErrors": true,
+    "noConsoleErrors": true,
+    "inheritedG6DBrowserRegression": "PASS",
+    "inheritedG6EBridgeRegression": "PASS"
+  },
+  "authorityBoundary": {
+    "frozenG5IIdentity": "0.35.0-g5i / G5I Distributed Page Delta Lifecycle + Conflict-Safe Undo",
+    "authenticG5ISourcePackagePresent": false,
+    "claim": "G6L extends the already-proven public stateless transport with isolated blank-page insertion and source-page deletion. It does not claim that these new transport implementations are recovered or byte-identical frozen G5I source code."
+  },
+  "promotedCapabilities": [
+    "insert one blank PDF page after the current page using inherited page geometry",
+    "delete one existing source PDF page while retaining at least one page",
+    "Undo staged insert/delete before export",
+    "verified PDF export with retained-page raster lineage",
+    "inherited reorder, bounded text replacement, true redaction, and URI links"
+  ],
+  "heldCapabilities": [
+    "editing content directly on the newly inserted blank page before export/reopen",
+    "multi-operation page lifecycle transaction",
+    "OCR transport",
+    "forms transport",
+    "source-font-perfect replacement",
+    "durable server workspaces",
+    "recovered frozen G5I source-code parity"
+  ],
+  "productionWinnerBeforePromotion": {
+    "build": "PS-PUBLIC-DEMO-G6K-v012-r2",
+    "commit": "4b7a8e016e87896ad6432296d43fefc2ad3fcea0",
+    "deployment": "dpl_scHumZ1SSSFDtB3GZgrFeLftaEVw"
+  }
+}
