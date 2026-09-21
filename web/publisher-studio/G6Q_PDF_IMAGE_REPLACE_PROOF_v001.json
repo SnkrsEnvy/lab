@@ -1,0 +1,53 @@
+{
+  "gate": "G6Q PDF Image Replace",
+  "status": "PASS_PUBLIC_RUNTIME_BOUNDED",
+  "build": "PS-PUBLIC-DEMO-G6Q-v018",
+  "branch": "publisher-studio-pdf-image-replace-g6q-v018",
+  "implementationCommit": "adf05223b2518f1078f8e566a6bea4a4c9387aa3",
+  "proofWorkflowCommit": "454ef03101976bfd78edf9d67b3dfd5838fdd986",
+  "workflowRun": 35575260402,
+  "artifactId": 10628385235,
+  "artifactSha256": "8c5b22ddc6abf23dbde66144895b4f2d453c8f85b0f04affb81949b9b19a32c4",
+  "sourceSha256": "d854c4d1a2a728912472c679d536b41d81fc45d0c7a90fa63b379ca87485f29f",
+  "outputSha256": "3ad9a5c6a4642fd971d13aeb76403b5bdeea7c60a6fae166ef120da1e1a9e842",
+  "proofSha256": "9db526d55ab0c9c79f3d1a53108b53aec9d322118fba7bcea160a769f3690aa2",
+  "sourceRasterDigest": "5b6a49c5f42ae1d219670ca36793a825",
+  "replacementPixelSha256": "880cea4b36494d0e3a56f8365a353c859fc69664220e5f0371212d4b68885788",
+  "sourceBbox": [
+    100,
+    150,
+    220,
+    230
+  ],
+  "checks": {
+    "replaceCapabilityReady": true,
+    "replacementStaged": true,
+    "undoClearedStage": true,
+    "verifiedExport": true,
+    "renderPass": true,
+    "structuralPass": true,
+    "oldRasterDigestAbsent": true,
+    "replacementSameBbox": true,
+    "replacementPixelIdentityPreserved": true,
+    "controlTextPreserved": true,
+    "outsideAuthorizedRectangleDifference": 0,
+    "noPageErrors": true,
+    "noConsoleErrors": true,
+    "inheritedG6DBrowserRegression": "PASS",
+    "inheritedG6EBridgeRegression": "PASS"
+  },
+  "authorityBoundary": {
+    "frozenG5IIdentity": "0.35.0-g5i / G5I Distributed Page Delta Lifecycle + Conflict-Safe Undo",
+    "authenticG5ISourcePackagePresent": false,
+    "claim": "G6Q extends the public stateless transport with same-box replacement of one unique unmasked axis-aligned raster occurrence using an opaque PNG/JPEG payload up to 750 KB. Replacement bytes are validated, then stripped from the server proof receipt. It does not claim recovered frozen G5I source-code parity."
+  },
+  "held": [
+    "masked or translucent source-image replacement",
+    "reused XObject replacement",
+    "rotated or sheared source-image replacement",
+    "replacement geometry changes",
+    "vector object replacement",
+    "persistent server workspaces",
+    "recovered frozen G5I source-code parity"
+  ]
+}
