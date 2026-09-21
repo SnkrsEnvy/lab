@@ -1,0 +1,54 @@
+{
+  "gate": "G6R PDF Image Insert",
+  "status": "PASS_PUBLIC_RUNTIME_BOUNDED",
+  "build": "PS-PUBLIC-DEMO-G6R-v019",
+  "branch": "publisher-studio-pdf-image-insert-g6r-v019",
+  "implementationCommit": "ba1e65265afe6972d9cf0d755b015fce81582ef9",
+  "proofHarnessFixCommit": "8b5edfab46634415f9ab7743c8fd6ab8e35d61e4",
+  "workflowRun": 35575977446,
+  "artifactId": 10628581215,
+  "artifactSha256": "7f362671f3523f1e664326d2387962c0656eed1bc874d259e4690fd768d534f1",
+  "sourceSha256": "cc34e883043db1df4e12a87009e98ffbb1233609f151d3b2fc1b40c131e9a94e",
+  "outputSha256": "acd882b2bee9c764b4996dd6de6dfaa326bcb7d4cf374f99c95e2295e2540046",
+  "proofSha256": "cfec76e90265ecdfc00c979e1ebab6d200fd881a47db571cec1e2a4486919357",
+  "insertedPixelSha256": "972130a61b68c3c36c2657a0c495dae6ee1bb56d8a3135f75609a9d5a3127779",
+  "targetBbox": [
+    100,
+    150,
+    280,
+    270
+  ],
+  "checks": {
+    "insertCapabilityReady": true,
+    "insertStaged": true,
+    "undoClearedStage": true,
+    "verifiedExport": true,
+    "renderPass": true,
+    "structuralPass": true,
+    "insertedOneImageAtTargetBbox": true,
+    "insertedPixelIdentityPreserved": true,
+    "controlTextPreserved": true,
+    "outsideAuthorizedRectangleDifference": 0,
+    "noPageErrors": true,
+    "noConsoleErrors": true,
+    "inheritedG6DBrowserRegression": "PASS",
+    "inheritedG6EBridgeRegression": "PASS"
+  },
+  "causalCorrection": {
+    "firstWitnessFailure": "The product staged the first insertion and Undo correctly; the proof registered a second exhausted dialog listener and never completed the second three-prompt placement sequence.",
+    "correction": "Use one six-answer Playwright dialog queue across both insertion passes.",
+    "mutationScope": "proof workflow only; application code and G6Q production remained frozen"
+  },
+  "authorityBoundary": {
+    "frozenG5IIdentity": "0.35.0-g5i / G5I Distributed Page Delta Lifecycle + Conflict-Safe Undo",
+    "authenticG5ISourcePackagePresent": false,
+    "claim": "G6R extends the public stateless transport with insertion of an opaque PNG/JPEG up to 750 KB into an explicit source-page rectangle. The UI preserves source image aspect ratio while computing the bounded target rectangle. It does not claim recovered frozen G5I source-code parity."
+  },
+  "held": [
+    "transparent image insertion",
+    "vector object insertion",
+    "cross-page placement",
+    "persistent server workspaces",
+    "recovered frozen G5I source-code parity"
+  ]
+}

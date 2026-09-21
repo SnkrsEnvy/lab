@@ -347,6 +347,36 @@ def apply_operations(source_raw: bytes, operations: list[dict[str, Any]]) -> tup
                 results.append({"id": op_id, "type": op_type, "page": page_num, "status": "APPLIED", "uri": uri, "bbox": rect_list(rect)})
                 continue
 
+            if op_type == "insert_image":
+                image_b64 = str(op.get("imageBase64") or "")
+                image_mime = str(op.get("imageMime") or "").lower()
+                if image_mime not in {"image/png", "image/jpeg"}:
+                    raise HTTPException(415, "G6R inserted image must declare PNG or JPEG")
+                try:
+                    image_bytes = base64.b64decode(image_b64, validate=True)
+                except Exception:
+                    raise HTTPException(400, "G6R inserted image payload is not valid base64")
+                image_identity = raster_pixel_identity(image_bytes)
+                inserted_xref = page.insert_image(rect, stream=image_bytes, keep_proportion=False, overlay=True)
+                op.pop("imageBase64", None)
+                op.update({
+                    "imagePixelSha256": image_identity["pixelSha256"],
+                    "imageBytesSha256": image_identity["bytesSha256"],
+                    "imageWidth": image_identity["width"],
+                    "imageHeight": image_identity["height"],
+                    "imageFormat": image_identity["format"],
+                })
+                results.append({
+                    "id": op_id, "type": op_type, "page": page_num, "status": "APPLIED",
+                    "insertedXref": int(inserted_xref), "bbox": rect_list(rect),
+                    "imagePixelSha256": image_identity["pixelSha256"],
+                    "imageBytesSha256": image_identity["bytesSha256"],
+                    "imageWidth": image_identity["width"],
+                    "imageHeight": image_identity["height"],
+                    "imageFormat": image_identity["format"],
+                })
+                continue
+
             if op_type == "replace_image":
                 try:
                     xref = int(op.get("xref") or 0)
@@ -740,6 +770,27 @@ def verify_structure(source_raw: bytes, output_raw: bytes, operations: list[dict
                             hits.append(link)
                 passed = bool(hits)
                 evidence["matchingLinks"] = len(hits)
+            elif op_type == "insert_image":
+                image_pixel_sha = str(op.get("imagePixelSha256") or "").lower()
+                image_hits = []
+                for info in page.get_image_info(hashes=True, xrefs=True):
+                    ibox = fitz.Rect(info.get("bbox"))
+                    if not all(abs(a-b) < 0.6 for a,b in zip(rect_list(ibox), rect_list(rect))):
+                        continue
+                    xref = int(info.get("xref") or 0)
+                    if xref <= 0:
+                        continue
+                    extracted = doc.extract_image(xref)
+                    image_bytes = extracted.get("image")
+                    if not image_bytes:
+                        continue
+                    identity = raster_pixel_identity(image_bytes)
+                    if identity["pixelSha256"].lower() == image_pixel_sha:
+                        image_hits.append(info)
+                passed = len(image_hits) == 1
+                evidence["insertedPixelMatches"] = len(image_hits)
+                evidence["imagePixelSha256"] = image_pixel_sha
+                evidence["bbox"] = rect_list(rect)
             elif op_type == "replace_image":
                 old_digest = str(op.get("digest") or "").lower()
                 replacement_pixel_sha = str(op.get("replacementPixelSha256") or "").lower()
@@ -840,7 +891,7 @@ def build_receipt(source_raw: bytes, output_raw: bytes, operations: list[dict[st
         "operationResults": operation_results,
         "preset": preset,
         "verification": verification,
-        "claim": "Stateless public transport executes bounded text-replacement/redaction/link/raster-object and isolated page-lifecycle mutations with render/structural proof in one invocation. G6Q adds same-box replacement of one unique unmasked axis-aligned raster occurrence with a bounded opaque PNG/JPEG payload while retaining G6M-G6P raster operations; this public transport extension is not claimed to be recovered frozen G5I source code.",
+        "claim": "Stateless public transport executes bounded text-replacement/redaction/link/raster-object and isolated page-lifecycle mutations with render/structural proof in one invocation. G6R adds bounded insertion of an opaque PNG/JPEG raster into an explicit on-page rectangle while retaining G6M-G6Q raster operations; this public transport extension is not claimed to be recovered frozen G5I source code.",
     }
 
 
@@ -937,10 +988,10 @@ async def capabilities(request: Request, selftest: str | None = None) -> JSONRes
         "transport": TRANSPORT,
         "stateless": True,
         "maxPdfBytes": MAX_PDF_BYTES,
-        "capabilities": {"replaceText": True, "redact": True, "links": True, "moveImage": True, "resizeImage": True, "rotateImage": True, "deleteImage": True, "replaceImage": True, "pageReorder": True, "pageInsert": True, "pageDelete": True, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
-        "editing": ["bounded native text replacement", "true redaction", "bounded URI link insertion", "bounded axis-aligned raster image translation", "bounded aspect-ratio-preserving raster image resize", "bounded 90-degree clockwise raster image rotation", "bounded unique raster image deletion", "bounded same-box raster image replacement", "isolated page reorder transaction", "isolated blank-page insertion", "isolated source-page deletion", "staged client-side undo", "bounded export proof"],
+        "capabilities": {"replaceText": True, "redact": True, "links": True, "moveImage": True, "resizeImage": True, "rotateImage": True, "deleteImage": True, "replaceImage": True, "insertImage": True, "pageReorder": True, "pageInsert": True, "pageDelete": True, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
+        "editing": ["bounded native text replacement", "true redaction", "bounded URI link insertion", "bounded axis-aligned raster image translation", "bounded aspect-ratio-preserving raster image resize", "bounded 90-degree clockwise raster image rotation", "bounded unique raster image deletion", "bounded same-box raster image replacement", "bounded raster image insertion", "isolated page reorder transaction", "isolated blank-page insertion", "isolated source-page deletion", "staged client-side undo", "bounded export proof"],
         "frozen": ["client source bytes", "source hash", "untouched regions"],
-        "limitOfClaim": "This transport checkpoint proves bounded native text replacement with builtin Helvetica fallback, true redaction, URI link insertion, isolated page lifecycle, translation-only movement, 25%-400% uniform aspect-ratio-preserving resize, 90-degree clockwise center-preserving rotation, deletion, and same-box PNG/JPEG replacement of one unique unmasked axis-aligned raster image occurrence. Replacement payloads are capped at 750 KB and must be fully opaque. Arbitrary-angle rotation, masked/translucent or reused-XObject raster operations, vector object transforms/deletion/replacement, recovered frozen G5I source parity, source-font-perfect replacement, text reflow, OCR/forms transport, durable server workspaces, distributed collaboration, and independent Poppler witness proof are not claimed.",
+        "limitOfClaim": "This transport checkpoint proves bounded native text replacement with builtin Helvetica fallback, true redaction, URI link insertion, isolated page lifecycle, translation-only movement, 25%-400% uniform aspect-ratio-preserving resize, 90-degree clockwise center-preserving rotation, deletion, same-box PNG/JPEG replacement, and insertion of bounded opaque PNG/JPEG raster images on existing PDF source pages. Raster payloads are capped at 750 KB. Arbitrary-angle rotation, masked/translucent or reused-XObject raster operations, vector object transforms/deletion/replacement/insertion, recovered frozen G5I source parity, source-font-perfect replacement, text reflow, OCR/forms transport, durable server workspaces, distributed collaboration, and independent Poppler witness proof are not claimed.",
     }, headers={"Cache-Control": "no-store"})
 
 

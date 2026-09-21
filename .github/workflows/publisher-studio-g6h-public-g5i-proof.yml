@@ -1,8 +1,8 @@
-name: Publisher Studio G6Q PDF Image Replace Proof
+name: Publisher Studio G6R PDF Image Insert Proof
 on:
   push:
     branches:
-      - 'publisher-studio-pdf-image-replace-g6q-v018'
+      - 'publisher-studio-pdf-image-insert-g6r-v019'
     paths:
       - 'web/api/publisher_studio_g5i.py'
       - 'web/requirements.txt'
@@ -18,13 +18,13 @@ on:
       - '.github/workflows/publisher-studio-g6h-public-g5i-proof.yml'
 
 jobs:
-  pdf-image-replace-proof:
+  pdf-image-insert-proof:
     runs-on: ubuntu-latest
     timeout-minutes: 14
     env:
-      TARGET_URL: https://lab-omo524vpj-world-builders.vercel.app/publisher-studio/
-      API_URL: https://lab-omo524vpj-world-builders.vercel.app/api/publisher-studio-g5i
-      EXPECTED_BUILD: PS-PUBLIC-DEMO-G6Q-v018
+      TARGET_URL: https://lab-8qex80t10-world-builders.vercel.app/publisher-studio/
+      API_URL: https://lab-8qex80t10-world-builders.vercel.app/api/publisher-studio-g5i
+      EXPECTED_BUILD: PS-PUBLIC-DEMO-G6R-v019
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -34,7 +34,7 @@ jobs:
         run: |
           python -m pip install --disable-pip-version-check playwright==1.55.0 pymupdf==1.26.7 requests pillow
           python -m playwright install --with-deps chromium
-      - name: Run public G6Q image replace proof
+      - name: Run public G6R image insert proof
         run: |
           python - <<'PY'
           import hashlib, io, json, os, pathlib
@@ -43,10 +43,10 @@ jobs:
           from playwright.sync_api import sync_playwright, expect
 
           target=os.environ['TARGET_URL']; api=os.environ['API_URL']; expected_build=os.environ['EXPECTED_BUILD']
-          out=pathlib.Path('publisher-studio-g6q-proof'); out.mkdir(exist_ok=True)
-          fixture=out/'g6q-image-fixture.pdf'
-          replacement_path=out/'g6q-replacement.png'
-          src_bbox=[100.0,150.0,220.0,230.0]
+          out=pathlib.Path('publisher-studio-g6r-proof'); out.mkdir(exist_ok=True)
+          fixture=out/'g6r-insert-fixture.pdf'
+          image_path=out/'g6r-insert.png'
+          target_bbox=[100.0,150.0,280.0,270.0]
           receipt={'target':target,'api':api,'expected_build':expected_build,'checks':{},'console_errors':[],'page_errors':[]}
 
           def mark(name,value=True,detail=None):
@@ -56,50 +56,35 @@ jobs:
 
           def pixel_identity(raw):
               with Image.open(io.BytesIO(raw)) as im:
-                  im.load()
-                  rgb=im.convert('RGB')
+                  im.load(); rgb=im.convert('RGB')
                   payload=f"{rgb.width}x{rgb.height}|RGB|".encode('ascii')+rgb.tobytes()
                   return {'pixelSha256':hashlib.sha256(payload).hexdigest(),'width':rgb.width,'height':rgb.height}
 
-          # Source raster.
-          src_im=Image.new('RGB',(120,80),(35,92,150))
-          dr=ImageDraw.Draw(src_im)
-          dr.rectangle((8,8,111,71),outline=(244,203,76),width=5)
-          dr.line((10,65,108,15),fill=(255,255,255),width=4)
-          dr.rectangle((44,24,76,56),fill=(120,35,90))
-          src_buf=io.BytesIO(); src_im.save(src_buf,format='PNG')
-
-          # Replacement raster: deliberately asymmetric and visually distinct.
-          repl=Image.new('RGB',(96,64),(205,70,42))
-          rr=ImageDraw.Draw(repl)
-          rr.polygon([(8,8),(86,14),(52,54)],fill=(32,154,98))
-          rr.rectangle((7,43,28,58),fill=(250,220,70))
-          rr.line((12,10,88,58),fill=(245,245,245),width=5)
-          repl.save(replacement_path,format='PNG')
-          replacement_bytes=replacement_path.read_bytes()
-          replacement_identity=pixel_identity(replacement_bytes)
-          receipt['detail']={'replacement_pixel_sha256':replacement_identity['pixelSha256']}
+          ins=Image.new('RGB',(90,60),(38,132,76))
+          dr=ImageDraw.Draw(ins)
+          dr.rectangle((5,5,84,54),outline=(245,201,62),width=4)
+          dr.polygon([(14,46),(44,10),(78,46)],fill=(65,82,184))
+          dr.ellipse((58,9,79,30),fill=(230,78,52))
+          dr.line((8,53,82,8),fill=(248,248,248),width=3)
+          ins.save(image_path,format='PNG')
+          image_bytes=image_path.read_bytes(); image_identity=pixel_identity(image_bytes)
 
           doc=fitz.open(); pg=doc.new_page(width=612,height=792)
-          pg.insert_text((72,72),'G6Q image replacement control text',fontsize=14,fontname='helv')
-          pg.insert_image(fitz.Rect(*src_bbox),stream=src_buf.getvalue(),keep_proportion=False)
+          pg.insert_text((72,72),'G6R image insertion control text',fontsize=14,fontname='helv')
+          pg.insert_text((72,100),'This PDF starts with zero raster images.',fontsize=11,fontname='helv')
           doc.save(str(fixture),garbage=4,deflate=True,clean=True); doc.close()
           source_bytes=fixture.read_bytes(); source_sha=hashlib.sha256(source_bytes).hexdigest()
-          receipt['detail']['source_sha256']=source_sha
+          receipt['detail']={'source_sha256':source_sha,'inserted_pixel_sha256':image_identity['pixelSha256']}
 
           src=fitz.open(stream=source_bytes,filetype='pdf')
           try:
-              infos=src[0].get_image_info(hashes=True,xrefs=True)
-              mark('fixture_one_image',len(infos)==1,[{'bbox':list(x['bbox']),'xref':x.get('xref')} for x in infos])
-              source_digest=infos[0]['digest'].hex()
-              mark('fixture_bbox_exact',all(abs(float(a)-float(b))<0.05 for a,b in zip(infos[0]['bbox'],src_bbox)),list(infos[0]['bbox']))
+              mark('fixture_zero_images',len(src[0].get_image_info(hashes=True,xrefs=True))==0)
           finally: src.close()
 
-          cap=requests.get(api,timeout=60)
-          mark('api_http_200',cap.status_code==200,cap.text[:800])
+          cap=requests.get(api,timeout=60); mark('api_http_200',cap.status_code==200,cap.text[:800])
           caps=cap.json()
           mark('api_identity',caps.get('version')=='0.35.0-g5i' and caps.get('gate')=='G5I Distributed Page Delta Lifecycle + Conflict-Safe Undo')
-          expected_caps={'replaceText':True,'redact':True,'links':True,'moveImage':True,'resizeImage':True,'rotateImage':True,'deleteImage':True,'replaceImage':True,'pageReorder':True,'pageInsert':True,'pageDelete':True,'undo':True,'exportPdf':True,'ocr':False,'forms':False}
+          expected_caps={'replaceText':True,'redact':True,'links':True,'moveImage':True,'resizeImage':True,'rotateImage':True,'deleteImage':True,'replaceImage':True,'insertImage':True,'pageReorder':True,'pageInsert':True,'pageDelete':True,'undo':True,'exportPdf':True,'ocr':False,'forms':False}
           mark('capability_ceiling',caps.get('capabilities')==expected_caps)
 
           def render(raw):
@@ -132,28 +117,28 @@ jobs:
               page.locator('#pdfFileInput').set_input_files(str(fixture))
               expect(page.locator('#pdfEngineStatus')).to_contain_text('CONNECTED',timeout=90000)
               bridge=page.evaluate("window.PublisherStudioPdfBridge.status()")
-              mark('replace_image_capability_ready',bridge.get('capabilities',{}).get('replaceImage') is True,bridge)
+              mark('insert_image_capability_ready',bridge.get('capabilities',{}).get('insertImage') is True,bridge)
 
-              def stage_replace():
+              dialog_answers=iter(['100','150','180','100','150','180'])
+              page.on('dialog',lambda dialog: dialog.accept(next(dialog_answers)))
+
+              def stage_insert():
                   page.get_by_role('button',name='PDF',exact=True).click()
-                  expect(page.locator('#pdfReplaceImageBtn')).to_be_enabled()
-                  page.locator('#pdfReplaceImageBtn').click()
-                  choice=page.locator('.pdf-block-choice[data-image]:not([disabled])')
-                  expect(choice).to_have_count(1)
+                  expect(page.locator('#pdfInsertImageBtn')).to_be_enabled()
                   with page.expect_file_chooser(timeout=10000) as fc:
-                      choice.click()
-                  fc.value.set_files(str(replacement_path))
-                  expect(page.locator('#opsLayer [title="Staged image replacement"]')).to_have_count(1,timeout=15000)
+                      page.locator('#pdfInsertImageBtn').click()
+                  fc.value.set_files(str(image_path))
+                  expect(page.locator('#opsLayer [title="Staged image insertion"]')).to_have_count(1,timeout=15000)
 
-              stage_replace()
-              mark('replace_staged',True,page.locator('#toast').inner_text())
+              stage_insert()
+              mark('insert_staged',True,page.locator('#toast').inner_text())
 
               page.get_by_role('button',name='Home',exact=True).click()
               page.locator('#undo').click(); page.wait_for_timeout(300)
-              expect(page.locator('#opsLayer [title="Staged image replacement"]')).to_have_count(0)
-              mark('replace_undo_clears_stage',True)
+              expect(page.locator('#opsLayer [title="Staged image insertion"]')).to_have_count(0)
+              mark('insert_undo_clears_stage',True)
 
-              stage_replace()
+              stage_insert()
 
               export_response={}
               def capture_export(resp):
@@ -163,7 +148,7 @@ jobs:
               page.get_by_role('button',name='Export',exact=True).first.click()
               with page.expect_download(timeout=90000) as di:
                   page.locator('#printPdfBtn').click()
-              edited=out/'public-g6q-image-replaced.pdf'; di.value.save_as(str(edited))
+              edited=out/'public-g6r-image-inserted.pdf'; di.value.save_as(str(edited))
               edited_bytes=edited.read_bytes(); edited_sha=hashlib.sha256(edited_bytes).hexdigest()
               h=export_response.get('headers',{})
               mark('export_http_200',export_response.get('status')==200,export_response)
@@ -177,37 +162,33 @@ jobs:
               outdoc=fitz.open(stream=edited_bytes,filetype='pdf')
               try:
                   infos=outdoc[0].get_image_info(hashes=True,xrefs=True)
-                  old_hits=[x for x in infos if x.get('digest') and x['digest'].hex()==source_digest]
-                  mark('old_raster_digest_absent',len(old_hits)==0,[{'bbox':list(x['bbox']),'xref':x.get('xref')} for x in old_hits])
-                  bbox_hits=[x for x in infos if all(abs(float(a)-float(b))<0.6 for a,b in zip(x['bbox'],src_bbox))]
-                  mark('replacement_one_image_same_bbox',len(bbox_hits)==1,[{'bbox':list(x['bbox']),'xref':x.get('xref')} for x in bbox_hits])
+                  bbox_hits=[x for x in infos if all(abs(float(a)-float(b))<0.6 for a,b in zip(x['bbox'],target_bbox))]
+                  mark('inserted_one_image_at_target_bbox',len(bbox_hits)==1,[{'bbox':list(x['bbox']),'xref':x.get('xref')} for x in bbox_hits])
                   xref=int(bbox_hits[0].get('xref') or 0)
-                  ext=outdoc.extract_image(xref)
-                  output_identity=pixel_identity(ext['image'])
-                  mark('replacement_pixel_identity_preserved',output_identity['pixelSha256']==replacement_identity['pixelSha256'],{'actual':output_identity,'expected':replacement_identity})
-                  mark('control_text_preserved','G6Q image replacement control text' in outdoc[0].get_text('text'))
+                  ext=outdoc.extract_image(xref); output_identity=pixel_identity(ext['image'])
+                  mark('inserted_pixel_identity_preserved',output_identity['pixelSha256']==image_identity['pixelSha256'],{'actual':output_identity,'expected':image_identity})
+                  mark('control_text_preserved','G6R image insertion control text' in outdoc[0].get_text('text'))
               finally: outdoc.close()
 
               src_render=render(source_bytes); out_render=render(edited_bytes)
-              r=outside_ratio(src_render,out_render,[src_bbox])
+              r=outside_ratio(src_render,out_render,[target_bbox])
               mark('outside_authorized_rectangle_stable',r<0.00005,r)
-              page.screenshot(path=str(out/'g6q-pdf-image-replace-proof.png'),full_page=True)
+              page.screenshot(path=str(out/'g6r-pdf-image-insert-proof.png'),full_page=True)
               mark('no_page_errors',len(receipt['page_errors'])==0,receipt['page_errors'])
               mark('no_console_errors',len(receipt['console_errors'])==0,receipt['console_errors'])
               browser.close()
 
           receipt['detail']['output_sha256']=edited_sha
-          receipt['detail']['source_digest']=source_digest
-          receipt['detail']['source_bbox']=src_bbox
+          receipt['detail']['target_bbox']=target_bbox
           receipt['status']='PASS'
           (out/'receipt.json').write_text(json.dumps(receipt,indent=2),encoding='utf-8')
-          print('PUBLISHER_STUDIO_G6Q_PDF_IMAGE_REPLACE_PROOF_PASS')
+          print('PUBLISHER_STUDIO_G6R_PDF_IMAGE_INSERT_PROOF_PASS')
           print(json.dumps(receipt,indent=2))
           PY
       - name: Upload public proof evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: publisher-studio-g6q-pdf-image-replace-proof
-          path: publisher-studio-g6q-proof/
+          name: publisher-studio-g6r-pdf-image-insert-proof
+          path: publisher-studio-g6r-proof/
           if-no-files-found: warn
