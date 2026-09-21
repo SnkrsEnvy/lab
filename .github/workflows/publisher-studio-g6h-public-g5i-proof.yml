@@ -1,4 +1,4 @@
-name: Publisher Studio G6M PDF Image Move Proof
+name: Publisher Studio G6M Production Smoke
 on:
   push:
     branches:
@@ -22,8 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 14
     env:
-      TARGET_URL: https://lab-4q25ex89q-world-builders.vercel.app/publisher-studio/
-      API_URL: https://lab-4q25ex89q-world-builders.vercel.app/api/publisher-studio-g5i
+      TARGET_URL: https://lab-world-builders.vercel.app/publisher-studio/
+      API_URL: https://lab-world-builders.vercel.app/api/publisher-studio-g5i
       EXPECTED_BUILD: PS-PUBLIC-DEMO-G6M-v014-r1
     steps:
       - uses: actions/checkout@v4
@@ -183,13 +183,13 @@ jobs:
           receipt['detail']['target_bbox']=dst_bbox
           receipt['status']='PASS'
           (out/'receipt.json').write_text(json.dumps(receipt,indent=2),encoding='utf-8')
-          print('PUBLISHER_STUDIO_G6M_PDF_IMAGE_MOVE_PROOF_PASS')
+          print('PUBLISHER_STUDIO_G6M_PRODUCTION_SMOKE_PASS')
           print(json.dumps(receipt,indent=2))
           PY
       - name: Upload public proof evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: publisher-studio-g6m-pdf-image-move-proof
+          name: publisher-studio-g6m-production-smoke
           path: publisher-studio-g6m-proof/
           if-no-files-found: warn
