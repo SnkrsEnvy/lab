@@ -1,0 +1,85 @@
+{
+  "schema_version": "grandcore.source-authority-register.v2",
+  "system": "Golden Goose / CannaCardz Broadcast Gateway",
+  "observed_at_utc": "2026-09-20T00:36:00Z",
+  "authority": {
+    "founder": "Founder retains final sovereignty",
+    "active_gate": "BG-002-PROOF-CLOSEOUT",
+    "command_state": "ONE_ACTIVE_GATE"
+  },
+  "current_source": {
+    "repository": "SnkrsEnvy/lab",
+    "default_branch": "main",
+    "main_head": "a65872c894787463120942b25b8ed0e7c6b60db3",
+    "v002_origin_commit": "55232dad69e41b3cf59913064529467b34e21f3d",
+    "v002_core_unchanged_since_origin": true,
+    "evidence": "GitHub compare 55232dad... to a65872c... shows no changes to v002 compiler, verifier, schema, manifest or generated broadcast-v2 files."
+  },
+  "current_production": {
+    "project": "lab",
+    "project_id": "prj_CvlrxUgjH0boED2KvmE6RIOIBvw9",
+    "deployment_id": "dpl_EPVHauHByXBMWVa1LMg5kXKpD9QQ",
+    "deployment_commit": "a65872c894787463120942b25b8ed0e7c6b60db3",
+    "alias": "https://lab-beryl-zeta.vercel.app",
+    "gateway_v2_url": "https://lab-beryl-zeta.vercel.app/broadcast-v2/39/?v=bg2-regression",
+    "build_marker": "bg2-39-regression"
+  },
+  "frozen": {
+    "gateway_v001_baseline": "PROVEN_METHOD",
+    "edition_39_cover": {
+      "url": "https://golden-goose-39-share.vercel.app/api/cover?v=16R1",
+      "mime": "image/jpeg",
+      "bytes": 39672,
+      "width": 900,
+      "height": 1256,
+      "sha256": "064c463f52caa8f2cf6ffaee79682df8418e54261b2101021a9ad6cf72618f20"
+    },
+    "edition_39_reader": {
+      "url": "https://golden-goose-39-public-v18.vercel.app/",
+      "outer_build": "gg39-v19-static-cover-shell",
+      "protected_parent_build": "gg39-v18-webp-inline-final"
+    }
+  },
+  "v002_generated_source": {
+    "index": {
+      "path": "web/broadcast-v2/39/index.html",
+      "git_blob_sha": "6b47c3ae48747cfbb159dfb14d111cd8378faa77"
+    },
+    "lock": {
+      "path": "web/broadcast-v2/39/manifest.lock.json",
+      "git_blob_sha": "6e5db94f4cdfa2fa750afa043c5e8e64390c988c"
+    },
+    "compile_receipt": {
+      "path": "web/broadcast-v2/39/receipt.json",
+      "git_blob_sha": "9c77ab3a4347da29d45edbf508b9995ce06ab07c",
+      "note": "Compile-time receipt only; null runtime gates are intentional and are not the current runtime truth."
+    }
+  },
+  "current_server_truth": {
+    "A": 1,
+    "P": 1,
+    "T": 1,
+    "I": 1,
+    "M": 1,
+    "K": 1,
+    "L": 1,
+    "R": 1,
+    "D": null,
+    "G_server": "PASS",
+    "G_final": "OPEN_DEVICE_COMPOSITOR"
+  },
+  "proof_branch": {
+    "name": "broadcast-gateway-v002-proof",
+    "head": "e3266fd484857da93430e826ad4775d46e68cf7a",
+    "preview_deployment": "dpl_2x2BVXacjWKn3UikYksW78dHfzTi",
+    "preview_url": "https://lab-doae1vycl-world-builders.vercel.app",
+    "status": "READY",
+    "scope": "Validation workflow only; no reader, media, v1 core or production routing mutation.",
+    "draft_pr": 6
+  },
+  "unknown": [
+    "Strict verifier CI execution/fail-closed test has not been observed through the available GitHub Actions evidence surface.",
+    "Fresh device/iMessage compositor result for the v002 Gateway URL."
+  ],
+  "next_permitted_action": "Run fresh device/iMessage composition using the exact v002 Gateway production URL. If correct, set D=1, append TruthBank PASS, and freeze v002. Do not reopen lower layers without contradictory evidence."
+}

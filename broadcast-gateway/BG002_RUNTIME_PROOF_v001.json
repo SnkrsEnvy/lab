@@ -1,0 +1,41 @@
+{
+  "schema_version": "broadcast-gateway.runtime-proof.v1",
+  "system": "Golden Goose / CannaCardz Broadcast Gateway v002",
+  "observed_at_utc": "2026-09-20T00:36:00Z",
+  "production_url": "https://lab-beryl-zeta.vercel.app/broadcast-v2/39/?v=bg2-regression",
+  "production_deployment": "dpl_EPVHauHByXBMWVa1LMg5kXKpD9QQ",
+  "production_commit": "a65872c894787463120942b25b8ed0e7c6b60db3",
+  "observed": {
+    "page_http": 200,
+    "page_mime": "text/html",
+    "build_marker": "bg2-39-regression",
+    "canonical": "https://lab-beryl-zeta.vercel.app/broadcast-v2/39/?v=bg2-regression",
+    "og_url": "https://lab-beryl-zeta.vercel.app/broadcast-v2/39/?v=bg2-regression",
+    "cover_url": "https://golden-goose-39-share.vercel.app/api/cover?v=16R1",
+    "cover_http": 200,
+    "cover_mime": "image/jpeg",
+    "cover_bytes": 39672,
+    "cover_sha256": "064c463f52caa8f2cf6ffaee79682df8418e54261b2101021a9ad6cf72618f20",
+    "cover_width": 900,
+    "cover_height": 1256,
+    "protected_reader_http": 200,
+    "protected_reader_outer_build": "gg39-v19-static-cover-shell",
+    "protected_reader_parent_build": "gg39-v18-webp-inline-final",
+    "semantic_jsonld": "CreativeWork / Golden Goose Publishing / Golden Goose Magazine"
+  },
+  "gates": {
+    "A": 1,
+    "P": 1,
+    "T": 1,
+    "I": 1,
+    "M": 1,
+    "K": 1,
+    "L": 1,
+    "R": 1,
+    "D": null
+  },
+  "G_server": "PASS",
+  "G_final": "OPEN_DEVICE_COMPOSITOR",
+  "claim_limit": "This receipt proves current server/media/metadata/source-deployment/reader truth. It does not prove the final iMessage/LinkPresentation composition and does not claim that unobserved CI self-tests executed.",
+  "next_proof": "Fresh iMessage share of the exact production v002 URL."
+}

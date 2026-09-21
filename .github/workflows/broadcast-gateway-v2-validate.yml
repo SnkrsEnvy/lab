@@ -1,5 +1,6 @@
 name: Broadcast Gateway v2 Validate
 on:
+  workflow_dispatch:
   push:
     paths:
       - 'broadcast-gateway/SOURCE_AUTHORITY_REGISTER_v001.json'
@@ -20,6 +21,7 @@ on:
       - 'tools/broadcast-gateway/compile-v2.mjs'
       - 'tools/broadcast-gateway/verify-v2.mjs'
       - '.github/workflows/broadcast-gateway-v2-validate.yml'
+
 jobs:
   compile-regression:
     runs-on: ubuntu-latest
@@ -28,18 +30,75 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Compile Edition 39 v2 regression candidate
+
+      - name: Syntax check v2 tools
+        run: |
+          node --check tools/broadcast-gateway/compile-v2.mjs
+          node --check tools/broadcast-gateway/verify-v2.mjs
+
+      - name: Compile canonical Edition 39 v2 regression candidate
         run: |
           node tools/broadcast-gateway/compile-v2.mjs \
             --manifest broadcast-gateway/manifests/edition-39-v2-regression.json \
             --out /tmp/bg2-ed39
-      - name: Assert v2 compile contract
-        run: |
           test -s /tmp/bg2-ed39/index.html
           test -s /tmp/bg2-ed39/manifest.lock.json
           test -s /tmp/bg2-ed39/receipt.json
           grep -q 'broadcast-gateway-build' /tmp/bg2-ed39/index.html
           grep -q '064c463f52caa8f2cf6ffaee79682df8418e54261b2101021a9ad6cf72618f20' /tmp/bg2-ed39/manifest.lock.json
           grep -q 'COMPILED_NOT_RUNTIME_PROVEN' /tmp/bg2-ed39/receipt.json
-      - name: Syntax check verifier
-        run: node --check tools/broadcast-gateway/verify-v2.mjs
+
+      - name: Build localhost proof manifest
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          const src = JSON.parse(await readFile('broadcast-gateway/manifests/edition-39-v2-regression.json', 'utf8'));
+          src.share.origin = 'http://127.0.0.1:4173';
+          src.share.path = '/';
+          src.share.version = 'ci-local';
+          src.share.build_marker = 'bg2-ci-local';
+          await writeFile('/tmp/bg2-local-manifest.json', JSON.stringify(src, null, 2) + '\n');
+          NODE
+          node tools/broadcast-gateway/compile-v2.mjs \
+            --manifest /tmp/bg2-local-manifest.json \
+            --out /tmp/bg2-local
+
+      - name: Strict local verifier PASS
+        run: |
+          python3 -m http.server 4173 --directory /tmp/bg2-local >/tmp/bg2-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill $server_pid 2>/dev/null || true' EXIT
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            curl -fsS http://127.0.0.1:4173/ >/dev/null && break
+            sleep 1
+          done
+          node tools/broadcast-gateway/verify-v2.mjs \
+            --url 'http://127.0.0.1:4173/?v=ci-local' \
+            --lock /tmp/bg2-local/manifest.lock.json \
+            | tee /tmp/bg2-local-verifier.json
+          grep -q '"G_server": "PASS"' /tmp/bg2-local-verifier.json
+
+      - name: Intentional fingerprint mismatch must fail closed
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          const lock = JSON.parse(await readFile('/tmp/bg2-local/manifest.lock.json', 'utf8'));
+          lock.cover.bytes += 1;
+          await writeFile('/tmp/bg2-bad.lock.json', JSON.stringify(lock, null, 2) + '\n');
+          NODE
+          python3 -m http.server 4174 --directory /tmp/bg2-local >/tmp/bg2-http-bad.log 2>&1 &
+          server_pid=$!
+          trap 'kill $server_pid 2>/dev/null || true' EXIT
+          if node tools/broadcast-gateway/verify-v2.mjs \
+            --url 'http://127.0.0.1:4174/?v=ci-local' \
+            --lock /tmp/bg2-bad.lock.json; then
+            echo 'ERROR: verifier accepted an intentionally wrong image byte count'
+            exit 1
+          fi
+          echo 'PASS: verifier failed closed on intentional image fingerprint mismatch'
+
+      - name: Confirm v1 core remains present
+        run: |
+          test -s tools/broadcast-gateway/compile.mjs
+          test -s tools/broadcast-gateway/verify.mjs
+          test -s broadcast-gateway/manifests/edition-39.json
