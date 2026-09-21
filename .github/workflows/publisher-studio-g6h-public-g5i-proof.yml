@@ -1,4 +1,4 @@
-name: Publisher Studio G6N PDF Image Resize Proof
+name: Publisher Studio G6N Production Smoke
 on:
   push:
     branches:
@@ -22,8 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 14
     env:
-      TARGET_URL: https://lab-9z4320ma7-world-builders.vercel.app/publisher-studio/
-      API_URL: https://lab-9z4320ma7-world-builders.vercel.app/api/publisher-studio-g5i
+      TARGET_URL: https://lab-world-builders.vercel.app/publisher-studio/
+      API_URL: https://lab-world-builders.vercel.app/api/publisher-studio-g5i
       EXPECTED_BUILD: PS-PUBLIC-DEMO-G6N-v015
     steps:
       - uses: actions/checkout@v4
@@ -184,7 +184,7 @@ jobs:
           receipt['detail']['target_bbox']=dst_bbox
           receipt['status']='PASS'
           (out/'receipt.json').write_text(json.dumps(receipt,indent=2),encoding='utf-8')
-          print('PUBLISHER_STUDIO_G6N_PDF_IMAGE_RESIZE_PROOF_PASS')
+          print('PUBLISHER_STUDIO_G6N_PRODUCTION_SMOKE_PASS')
           print(json.dumps(receipt,indent=2))
           PY
       - name: Upload public proof evidence
