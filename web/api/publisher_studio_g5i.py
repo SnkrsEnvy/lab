@@ -17,6 +17,8 @@ APP_VERSION = "0.35.0-g5i"
 ACTIVE_GATE = "G5I Distributed Page Delta Lifecycle + Conflict-Safe Undo"
 TRANSPORT = "g6h-stateless-same-origin-v001"
 MAX_PDF_BYTES = 3_500_000
+MAX_REPLACEMENT_IMAGE_BYTES = 750_000
+MAX_REPLACEMENT_PIXELS = 12_000_000
 RENDER_SCALE = 2.0
 OUTSIDE_TOLERANCE = 0.00005
 SELFTEST_PDF_B64 = "JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUiAvRjMgNCAwIFIgL0Y0IDUgMCBSCj4+CmVuZG9iagoyIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhIC9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nIC9OYW1lIC9GMSAvU3VidHlwZSAvVHlwZTEgL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjMgMCBvYmoKPDwKL0Jhc2VGb250IC9IZWx2ZXRpY2EtQm9sZCAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjIgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iago0IDAgb2JqCjw8Ci9CYXNlRm9udCAvVGltZXMtQm9sZCAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjMgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iago1IDAgb2JqCjw8Ci9CYXNlRm9udCAvQ291cmllciAvRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZyAvTmFtZSAvRjQgL1N1YnR5cGUgL1R5cGUxIC9UeXBlIC9Gb250Cj4+CmVuZG9iago2IDAgb2JqCjw8Ci9Db250ZW50cyAxMSAwIFIgL01lZGlhQm94IFsgMCAwIDYxMiA3OTIgXSAvUGFyZW50IDEwIDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago3IDAgb2JqCjw8Ci9Db250ZW50cyAxMiAwIFIgL01lZGlhQm94IFsgMCAwIDYxMiA3OTIgXSAvUGFyZW50IDEwIDAgUiAvUmVzb3VyY2VzIDw8Ci9Gb250IDEgMCBSIC9Qcm9jU2V0IFsgL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSSBdCj4+IC9Sb3RhdGUgMCAvVHJhbnMgPDwKCj4+IAogIC9UeXBlIC9QYWdlCj4+CmVuZG9iago4IDAgb2JqCjw8Ci9QYWdlTW9kZSAvVXNlTm9uZSAvUGFnZXMgMTAgMCBSIC9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iago5IDAgb2JqCjw8Ci9BdXRob3IgKGFub255bW91cykgL0NyZWF0aW9uRGF0ZSAoRDoyMDI2MDkyMDAyNTMwMCswMCcwMCcpIC9DcmVhdG9yIChhbm9ueW1vdXMpIC9LZXl3b3JkcyAoKSAvTW9kRGF0ZSAoRDoyMDI2MDkyMDAyNTMwMCswMCcwMCcpIC9Qcm9kdWNlciAoUmVwb3J0TGFiIFBERiBMaWJyYXJ5IC0gXChvcGVuc291cmNlXCkpIAogIC9TdWJqZWN0ICh1bnNwZWNpZmllZCkgL1RpdGxlICh1bnRpdGxlZCkgL1RyYXBwZWQgL0ZhbHNlCj4+CmVuZG9iagoxMCAwIG9iago8PAovQ291bnQgMiAvS2lkcyBbIDYgMCBSIDcgMCBSIF0gL1R5cGUgL1BhZ2VzCj4+CmVuZG9iagoxMSAwIG9iago8PAovRmlsdGVyIFsgL0FTQ0lJODVEZWNvZGUgL0ZsYXRlRGVjb2RlIF0gL0xlbmd0aCA1MDUKPj4Kc3RyZWFtCkdhcm89OTk3Z00nU1o7VydrYzNbPCwrKzk3LXVOXCcxXT9tOEtzUjpmNylNbkRKXiVxLzlUPl4/ZColWEJlaSMqXEQyR0dGKz5LU0tEVyV0SjEkJlMzdDxtOWNKWGpXVycpb0RAUFduXD4oWjhpUTNkZDBCZTVEUWstPm07OF06JEwkNyNgX2lWXW9oPmpzLkpdRE8+cDs8N0YhOj8tPDhwQlVkQyhQRz1eSDosMiVeU3UyXicrbUo9cGlNdCpeNy86XS4uI2AyKUNNPFEpK0AyLzU9PkMkSEZPXTpoOyU8K1JDTSEuTmA0aUJUVW9tK2dORjVXKUQtcStUYzd1JDA4KC50JkJfOG9BPSRlXzkkXyE3Tkg5OjFiRi9XOl8hW2l0TzhdLDFLYTRaRTBeNzdNZ2hGQlFfZnMhUGdUcCwvKWxXI2ZLW04kQUFANkVtRV5FLixGa1wqcXJgbGs5L3BvUic1WkxTL0c5YWUiJnFbJVxBTj5cO0M1SitsQ1xhcihvOzFvKTQsXkZeW0hZWz1fa28/Jy5kXkk8XShpYlNoN2ZYVFhNKkhKS0M9XzlMN2U0MHF1dHQiT288QTFnIzRwbm5DUHAlW1Q9RjduRTo1OSwpN0QjSSVNRG5HIjkiVVk+OWtwZVo2aVJMXT86N3I8ITU5Wm5ffj5lbmRzdHJlYW0KZW5kb2JqCjEyIDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDI0MQo+PgpzdHJlYW0KR2FyVzJfLnBrQSUjNDRyTVo6MSVpXlFdMEZOOlBrVl0/ITUqWycqTWoscXQ9RVZmVVhdSj1YSSFYWE9vbWhfWyRNZlE5T243JlVgJzFmdUY1YEtHYj8/JWBTK0EjMGk2VnVUMlY6TVg8P0l0Ukk3N00lNU4oRW8qWEYjOUc8Sis9UTBJKjFHZnVEdD5lbTAuPjUhay1ibUZnRzg2Xm0jPUpiYXVQNTU+JF9qXT8xP3M3UFlYQigjYVRFO0IxL0FgamBoNHRfSypedGshNEg5XT1ILFR0dTwqI3FiTkc4dWRUaCZ1XCJVVVVEUmpbXDV+PmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDEzCjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDA2MSAwMDAwMCBuIAowMDAwMDAwMTIyIDAwMDAwIG4gCjAwMDAwMDAyMjkgMDAwMDAgbiAKMDAwMDAwMDM0MSAwMDAwMCBuIAowMDAwMDAwNDQ5IDAwMDAwIG4gCjAwMDAwMDA1NTQgMDAwMDAgbiAKMDAwMDAwMDc0OSAwMDAwMCBuIAowMDAwMDAwOTQ0IDAwMDAwIG4gCjAwMDAwMDEwMTMgMDAwMDAgbiAKMDAwMDAwMTI3NCAwMDAwMCBuIAowMDAwMDAxMzQwIDAwMDAwIG4gCjAwMDAwMDE5MzYgMDAwMDAgbiAKdHJhaWxlcgo8PAovSUQgCls8ZDdhZjBlM2Q5YzQyZjk4ZTAzMDM5NjkyYjA0NWUzYzg+PGQ3YWYwZTNkOWM0MmY5OGUwMzAzOTY5MmIwNDVlM2M4Pl0KJSBSZXBvcnRMYWIgZ2VuZXJhdGVkIFBERiBkb2N1bWVudCAtLSBkaWdlc3QgKG9wZW5zb3VyY2UpCgovSW5mbyA5IDAgUgovUm9vdCA4IDAgUgovU2l6ZSAxMwo+PgpzdGFydHhyZWYKMjI2OAolJUVPRgo="
@@ -29,6 +31,39 @@ app = FastAPI(title="Publisher Studio G5I Stateless Transport", version=APP_VERS
 
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
+
+
+def raster_pixel_identity(raw: bytes) -> dict[str, Any]:
+    if not raw:
+        raise HTTPException(400, "Replacement image is empty")
+    if len(raw) > MAX_REPLACEMENT_IMAGE_BYTES:
+        raise HTTPException(413, f"Replacement image limit is {MAX_REPLACEMENT_IMAGE_BYTES} bytes")
+    try:
+        with Image.open(io.BytesIO(raw)) as im:
+            im.load()
+            fmt = str(im.format or "").upper()
+            if fmt not in {"PNG", "JPEG"}:
+                raise HTTPException(415, "G6Q replacement image must be PNG or JPEG")
+            width, height = int(im.width), int(im.height)
+            if width < 1 or height < 1 or width * height > MAX_REPLACEMENT_PIXELS:
+                raise HTTPException(413, "Replacement image dimensions exceed the G6Q checkpoint")
+            rgba = im.convert("RGBA")
+            alpha = rgba.getchannel("A")
+            if alpha.getextrema()[0] < 255:
+                raise HTTPException(409, "G6Q replacement image must be fully opaque")
+            rgb = rgba.convert("RGB")
+            payload = f"{width}x{height}|RGB|".encode("ascii") + rgb.tobytes()
+            return {
+                "pixelSha256": sha256_bytes(payload),
+                "bytesSha256": sha256_bytes(raw),
+                "width": width,
+                "height": height,
+                "format": fmt,
+            }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(400, f"Unable to decode replacement image: {exc}")
 
 
 def hex_rgb(value: str | None, fallback: tuple[float, float, float] = (0, 0, 0)) -> tuple[float, float, float]:
@@ -310,6 +345,81 @@ def apply_operations(source_raw: bytes, operations: list[dict[str, Any]]) -> tup
                     raise HTTPException(400, f"URI missing for operation {op_id}")
                 page.insert_link({"kind": fitz.LINK_URI, "from": rect, "uri": uri})
                 results.append({"id": op_id, "type": op_type, "page": page_num, "status": "APPLIED", "uri": uri, "bbox": rect_list(rect)})
+                continue
+
+            if op_type == "replace_image":
+                try:
+                    xref = int(op.get("xref") or 0)
+                except Exception:
+                    xref = 0
+                digest_hex = str(op.get("digest") or "").lower()
+                replacement_b64 = str(op.get("replacementBase64") or "")
+                replacement_mime = str(op.get("replacementMime") or "").lower()
+                if xref <= 0 or not digest_hex:
+                    raise HTTPException(400, "replace_image requires source xref and digest")
+                if replacement_mime not in {"image/png", "image/jpeg"}:
+                    raise HTTPException(415, "G6Q replacement image must declare PNG or JPEG")
+                try:
+                    replacement_bytes = base64.b64decode(replacement_b64, validate=True)
+                except Exception:
+                    raise HTTPException(400, "G6Q replacement image payload is not valid base64")
+                replacement_identity = raster_pixel_identity(replacement_bytes)
+
+                infos = page.get_image_info(hashes=True, xrefs=True)
+                candidates = []
+                for info in infos:
+                    if int(info.get("xref") or 0) != xref:
+                        continue
+                    ibox = fitz.Rect(info.get("bbox"))
+                    dg = info.get("digest")
+                    dg_hex = dg.hex() if isinstance(dg, (bytes, bytearray)) else ""
+                    if dg_hex.lower() == digest_hex and all(abs(a-b) < 0.05 for a,b in zip(rect_list(ibox), rect_list(rect))):
+                        candidates.append(info)
+                if len(candidates) != 1:
+                    raise HTTPException(409, "G6Q could not resolve one unique source image occurrence")
+                info = candidates[0]
+                transform = tuple(float(v) for v in info.get("transform") or (1, 0, 0, 1, 0, 0))
+                if len(transform) < 4 or abs(transform[1]) >= 0.0001 or abs(transform[2]) >= 0.0001:
+                    raise HTTPException(409, "G6Q does not replace rotated or sheared raster occurrences")
+                page_images = [item for item in page.get_images(full=True) if int(item[0]) == xref]
+                if not page_images or any(int(item[1]) != 0 for item in page_images):
+                    raise HTTPException(409, "G6Q does not replace masked/translucent source images")
+                same_xref = [x for x in infos if int(x.get("xref") or 0) == xref]
+                if len(same_xref) != 1:
+                    raise HTTPException(409, "G6Q does not replace reused image XObjects")
+                extracted = doc.extract_image(xref)
+                source_image_bytes = extracted.get("image")
+                if not source_image_bytes:
+                    raise HTTPException(409, "G6Q could not extract the source raster payload")
+                source_identity = raster_pixel_identity(source_image_bytes)
+                if source_identity["pixelSha256"] == replacement_identity["pixelSha256"]:
+                    raise HTTPException(409, "G6Q replacement image must differ from the source raster")
+
+                page.add_redact_annot(rect, fill=None, cross_out=False)
+                page.apply_redactions(
+                    images=fitz.PDF_REDACT_IMAGE_REMOVE,
+                    graphics=fitz.PDF_REDACT_LINE_ART_NONE,
+                    text=fitz.PDF_REDACT_TEXT_NONE,
+                )
+                inserted_xref = page.insert_image(rect, stream=replacement_bytes, keep_proportion=False, overlay=True)
+                op.pop("replacementBase64", None)
+                op.update({
+                    "replacementPixelSha256": replacement_identity["pixelSha256"],
+                    "replacementBytesSha256": replacement_identity["bytesSha256"],
+                    "replacementWidth": replacement_identity["width"],
+                    "replacementHeight": replacement_identity["height"],
+                    "replacementFormat": replacement_identity["format"],
+                })
+                results.append({
+                    "id": op_id, "type": op_type, "page": page_num, "status": "APPLIED",
+                    "xref": xref, "insertedXref": int(inserted_xref), "digest": digest_hex,
+                    "bbox": rect_list(rect),
+                    "replacementPixelSha256": replacement_identity["pixelSha256"],
+                    "replacementBytesSha256": replacement_identity["bytesSha256"],
+                    "replacementWidth": replacement_identity["width"],
+                    "replacementHeight": replacement_identity["height"],
+                    "replacementFormat": replacement_identity["format"],
+                })
                 continue
 
             if op_type == "delete_image":
@@ -630,6 +740,34 @@ def verify_structure(source_raw: bytes, output_raw: bytes, operations: list[dict
                             hits.append(link)
                 passed = bool(hits)
                 evidence["matchingLinks"] = len(hits)
+            elif op_type == "replace_image":
+                old_digest = str(op.get("digest") or "").lower()
+                replacement_pixel_sha = str(op.get("replacementPixelSha256") or "").lower()
+                old_hits = []
+                replacement_hits = []
+                for info in page.get_image_info(hashes=True, xrefs=True):
+                    dg = info.get("digest")
+                    dg_hex = dg.hex() if isinstance(dg, (bytes, bytearray)) else ""
+                    ibox = fitz.Rect(info.get("bbox"))
+                    if dg_hex.lower() == old_digest:
+                        old_hits.append(info)
+                    if not all(abs(a-b) < 0.6 for a,b in zip(rect_list(ibox), rect_list(rect))):
+                        continue
+                    xref = int(info.get("xref") or 0)
+                    if xref <= 0:
+                        continue
+                    extracted = doc.extract_image(xref)
+                    image_bytes = extracted.get("image")
+                    if not image_bytes:
+                        continue
+                    identity = raster_pixel_identity(image_bytes)
+                    if identity["pixelSha256"].lower() == replacement_pixel_sha:
+                        replacement_hits.append(info)
+                passed = not old_hits and len(replacement_hits) == 1
+                evidence["oldDigestMatches"] = len(old_hits)
+                evidence["replacementPixelMatches"] = len(replacement_hits)
+                evidence["replacementPixelSha256"] = replacement_pixel_sha
+                evidence["sourceBbox"] = rect_list(rect)
             elif op_type == "delete_image":
                 digest_hex = str(op.get("digest") or "").lower()
                 visible_hits = []
@@ -702,7 +840,7 @@ def build_receipt(source_raw: bytes, output_raw: bytes, operations: list[dict[st
         "operationResults": operation_results,
         "preset": preset,
         "verification": verification,
-        "claim": "Stateless public transport executes bounded text-replacement/redaction/link/raster-object and isolated page-lifecycle mutations with render/structural proof in one invocation. G6P adds deletion of one unique unmasked axis-aligned raster occurrence while retaining G6M movement, G6N resize, and G6O rotation; this public transport extension is not claimed to be recovered frozen G5I source code.",
+        "claim": "Stateless public transport executes bounded text-replacement/redaction/link/raster-object and isolated page-lifecycle mutations with render/structural proof in one invocation. G6Q adds same-box replacement of one unique unmasked axis-aligned raster occurrence with a bounded opaque PNG/JPEG payload while retaining G6M-G6P raster operations; this public transport extension is not claimed to be recovered frozen G5I source code.",
     }
 
 
@@ -799,10 +937,10 @@ async def capabilities(request: Request, selftest: str | None = None) -> JSONRes
         "transport": TRANSPORT,
         "stateless": True,
         "maxPdfBytes": MAX_PDF_BYTES,
-        "capabilities": {"replaceText": True, "redact": True, "links": True, "moveImage": True, "resizeImage": True, "rotateImage": True, "deleteImage": True, "pageReorder": True, "pageInsert": True, "pageDelete": True, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
-        "editing": ["bounded native text replacement", "true redaction", "bounded URI link insertion", "bounded axis-aligned raster image translation", "bounded aspect-ratio-preserving raster image resize", "bounded 90-degree clockwise raster image rotation", "bounded unique raster image deletion", "isolated page reorder transaction", "isolated blank-page insertion", "isolated source-page deletion", "staged client-side undo", "bounded export proof"],
+        "capabilities": {"replaceText": True, "redact": True, "links": True, "moveImage": True, "resizeImage": True, "rotateImage": True, "deleteImage": True, "replaceImage": True, "pageReorder": True, "pageInsert": True, "pageDelete": True, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
+        "editing": ["bounded native text replacement", "true redaction", "bounded URI link insertion", "bounded axis-aligned raster image translation", "bounded aspect-ratio-preserving raster image resize", "bounded 90-degree clockwise raster image rotation", "bounded unique raster image deletion", "bounded same-box raster image replacement", "isolated page reorder transaction", "isolated blank-page insertion", "isolated source-page deletion", "staged client-side undo", "bounded export proof"],
         "frozen": ["client source bytes", "source hash", "untouched regions"],
-        "limitOfClaim": "This transport checkpoint proves bounded native text replacement with builtin Helvetica fallback, true redaction, URI link insertion, isolated page lifecycle, translation-only movement, 25%-400% uniform aspect-ratio-preserving resize, 90-degree clockwise center-preserving rotation, and deletion of one unique unmasked axis-aligned raster image occurrence. Arbitrary-angle rotation, masked/translucent or reused-XObject raster operations, non-uniform raster transforms, vector object transforms/deletion, recovered frozen G5I source parity, source-font-perfect replacement, text reflow, OCR/forms transport, durable server workspaces, distributed collaboration, and independent Poppler witness proof are not claimed.",
+        "limitOfClaim": "This transport checkpoint proves bounded native text replacement with builtin Helvetica fallback, true redaction, URI link insertion, isolated page lifecycle, translation-only movement, 25%-400% uniform aspect-ratio-preserving resize, 90-degree clockwise center-preserving rotation, deletion, and same-box PNG/JPEG replacement of one unique unmasked axis-aligned raster image occurrence. Replacement payloads are capped at 750 KB and must be fully opaque. Arbitrary-angle rotation, masked/translucent or reused-XObject raster operations, vector object transforms/deletion/replacement, recovered frozen G5I source parity, source-font-perfect replacement, text reflow, OCR/forms transport, durable server workspaces, distributed collaboration, and independent Poppler witness proof are not claimed.",
     }, headers={"Cache-Control": "no-store"})
 
 
