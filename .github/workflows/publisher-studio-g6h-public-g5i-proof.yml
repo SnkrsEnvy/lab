@@ -1,8 +1,8 @@
-name: Publisher Studio G6L PDF Page Lifecycle Proof
+name: Publisher Studio G6M PDF Image Move Proof
 on:
   push:
     branches:
-      - 'publisher-studio-pdf-page-lifecycle-g6l-v013'
+      - 'publisher-studio-pdf-image-move-g6m-v014'
     paths:
       - 'web/api/publisher_studio_g5i.py'
       - 'web/requirements.txt'
@@ -18,14 +18,13 @@ on:
       - '.github/workflows/publisher-studio-g6h-public-g5i-proof.yml'
 
 jobs:
-  pdf-page-lifecycle-proof:
+  pdf-image-move-proof:
     runs-on: ubuntu-latest
     timeout-minutes: 14
     env:
-      TARGET_URL: https://lab-lsa41rjrl-world-builders.vercel.app/publisher-studio/
-      API_URL: https://lab-lsa41rjrl-world-builders.vercel.app/api/publisher-studio-g5i
-      EXPECTED_BUILD: PS-PUBLIC-DEMO-G6L-v013
-      EXPECTED_SOURCE_SHA: da37ed6b61739777d399c7292dbe5f88661f34ade3abae245aaf287d826e3c92
+      TARGET_URL: https://lab-4q25ex89q-world-builders.vercel.app/publisher-studio/
+      API_URL: https://lab-4q25ex89q-world-builders.vercel.app/api/publisher-studio-g5i
+      EXPECTED_BUILD: PS-PUBLIC-DEMO-G6M-v014-r1
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -35,22 +34,20 @@ jobs:
         run: |
           python -m pip install --disable-pip-version-check playwright==1.55.0 pymupdf==1.26.7 requests pillow
           python -m playwright install --with-deps chromium
-      - name: Run public G6L page lifecycle proof
+      - name: Run public G6M image move proof
         run: |
           python - <<'PY'
           import hashlib, io, json, os, pathlib
           import fitz, requests
-          from PIL import Image, ImageChops
+          from PIL import Image, ImageChops, ImageDraw
           from playwright.sync_api import sync_playwright, expect
 
-          target=os.environ['TARGET_URL']
-          api=os.environ['API_URL']
-          expected_build=os.environ['EXPECTED_BUILD']
-          expected_source=os.environ['EXPECTED_SOURCE_SHA']
-          fixture=pathlib.Path('web/publisher-studio/proof/publisher-studio-demo-g5i.pdf')
-          out=pathlib.Path('publisher-studio-g6l-proof'); out.mkdir(exist_ok=True)
-          page1_text='Publisher Studio Proof Sheet'
-          page2_text='Second Page - Untouched Control'
+          target=os.environ['TARGET_URL']; api=os.environ['API_URL']; expected_build=os.environ['EXPECTED_BUILD']
+          out=pathlib.Path('publisher-studio-g6m-proof'); out.mkdir(exist_ok=True)
+          fixture=out/'g6m-image-fixture.pdf'
+          src_bbox=[100.0,150.0,220.0,230.0]
+          dx,dy=72.0,36.0
+          dst_bbox=[src_bbox[0]+dx,src_bbox[1]+dy,src_bbox[2]+dx,src_bbox[3]+dy]
           receipt={'target':target,'api':api,'expected_build':expected_build,'checks':{},'console_errors':[],'page_errors':[]}
 
           def mark(name,value=True,detail=None):
@@ -58,28 +55,50 @@ jobs:
               if detail is not None: receipt.setdefault('detail',{})[name]=detail
               if not value: raise AssertionError(name)
 
-          source_bytes=fixture.read_bytes()
-          mark('fixture_source_hash',hashlib.sha256(source_bytes).hexdigest()==expected_source)
+          # Deterministic proof PDF: one unique unmasked axis-aligned raster occurrence.
+          im=Image.new('RGB',(120,80),(35,92,150))
+          dr=ImageDraw.Draw(im)
+          dr.rectangle((8,8,111,71),outline=(244,203,76),width=5)
+          dr.line((10,65,108,15),fill=(255,255,255),width=4)
+          dr.rectangle((44,24,76,56),fill=(120,35,90))
+          buf=io.BytesIO(); im.save(buf,format='PNG')
+          doc=fitz.open(); pg=doc.new_page(width=612,height=792)
+          pg.insert_text((72,72),'G6M image movement control text',fontsize=14,fontname='helv')
+          pg.insert_image(fitz.Rect(*src_bbox),stream=buf.getvalue(),keep_proportion=False)
+          doc.save(str(fixture),garbage=4,deflate=True,clean=True); doc.close()
+          source_bytes=fixture.read_bytes(); source_sha=hashlib.sha256(source_bytes).hexdigest()
+          receipt['detail']={'source_sha256':source_sha}
 
-          cap=requests.get(api,timeout=60)
-          mark('api_http_200',cap.status_code==200,cap.text[:700])
+          src=fitz.open(stream=source_bytes,filetype='pdf')
+          try:
+              infos=src[0].get_image_info(hashes=True,xrefs=True)
+              serial_infos=[{'bbox':[float(v) for v in x['bbox']],'xref':int(x.get('xref') or 0),'digest':x['digest'].hex() if x.get('digest') else ''} for x in infos]
+              mark('fixture_one_image',len(infos)==1,serial_infos)
+              source_digest=infos[0]['digest'].hex()
+              mark('fixture_bbox_exact',all(abs(float(a)-float(b))<0.05 for a,b in zip(infos[0]['bbox'],src_bbox)),list(infos[0]['bbox']))
+          finally: src.close()
+
+          cap=requests.get(api,timeout=60); mark('api_http_200',cap.status_code==200,cap.text[:800])
           caps=cap.json()
           mark('api_identity',caps.get('version')=='0.35.0-g5i' and caps.get('gate')=='G5I Distributed Page Delta Lifecycle + Conflict-Safe Undo')
-          mark('api_stateless',caps.get('stateless') is True and caps.get('transport')=='g6h-stateless-same-origin-v001')
-          mark('capability_ceiling',caps.get('capabilities')=={'replaceText':True,'redact':True,'links':True,'pageReorder':True,'pageInsert':True,'pageDelete':True,'undo':True,'exportPdf':True,'ocr':False,'forms':False})
+          expected_caps={'replaceText':True,'redact':True,'links':True,'moveImage':True,'pageReorder':True,'pageInsert':True,'pageDelete':True,'undo':True,'exportPdf':True,'ocr':False,'forms':False}
+          mark('capability_ceiling',caps.get('capabilities')==expected_caps)
 
-          def render(raw,idx):
+          def render(raw):
               d=fitz.open(stream=raw,filetype='pdf')
               try:
-                  pix=d[idx].get_pixmap(matrix=fitz.Matrix(2,2),alpha=False)
+                  pix=d[0].get_pixmap(matrix=fitz.Matrix(2,2),alpha=False)
                   return Image.open(io.BytesIO(pix.tobytes('png'))).convert('RGB')
-              finally:
-                  d.close()
+              finally:d.close()
 
-          def ratio(a,b):
-              if a.size!=b.size:return 1.0
-              hist=ImageChops.difference(a,b).convert('L').histogram()
-              total=max(1,a.size[0]*a.size[1])
+          def outside_ratio(a,b,rects):
+              diff=ImageChops.difference(a,b).convert('L')
+              mask=Image.new('L',a.size,255); draw=ImageDraw.Draw(mask)
+              sx=a.size[0]/612.0; sy=a.size[1]/792.0
+              for rect in rects:
+                  x0,y0,x1,y1=rect; pad=12
+                  draw.rectangle((int(x0*sx)-pad,int(y0*sy)-pad,int(x1*sx)+pad,int(y1*sy)+pad),fill=0)
+              outside=ImageChops.multiply(diff,mask); hist=outside.histogram(); total=max(1,a.size[0]*a.size[1])
               return (total-hist[0])/total
 
           with sync_playwright() as p:
@@ -87,137 +106,90 @@ jobs:
               page=browser.new_page(viewport={'width':1440,'height':1000},accept_downloads=True)
               page.on('console',lambda msg: receipt['console_errors'].append(msg.text) if msg.type=='error' else None)
               page.on('pageerror',lambda exc: receipt['page_errors'].append(str(exc)))
+              response=page.goto(target,wait_until='networkidle',timeout=90000)
+              mark('page_http_200',response is not None and response.status==200)
+              mark('build_identity',page.locator('meta[name="publisher-studio-build"]').get_attribute('content')==expected_build)
+              expect(page.locator('#pdfEngineStatus')).to_contain_text('READY',timeout=90000)
+              page.locator('#fileTab').click(); page.locator('.file-nav[data-file-view="open"]').click()
+              page.locator('#pdfFileInput').set_input_files(str(fixture))
+              expect(page.locator('#pdfEngineStatus')).to_contain_text('CONNECTED',timeout=90000)
+              bridge=page.evaluate("window.PublisherStudioPdfBridge.status()")
+              mark('move_image_capability_ready',bridge.get('capabilities',{}).get('moveImage') is True,bridge)
 
-              def load_fixture():
-                  response=page.goto(target,wait_until='networkidle',timeout=90000)
-                  mark('page_http_200',response is not None and response.status==200)
-                  mark('build_identity',page.locator('meta[name="publisher-studio-build"]').get_attribute('content')==expected_build)
-                  expect(page.locator('#pdfEngineStatus')).to_contain_text('READY',timeout=90000)
-                  page.locator('#fileTab').click()
-                  page.locator('.file-nav[data-file-view="open"]').click()
-                  page.locator('#pdfFileInput').set_input_files(str(fixture))
-                  expect(page.locator('#pdfEngineStatus')).to_contain_text('CONNECTED',timeout=90000)
-                  expect(page.locator('#pageCountStatus')).to_contain_text('2 pages')
-                  thumbs=page.locator('#opsThumbs .thumb'); expect(thumbs).to_have_count(2)
-                  return thumbs
-
-              # INSERT
-              thumbs=load_fixture()
-              bridge_state=page.evaluate("window.PublisherStudioPdfBridge.status()")
-              mark('page_insert_capability_ready',bridge_state.get('capabilities',{}).get('pageInsert') is True,bridge_state)
-              page.get_by_role('button',name='Insert',exact=True).click()
-              page.locator('#addPageBtn').click()
-              expect(page.locator('#opsThumbs .thumb')).to_have_count(3)
-              expect(page.locator('#opsThumbs .thumb').nth(1).locator('small')).to_have_text('Inserted blank page')
-              mark('insert_staged',True)
+              answers=iter([str(dx),str(dy),str(dx),str(dy)])
+              page.on('dialog',lambda dialog: dialog.accept(next(answers)))
+              page.get_by_role('button',name='PDF',exact=True).click()
+              expect(page.locator('#pdfMoveImageBtn')).to_be_enabled()
+              page.locator('#pdfMoveImageBtn').click()
+              choice=page.locator('.pdf-block-choice[data-image]:not([disabled])')
+              expect(choice).to_have_count(1)
+              choice.click()
+              page.wait_for_timeout(450)
+              expect(page.locator('#opsLayer [title="Staged image destination"]')).to_have_count(1)
+              mark('move_staged',True,page.locator('#toast').inner_text())
 
               page.get_by_role('button',name='Home',exact=True).click()
-              page.locator('#undo').click()
-              expect(page.locator('#opsThumbs .thumb')).to_have_count(2)
-              expect(page.locator('#opsThumbs .thumb').nth(0).locator('small')).to_have_text('PDF page 1')
-              expect(page.locator('#opsThumbs .thumb').nth(1).locator('small')).to_have_text('PDF page 2')
-              mark('insert_undo_restores_source_pages',True)
+              page.locator('#undo').click(); page.wait_for_timeout(250)
+              expect(page.locator('#opsLayer [title="Staged image destination"]')).to_have_count(0)
+              mark('move_undo_clears_stage',True)
 
-              page.get_by_role('button',name='Insert',exact=True).click()
-              page.locator('#addPageBtn').click()
-              expect(page.locator('#opsThumbs .thumb')).to_have_count(3)
+              page.get_by_role('button',name='PDF',exact=True).click()
+              page.locator('#pdfMoveImageBtn').click(); page.locator('.pdf-block-choice[data-image]:not([disabled])').click()
+              page.wait_for_timeout(350)
+              expect(page.locator('#opsLayer [title="Staged image destination"]')).to_have_count(1)
 
-              insert_export={}
-              def capture_insert(resp):
+              export_response={}
+              def capture_export(resp):
                   if resp.url.endswith('/api/publisher-studio-g5i') and resp.request.method=='POST' and resp.headers.get('content-type','').startswith('application/pdf'):
-                      insert_export['status']=resp.status; insert_export['headers']=resp.all_headers()
-              page.on('response',capture_insert)
+                      export_response['status']=resp.status; export_response['headers']=resp.all_headers()
+              page.on('response',capture_export)
               page.get_by_role('button',name='Export',exact=True).first.click()
               with page.expect_download(timeout=90000) as di:
                   page.locator('#printPdfBtn').click()
-              inserted=out/'public-g6l-inserted.pdf'; di.value.save_as(str(inserted))
-              inserted_bytes=inserted.read_bytes(); inserted_sha=hashlib.sha256(inserted_bytes).hexdigest()
-              hi=insert_export.get('headers',{})
-              mark('insert_export_http_200',insert_export.get('status')==200,insert_export)
-              mark('insert_remote_verification_pass',hi.get('x-publisher-verification-pass')=='true')
-              mark('insert_remote_render_pass',hi.get('x-publisher-render-pass')=='true')
-              mark('insert_remote_structural_pass',hi.get('x-publisher-structural-pass')=='true')
-              mark('insert_remote_source_hash',hi.get('x-publisher-source-sha256')==expected_source)
-              mark('insert_remote_output_hash',hi.get('x-publisher-output-sha256')==inserted_sha)
-              src=fitz.open(stream=source_bytes,filetype='pdf'); ins=fitz.open(stream=inserted_bytes,filetype='pdf')
+              edited=out/'public-g6m-image-moved.pdf'; di.value.save_as(str(edited))
+              edited_bytes=edited.read_bytes(); edited_sha=hashlib.sha256(edited_bytes).hexdigest()
+              h=export_response.get('headers',{})
+              mark('export_http_200',export_response.get('status')==200,export_response)
+              mark('remote_verification_pass',h.get('x-publisher-verification-pass')=='true')
+              mark('remote_render_pass',h.get('x-publisher-render-pass')=='true')
+              mark('remote_structural_pass',h.get('x-publisher-structural-pass')=='true')
+              mark('remote_source_hash',h.get('x-publisher-source-sha256')==source_sha)
+              mark('remote_output_hash',h.get('x-publisher-output-sha256')==edited_sha)
+              mark('output_hash_changed',edited_sha!=source_sha,edited_sha)
+
+              outdoc=fitz.open(stream=edited_bytes,filetype='pdf')
               try:
-                  mark('insert_page_count_3',ins.page_count==3)
-                  mark('insert_lineage_text',page1_text in ins[0].get_text('text') and not ins[1].get_text('text').strip() and page2_text in ins[2].get_text('text'))
-                  mark('insert_blank_no_images',len(ins[1].get_images(full=True))==0)
-                  mark('insert_blank_no_links',len(ins[1].get_links())==0)
-                  mark('insert_blank_no_drawings',len(ins[1].get_drawings())==0)
-              finally:
-                  src.close(); ins.close()
-              r10=ratio(render(source_bytes,0),render(inserted_bytes,0))
-              r12=ratio(render(source_bytes,1),render(inserted_bytes,2))
-              mark('insert_raster_source1_preserved',r10<0.00005,r10)
-              mark('insert_raster_source2_preserved',r12<0.00005,r12)
+                  infos=outdoc[0].get_image_info(hashes=True,xrefs=True)
+                  digest_hits=[x for x in infos if x.get('digest') and x['digest'].hex()==source_digest]
+                  mark('output_has_same_raster_digest',len(digest_hits)>=1,[{'bbox':list(x['bbox']),'xref':x.get('xref')} for x in digest_hits])
+                  target_hits=[x for x in digest_hits if all(abs(float(a)-float(b))<0.6 for a,b in zip(x['bbox'],dst_bbox))]
+                  old_hits=[x for x in digest_hits if all(abs(float(a)-float(b))<0.6 for a,b in zip(x['bbox'],src_bbox))]
+                  mark('same_raster_at_target',len(target_hits)==1,[list(x['bbox']) for x in target_hits])
+                  mark('same_raster_absent_at_source',len(old_hits)==0,[list(x['bbox']) for x in old_hits])
+                  mark('control_text_preserved','G6M image movement control text' in outdoc[0].get_text('text'))
+              finally: outdoc.close()
 
-              # DELETE fresh source
-              thumbs=load_fixture()
-              bridge_state=page.evaluate("window.PublisherStudioPdfBridge.status()")
-              mark('page_delete_capability_ready',bridge_state.get('capabilities',{}).get('pageDelete') is True,bridge_state)
-              page.locator('#opsThumbs .thumb').nth(1).click()
-              page.get_by_role('button',name='Layout',exact=True).click()
-              page.locator('#deletePageBtn').click()
-              expect(page.locator('#opsThumbs .thumb')).to_have_count(1)
-              expect(page.locator('#opsThumbs .thumb').nth(0).locator('small')).to_have_text('PDF page 1')
-              mark('delete_staged',True)
-
-              page.get_by_role('button',name='Home',exact=True).click()
-              page.locator('#undo').click()
-              expect(page.locator('#opsThumbs .thumb')).to_have_count(2)
-              expect(page.locator('#opsThumbs .thumb').nth(1).locator('small')).to_have_text('PDF page 2')
-              mark('delete_undo_restores_source_pages',True)
-
-              page.locator('#opsThumbs .thumb').nth(1).click()
-              page.get_by_role('button',name='Layout',exact=True).click()
-              page.locator('#deletePageBtn').click()
-              expect(page.locator('#opsThumbs .thumb')).to_have_count(1)
-
-              delete_export={}
-              def capture_delete(resp):
-                  if resp.url.endswith('/api/publisher-studio-g5i') and resp.request.method=='POST' and resp.headers.get('content-type','').startswith('application/pdf'):
-                      delete_export['status']=resp.status; delete_export['headers']=resp.all_headers()
-              page.on('response',capture_delete)
-              page.get_by_role('button',name='Export',exact=True).first.click()
-              with page.expect_download(timeout=90000) as dd:
-                  page.locator('#printPdfBtn').click()
-              deleted=out/'public-g6l-deleted.pdf'; dd.value.save_as(str(deleted))
-              deleted_bytes=deleted.read_bytes(); deleted_sha=hashlib.sha256(deleted_bytes).hexdigest()
-              hd=delete_export.get('headers',{})
-              mark('delete_export_http_200',delete_export.get('status')==200,delete_export)
-              mark('delete_remote_verification_pass',hd.get('x-publisher-verification-pass')=='true')
-              mark('delete_remote_render_pass',hd.get('x-publisher-render-pass')=='true')
-              mark('delete_remote_structural_pass',hd.get('x-publisher-structural-pass')=='true')
-              mark('delete_remote_source_hash',hd.get('x-publisher-source-sha256')==expected_source)
-              mark('delete_remote_output_hash',hd.get('x-publisher-output-sha256')==deleted_sha)
-              dele=fitz.open(stream=deleted_bytes,filetype='pdf')
-              try:
-                  mark('delete_page_count_1',dele.page_count==1)
-                  mark('delete_retains_source_page1_text',page1_text in dele[0].get_text('text'))
-                  mark('delete_removes_source_page2_text',page2_text not in dele[0].get_text('text'))
-              finally:
-                  dele.close()
-              rd=ratio(render(source_bytes,0),render(deleted_bytes,0))
-              mark('delete_raster_source1_preserved',rd<0.00005,rd)
-
-              page.screenshot(path=str(out/'g6l-pdf-page-lifecycle-proof.png'),full_page=True)
+              src_render=render(source_bytes); out_render=render(edited_bytes)
+              r=outside_ratio(src_render,out_render,[src_bbox,dst_bbox])
+              mark('outside_authorized_rectangles_stable',r<0.00005,r)
+              page.screenshot(path=str(out/'g6m-pdf-image-move-proof.png'),full_page=True)
               mark('no_page_errors',len(receipt['page_errors'])==0,receipt['page_errors'])
               mark('no_console_errors',len(receipt['console_errors'])==0,receipt['console_errors'])
               browser.close()
 
+          receipt['detail']['output_sha256']=edited_sha
+          receipt['detail']['source_digest']=source_digest
+          receipt['detail']['source_bbox']=src_bbox
+          receipt['detail']['target_bbox']=dst_bbox
           receipt['status']='PASS'
-          receipt['detail']['insert_output_sha256']=inserted_sha
-          receipt['detail']['delete_output_sha256']=deleted_sha
           (out/'receipt.json').write_text(json.dumps(receipt,indent=2),encoding='utf-8')
-          print('PUBLISHER_STUDIO_G6L_PDF_PAGE_LIFECYCLE_PROOF_PASS')
+          print('PUBLISHER_STUDIO_G6M_PDF_IMAGE_MOVE_PROOF_PASS')
           print(json.dumps(receipt,indent=2))
           PY
       - name: Upload public proof evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: publisher-studio-g6l-pdf-page-lifecycle-proof
-          path: publisher-studio-g6l-proof/
+          name: publisher-studio-g6m-pdf-image-move-proof
+          path: publisher-studio-g6m-proof/
           if-no-files-found: warn

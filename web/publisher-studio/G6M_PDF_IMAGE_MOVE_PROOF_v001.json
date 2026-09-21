@@ -1,0 +1,76 @@
+{
+  "gate": "G6M Existing PDF Raster Image Move",
+  "status": "PASS_PUBLIC_RUNTIME_BOUNDED",
+  "date": "2026-09-20",
+  "branch": "publisher-studio-pdf-image-move-g6m-v014",
+  "build": "PS-PUBLIC-DEMO-G6M-v014-r1",
+  "implementationCommit": "55519b6595870b9d75b972bba3aed1b2d8a27375",
+  "proofWorkflowCommit": "24481e1fbaf9887c593d946eea8601df0b0466da",
+  "workflowRun": 35557348633,
+  "artifactId": 10620782929,
+  "artifactSha256": "6bd36d9c4d8fecbab67e6f6909bad1126c1ef964b5f8b1f3318e52192560363d",
+  "sourceSha256": "25186ee4aecbf429f53bfa173c1db40b6bcb7b725d3f9de0c81988637211e201",
+  "outputSha256": "06d2c9a8899c271235cef7640361fce36c18a492d3544f7513274ec139b48d88",
+  "proofSha256": "a067690304216d75a00504f04c8ac4711f68b29bbd1377c0da6ecd6f2dbe36ab",
+  "sourceRasterDigest": "5b6a49c5f42ae1d219670ca36793a825",
+  "sourceBbox": [
+    100,
+    150,
+    220,
+    230
+  ],
+  "targetBbox": [
+    172,
+    186,
+    292,
+    266
+  ],
+  "checks": {
+    "moveImageCapabilityReady": true,
+    "imageMoveStaged": true,
+    "stagedUndoClearsMove": true,
+    "exportHttp200": true,
+    "remoteVerificationPass": true,
+    "remoteRenderPass": true,
+    "remoteStructuralPass": true,
+    "sourceHashBound": true,
+    "outputHashChanged": true,
+    "sameRasterDigestAtTarget": true,
+    "sameRasterAbsentAtExactSourceLocation": true,
+    "controlTextPreserved": true,
+    "outsideAuthorizedRectanglesRasterDifference": 0,
+    "noPageErrors": true,
+    "noConsoleErrors": true,
+    "inheritedG6DBrowserRegression": "PASS",
+    "inheritedG6EBridgeRegression": "PASS"
+  },
+  "authorityBoundary": {
+    "frozenG5IIdentity": "0.35.0-g5i / G5I Distributed Page Delta Lifecycle + Conflict-Safe Undo",
+    "authenticG5ISourcePackagePresent": false,
+    "claim": "G6M extends the proven public stateless transport with translation-only movement of one unique unmasked axis-aligned raster occurrence. It does not claim recovered frozen G5I source-code parity."
+  },
+  "promotedCapabilities": [
+    "inspect embedded raster image occurrences and expose eligibility",
+    "move one unique opaque/unmasked axis-aligned raster occurrence by translation only",
+    "preserve raster identity digest at target",
+    "staged Undo before export",
+    "verified PDF export with old/new region claim boundary",
+    "inherited text replacement, true redaction, URI links, page reorder, page insert, and page delete"
+  ],
+  "heldCapabilities": [
+    "rotated or sheared raster movement",
+    "masked/translucent raster movement",
+    "reused image XObject movement",
+    "image resizing",
+    "vector object movement",
+    "direct click-drag editing inside embedded PDF viewer",
+    "OCR transport",
+    "forms transport",
+    "recovered frozen G5I source-code parity"
+  ],
+  "productionWinnerBeforePromotion": {
+    "build": "PS-PUBLIC-DEMO-G6L-v013",
+    "commit": "68914747beb5df6f65346f4e89be13ca4f2116ef",
+    "deployment": "dpl_CT7rAzXK2Fi48aNC86FhwdGtwsPH"
+  }
+}

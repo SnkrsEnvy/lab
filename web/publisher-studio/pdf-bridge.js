@@ -1,7 +1,7 @@
 (()=>{
 'use strict';
 const CONTRACT='publisher-studio-pdf-bridge-g6e-1';
-const TOOLS=['replaceText','redact','ocr','forms','links','pageReorder','pageInsert','pageDelete','undo','exportPdf'];
+const TOOLS=['replaceText','redact','ocr','forms','links','moveImage','pageReorder','pageInsert','pageDelete','undo','exportPdf'];
 let adapter=null;
 let state={contract:CONTRACT,status:'HOLD',reason:'adapter_not_registered',adapterId:null,capabilities:{},source:null,lastError:null};
 const copy=()=>JSON.parse(JSON.stringify(state));

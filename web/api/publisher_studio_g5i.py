@@ -115,6 +115,51 @@ def inspect_pdf(raw: bytes) -> dict[str, Any]:
                     "bbox": [round(float(v), 3) for v in block[:4]],
                     "text": text,
                 })
+            image_infos = page.get_image_info(hashes=True, xrefs=True)
+            xref_counts: dict[int, int] = {}
+            for info in image_infos:
+                xref = int(info.get("xref") or 0)
+                if xref > 0:
+                    xref_counts[xref] = xref_counts.get(xref, 0) + 1
+            image_refs = {int(item[0]): int(item[1]) for item in page.get_images(full=True) if len(item) > 1 and int(item[0]) > 0}
+            images = []
+            for idx, info in enumerate(image_infos, start=1):
+                xref = int(info.get("xref") or 0)
+                bbox = fitz.Rect(info.get("bbox"))
+                transform = tuple(float(v) for v in info.get("transform") or (1, 0, 0, 1, 0, 0))
+                digest = info.get("digest")
+                digest_hex = digest.hex() if isinstance(digest, (bytes, bytearray)) else ""
+                axis_aligned = len(transform) >= 4 and abs(transform[1]) < 0.0001 and abs(transform[2]) < 0.0001
+                smask = image_refs.get(xref, 0)
+                unique = xref > 0 and xref_counts.get(xref, 0) == 1
+                movable = bool(xref > 0 and not bbox.is_empty and axis_aligned and smask == 0 and unique)
+                reason = None
+                if not movable:
+                    if xref <= 0:
+                        reason = "image xref unavailable"
+                    elif bbox.is_empty:
+                        reason = "image bbox unavailable"
+                    elif not axis_aligned:
+                        reason = "rotation or shear is outside G6M"
+                    elif smask:
+                        reason = "masked/translucent images are outside G6M"
+                    elif not unique:
+                        reason = "reused image XObjects are outside G6M"
+                    else:
+                        reason = "image occurrence is outside G6M"
+                images.append({
+                    "id": f"p{pno}-img{idx}",
+                    "xref": xref,
+                    "bbox": rect_list(bbox),
+                    "width": int(info.get("width") or 0),
+                    "height": int(info.get("height") or 0),
+                    "digest": digest_hex,
+                    "transform": [round(v, 6) for v in transform],
+                    "occurrenceCount": xref_counts.get(xref, 0),
+                    "smask": smask,
+                    "movable": movable,
+                    "holdReason": reason,
+                })
             pages.append({
                 "page": pno,
                 "width": round(float(page.rect.width), 3),
@@ -122,6 +167,7 @@ def inspect_pdf(raw: bytes) -> dict[str, Any]:
                 "rotation": int(page.rotation),
                 "text": page.get_text("text"),
                 "blocks": blocks,
+                "images": images,
             })
         return {
             "version": APP_VERSION,
@@ -266,6 +312,59 @@ def apply_operations(source_raw: bytes, operations: list[dict[str, Any]]) -> tup
                 results.append({"id": op_id, "type": op_type, "page": page_num, "status": "APPLIED", "uri": uri, "bbox": rect_list(rect)})
                 continue
 
+            if op_type == "move_image":
+                target = normalize_bbox(op.get("targetBbox"), page_rect=page.rect)
+                if abs(target.width - rect.width) > 0.02 or abs(target.height - rect.height) > 0.02:
+                    raise HTTPException(409, "G6M moves raster images by translation only; resizing is not promoted")
+                try:
+                    xref = int(op.get("xref") or 0)
+                except Exception:
+                    xref = 0
+                digest_hex = str(op.get("digest") or "").lower()
+                if xref <= 0 or not digest_hex:
+                    raise HTTPException(400, "move_image requires source xref and digest")
+
+                infos = page.get_image_info(hashes=True, xrefs=True)
+                candidates = []
+                for info in infos:
+                    if int(info.get("xref") or 0) != xref:
+                        continue
+                    ibox = fitz.Rect(info.get("bbox"))
+                    dg = info.get("digest")
+                    dg_hex = dg.hex() if isinstance(dg, (bytes, bytearray)) else ""
+                    if dg_hex.lower() == digest_hex and all(abs(a-b) < 0.05 for a,b in zip(rect_list(ibox), rect_list(rect))):
+                        candidates.append(info)
+                if len(candidates) != 1:
+                    raise HTTPException(409, "G6M could not resolve one unique source image occurrence")
+                info = candidates[0]
+                transform = tuple(float(v) for v in info.get("transform") or (1, 0, 0, 1, 0, 0))
+                if len(transform) < 4 or abs(transform[1]) >= 0.0001 or abs(transform[2]) >= 0.0001:
+                    raise HTTPException(409, "G6M does not move rotated or sheared raster occurrences")
+                page_images = [item for item in page.get_images(full=True) if int(item[0]) == xref]
+                if not page_images or any(int(item[1]) != 0 for item in page_images):
+                    raise HTTPException(409, "G6M does not move masked/translucent raster images")
+                same_xref = [x for x in infos if int(x.get("xref") or 0) == xref]
+                if len(same_xref) != 1:
+                    raise HTTPException(409, "G6M does not move reused image XObjects")
+
+                extracted = doc.extract_image(xref)
+                image_bytes = extracted.get("image")
+                if not image_bytes:
+                    raise HTTPException(409, "G6M could not extract the source raster payload")
+                page.add_redact_annot(rect, fill=None, cross_out=False)
+                page.apply_redactions(
+                    images=fitz.PDF_REDACT_IMAGE_REMOVE,
+                    graphics=fitz.PDF_REDACT_LINE_ART_NONE,
+                    text=fitz.PDF_REDACT_TEXT_NONE,
+                )
+                inserted_xref = page.insert_image(target, stream=image_bytes, keep_proportion=False, overlay=True)
+                results.append({
+                    "id": op_id, "type": op_type, "page": page_num, "status": "APPLIED",
+                    "xref": xref, "insertedXref": int(inserted_xref), "digest": digest_hex,
+                    "bbox": rect_list(rect), "targetBbox": rect_list(target),
+                })
+                continue
+
             raise HTTPException(400, f"Stateless checkpoint does not yet expose operation type: {op_type}")
 
         out = io.BytesIO()
@@ -362,12 +461,15 @@ def verify_render(source_raw: bytes, output_raw: bytes, operations: list[dict[st
             pr = src_rects[page_num - 1]
             sx, sy = src.size[0] / pr.width, src.size[1] / pr.height
             for op in page_ops:
-                raw_bbox = op.get("bbox")
-                if not isinstance(raw_bbox, list) or len(raw_bbox) != 4:
-                    continue
-                x0, y0, x1, y1 = [float(v) for v in raw_bbox]
-                pad = 10
-                draw.rectangle((int(x0*sx)-pad, int(y0*sy)-pad, int(x1*sx)+pad, int(y1*sy)+pad), fill=0)
+                rects = [op.get("bbox")]
+                if str(op.get("type") or "") == "move_image":
+                    rects.append(op.get("targetBbox"))
+                for raw_bbox in rects:
+                    if not isinstance(raw_bbox, list) or len(raw_bbox) != 4:
+                        continue
+                    x0, y0, x1, y1 = [float(v) for v in raw_bbox]
+                    pad = 10
+                    draw.rectangle((int(x0*sx)-pad, int(y0*sy)-pad, int(x1*sx)+pad, int(y1*sy)+pad), fill=0)
             outside = ImageChops.multiply(gray, mask)
             hist = outside.histogram(); ratio = (total - hist[0]) / total
         max_outside = max(max_outside, ratio)
@@ -462,6 +564,26 @@ def verify_structure(source_raw: bytes, output_raw: bytes, operations: list[dict
                             hits.append(link)
                 passed = bool(hits)
                 evidence["matchingLinks"] = len(hits)
+            elif op_type == "move_image":
+                target = fitz.Rect(*[float(v) for v in op.get("targetBbox")])
+                digest_hex = str(op.get("digest") or "").lower()
+                target_hits = []
+                source_hits = []
+                for info in page.get_image_info(hashes=True, xrefs=True):
+                    dg = info.get("digest")
+                    dg_hex = dg.hex() if isinstance(dg, (bytes, bytearray)) else ""
+                    if dg_hex.lower() != digest_hex:
+                        continue
+                    ibox = fitz.Rect(info.get("bbox"))
+                    ib = rect_list(ibox)
+                    if all(abs(float(a)-float(b)) < 0.6 for a,b in zip(ib, rect_list(target))):
+                        target_hits.append(info)
+                    if all(abs(float(a)-float(b)) < 0.6 for a,b in zip(ib, rect_list(rect))):
+                        source_hits.append(info)
+                passed = bool(target_hits) and not source_hits
+                evidence["targetDigestMatches"] = len(target_hits)
+                evidence["sourceDigestMatches"] = len(source_hits)
+                evidence["targetBbox"] = rect_list(target)
             else:
                 passed = False; evidence["reason"] = "unsupported verification type"
             checks.append({"id": op_id, "type": op_type, "page": page_num, "pass": passed, "evidence": evidence})
@@ -493,7 +615,7 @@ def build_receipt(source_raw: bytes, output_raw: bytes, operations: list[dict[st
         "operationResults": operation_results,
         "preset": preset,
         "verification": verification,
-        "claim": "Stateless public transport executes bounded text-replacement/redaction/link and isolated page-lifecycle mutations with render/structural proof in one invocation. G6L adds blank-page insertion and source-page deletion to the already-proven reorder path; this public transport extension is not claimed to be recovered frozen G5I source code.",
+        "claim": "Stateless public transport executes bounded text-replacement/redaction/link/image-translation and isolated page-lifecycle mutations with render/structural proof in one invocation. G6M adds translation-only movement of one unique unmasked axis-aligned raster occurrence; this public transport extension is not claimed to be recovered frozen G5I source code.",
     }
 
 
@@ -590,10 +712,10 @@ async def capabilities(request: Request, selftest: str | None = None) -> JSONRes
         "transport": TRANSPORT,
         "stateless": True,
         "maxPdfBytes": MAX_PDF_BYTES,
-        "capabilities": {"replaceText": True, "redact": True, "links": True, "pageReorder": True, "pageInsert": True, "pageDelete": True, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
-        "editing": ["bounded native text replacement", "true redaction", "bounded URI link insertion", "isolated page reorder transaction", "isolated blank-page insertion", "isolated source-page deletion", "staged client-side undo", "bounded export proof"],
+        "capabilities": {"replaceText": True, "redact": True, "links": True, "moveImage": True, "pageReorder": True, "pageInsert": True, "pageDelete": True, "undo": True, "exportPdf": True, "ocr": False, "forms": False},
+        "editing": ["bounded native text replacement", "true redaction", "bounded URI link insertion", "bounded axis-aligned raster image translation", "isolated page reorder transaction", "isolated blank-page insertion", "isolated source-page deletion", "staged client-side undo", "bounded export proof"],
         "frozen": ["client source bytes", "source hash", "untouched regions"],
-        "limitOfClaim": "This transport checkpoint proves bounded native text replacement with builtin Helvetica fallback, true redaction, URI link insertion, isolated page reorder, blank-page insertion, and source-page deletion. Page lifecycle is implemented in the public stateless transport layer; recovered frozen G5I source parity, source-font-perfect replacement, text reflow, OCR/forms transport, durable server workspaces, distributed collaboration, and independent Poppler witness proof are not claimed.",
+        "limitOfClaim": "This transport checkpoint proves bounded native text replacement with builtin Helvetica fallback, true redaction, URI link insertion, isolated page lifecycle, and translation-only movement of one unique unmasked axis-aligned raster image occurrence. Rotated/sheared, masked/translucent, reused-XObject, resized, or vector object movement; recovered frozen G5I source parity; source-font-perfect replacement; text reflow; OCR/forms transport; durable server workspaces; distributed collaboration; and independent Poppler witness proof are not claimed.",
     }, headers={"Cache-Control": "no-store"})
 
 
