@@ -22,8 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 14
     env:
-      TARGET_URL: https://lab-jqnpvfyif-world-builders.vercel.app/publisher-studio/
-      API_URL: https://lab-jqnpvfyif-world-builders.vercel.app/api/publisher-studio-g5i
+      TARGET_URL: https://lab-cbz47vtbq-world-builders.vercel.app/publisher-studio/
+      API_URL: https://lab-cbz47vtbq-world-builders.vercel.app/api/publisher-studio-g5i
       EXPECTED_BUILD: PS-PUBLIC-DEMO-G6O-v016-r1
     steps:
       - uses: actions/checkout@v4
