@@ -1,4 +1,4 @@
-name: Publisher Studio G6Q PDF Image Replace Proof
+name: Publisher Studio G6Q Production Smoke
 on:
   push:
     branches:
@@ -22,8 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 14
     env:
-      TARGET_URL: https://lab-omo524vpj-world-builders.vercel.app/publisher-studio/
-      API_URL: https://lab-omo524vpj-world-builders.vercel.app/api/publisher-studio-g5i
+      TARGET_URL: https://lab-world-builders.vercel.app/publisher-studio/
+      API_URL: https://lab-world-builders.vercel.app/api/publisher-studio-g5i
       EXPECTED_BUILD: PS-PUBLIC-DEMO-G6Q-v018
     steps:
       - uses: actions/checkout@v4
@@ -201,13 +201,13 @@ jobs:
           receipt['detail']['source_bbox']=src_bbox
           receipt['status']='PASS'
           (out/'receipt.json').write_text(json.dumps(receipt,indent=2),encoding='utf-8')
-          print('PUBLISHER_STUDIO_G6Q_PDF_IMAGE_REPLACE_PROOF_PASS')
+          print('PUBLISHER_STUDIO_G6Q_PRODUCTION_SMOKE_PASS')
           print(json.dumps(receipt,indent=2))
           PY
       - name: Upload public proof evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: publisher-studio-g6q-pdf-image-replace-proof
+          name: publisher-studio-g6q-production-smoke
           path: publisher-studio-g6q-proof/
           if-no-files-found: warn
